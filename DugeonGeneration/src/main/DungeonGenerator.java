@@ -4,6 +4,7 @@ public class DungeonGenerator {
 //Just a test comment
 	//tests
 	//nummer 3
+	//yanniktest
 	public static final int ROOM_POOL = 8;
 	public static final int MAP_WIDTH = 10;
 	public static final int MAP_HEIGHT = 10;
