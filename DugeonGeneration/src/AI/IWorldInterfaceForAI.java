@@ -1,6 +1,6 @@
 package AI;
 
-
+import DungeonGeneration.MapField;
 
 public interface IWorldInterfaceForAI
 {
@@ -11,4 +11,6 @@ public interface IWorldInterfaceForAI
 	public double[] GetPlayerCoordinates();
 	
 	public IDamageable getPlayer();
+	
+	public MapField[][] getMap();
 }

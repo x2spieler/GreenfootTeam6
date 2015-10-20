@@ -16,4 +16,9 @@ public class MapField {
 	
 	}
 	
+	public boolean walkable()
+	{
+		return isWalkable;
+	}
+	
 }
