@@ -3,8 +3,10 @@ import greenfoot.Actor;
 
 public class Enemy extends Actor implements IDamageable
 {
-	//zweiter Test
+
 	//Geiles Testkommentar
+	//test 2d
+	//dsamodmasod
 	
 	protected double velocity = -1;
 	Weapon weapon = null;
