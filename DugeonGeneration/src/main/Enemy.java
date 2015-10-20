@@ -3,6 +3,7 @@ import greenfoot.Actor;
 
 public class Enemy extends Actor implements IDamageable
 {
+	//cool
 	//zweiter Test
 	//Geiles Testkommentar
 	
