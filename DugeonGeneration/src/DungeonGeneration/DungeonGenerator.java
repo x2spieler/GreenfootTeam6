@@ -3,11 +3,11 @@ package DungeonGeneration;
 public class DungeonGenerator {
 
 	public static final int ROOM_POOL = 8;
-	public static final int MAP_WIDTH = 10;
-	public static final int MAP_HEIGHT = 10;
+	public static final int MAP_WIDTH = 100;
+	public static final int MAP_HEIGHT = 100;
 	
-	public static final int MAX_ROOM_SIZE= 6;
-	public static final int MIN_ROOM_SIZE= 2;
+	public static final int MAX_ROOM_SIZE= 10;
+	public static final int MIN_ROOM_SIZE= 5;
 	
 	private MapField[][] mapBlocks = new MapField[MAP_WIDTH][MAP_HEIGHT];
 		
@@ -52,7 +52,7 @@ public class DungeonGenerator {
 			for (int y=0; y<rooms[i].getSizeY(); y++ ){
 				
 				for (int x=0; x<rooms[i].getSizeX(); x++ ) {
-					mapBlocks[rooms[i].getPosition().x][rooms[i].getPosition().y].isWalkable = true;
+					mapBlocks[rooms[i].getPosition().x + x][rooms[i].getPosition().y + y].isWalkable = true;
 				}
 			}
 						
