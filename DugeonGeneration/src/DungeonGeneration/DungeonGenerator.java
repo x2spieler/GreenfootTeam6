@@ -11,6 +11,8 @@ public class DungeonGenerator {
 	
 	private MapField[][] mapBlocks = new MapField[MAP_WIDTH][MAP_HEIGHT];
 		
+	private Room[] rooms = new Room[ROOM_POOL];
+	
 	//Füllt jedes Feld der Map mit einem nicht betretbaren Feld-Objekt.
 	public void clearMap() {
 		
@@ -30,9 +32,7 @@ public class DungeonGenerator {
 	//Erstellt Räume von zufälliger Größe und speichert sie in einem Array
 	//(Mindest-Größe und Maximal-Größe sind als Konstante festgelegt.)
 	public void generateRooms() {
-		
-		Room[] rooms = new Room[ROOM_POOL];
-		
+				
 		for(int i = 0; i < ROOM_POOL; i++) {
 			
 			int randomWidth = MegaRandom.randomInt(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
