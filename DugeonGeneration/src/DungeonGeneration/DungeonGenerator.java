@@ -2,7 +2,7 @@ package DungeonGeneration;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 8;
+	public static final int ROOM_POOL = 25;
 	public static final int MAP_WIDTH = 100;
 	public static final int MAP_HEIGHT = 100;
 	
@@ -63,9 +63,22 @@ public class DungeonGenerator {
 		
 	}
 	
-	public void showMap() {
+	//Pfad von Raum0 zu Raum1 zu Raum2 zu Raum3 ... zu RaumN erstellen, um sicher zu stellen, dass jeder Raum erreichbar ist.
+	//bitte noch fertig machen
+	public void buildPaths() {
 		
+		for(int r1 = 0; r1 < ROOM_POOL -1; r1++) {
+			
+			int deltaX = Math.abs(rooms[r1].getPosition().x - rooms[r1 + 1].getPosition().x);
+			int deltaY = Math.abs(rooms[r1].getPosition().y - rooms[r1 + 1].getPosition().y);
+			
+		}
+		
+	}
 	
+	
+	public void showMap() {
+			
 		
 		for(int y = 0; y < MAP_HEIGHT; y++) {
 		
@@ -76,7 +89,7 @@ public class DungeonGenerator {
 					System.out.print("#");
 					
 					} else {
-						System.out.print("O");
+						System.out.print(".");
 					}
 		
 		
@@ -84,5 +97,5 @@ public class DungeonGenerator {
 				System.out.println();
 			}
 		
-		}
+	}
 }
