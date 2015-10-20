@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import javax.print.attribute.standard.NumberOfDocuments;
+
 import DungeonGeneration.MapField;
 import greenfoot.Actor;
 
@@ -15,7 +17,7 @@ public class Enemy extends Actor implements IDamageable
 	protected int value = -1;
 	protected int hp = -1;
 	protected int viewRange = -1;
-	private Queue<Node> pathToTarget; 
+	private Node currTargetNode;
 
 
 
@@ -38,7 +40,7 @@ public class Enemy extends Actor implements IDamageable
 
 	}
 
-	private Queue<Node> findPath(Point start, Point end)
+	private Node findPath(Point start, Point end)
 	{
 		IWorldInterfaceForAI wi = (IWorldInterfaceForAI) getWorld();
 		if (wi == null)
@@ -51,11 +53,17 @@ public class Enemy extends Actor implements IDamageable
 		MapField[][] map=wi.getMap();
 
 		if(!map[end.x][end.y].walkable())
-			return path;
+			return null;
 
 		openList.add(new Node(start.distance(end),0, end.x, end.y, null));
 
-		return path;
+		Node endNode=null;
+		while(endNode==null)
+		{
+			endNode=step(closedList, openList, map, start, end);
+		}
+
+		return endNode;
 	}
 
 	private Node step(ArrayList<Node>closedList, ArrayList<Node>openList,MapField[][] map, Point start, Point end)
@@ -68,45 +76,55 @@ public class Enemy extends Actor implements IDamageable
 				closest=node;
 			}
 		}
-		
+
 		if(closest.x==end.x&&closest.y==end.y)
 		{
 			return closest;
 		}
-		
-		int x,y;
-		x=closest.x-1;
-		y=closest.y;
-		if(map[x][y].walkable()&&!closedList.contains(new Node(x, y)))
+		int x=-1,y=-1;
+		for(int i=0;i<4;i++)
 		{
-			int indx=openList.indexOf(new Node(x, y));
-			Node currNode=new Node(distance(start, x,y)+closest.prevEdgeCost+1,closest.prevEdgeCost+1, x,y, closest);
-			if(indx==-1)
+			switch(i)
 			{
-				openList.add(currNode);
+			case 0:
+			{
+				x=closest.x-1;
+				y=closest.y;
 			}
-			else
+			case 1:
 			{
-				if(currNode.cost<openList.get(indx).cost)
+				x=closest.x+1;
+				y=closest.y;
+			}
+			case 2:
+			{
+				x=closest.x;
+				y=closest.y-1;
+			}
+			case 3:
+			{
+				x=closest.x;
+				y=closest.y+1;
+			}
+			}
+			if(map[x][y].walkable()&&!closedList.contains(new Node(x, y)))
+			{
+				int indx=openList.indexOf(new Node(x, y));
+				Node currNode=new Node(distance(start, x,y)+closest.prevEdgeCost+1,closest.prevEdgeCost+1, x,y, closest);
+				if(indx==-1)
 				{
-					openList.set(indx, currNode);
+					openList.add(currNode);
+				}
+				else
+				{
+					if(currNode.cost<openList.get(indx).cost)
+					{
+						openList.set(indx, currNode);
+					}
 				}
 			}
 		}
-		/**
-		 * 
-		 * 
-		 * TODO Add this for x+1, y-1 and y+1
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
+
 
 		openList.remove(closest);
 		closedList.add(closest);
