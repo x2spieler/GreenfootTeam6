@@ -29,6 +29,12 @@ public class Room {
 		this.pos = new Point(pos.x, pos.y);
 		
 	}
+	
+	public Point getPosition() {
+		
+		return pos;
+		
+	}
 		
 	public int getSizeX() {
 		
