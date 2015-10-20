@@ -69,14 +69,20 @@ public class DungeonGenerator {
 		
 		for(int y = 0; y < MAP_HEIGHT; y++) {
 		
-		for(int x = 0; x < MAP_WIDTH; x++) {
+			for(int x = 0; x < MAP_WIDTH; x++) {
+			
+				if (mapBlocks[x][y].isWalkable == true){
 			 
-			System.out.print(mapBlocks[x][y].isWalkable + " ");
+					System.out.print("#");
+					
+					} else {
+						System.out.print("O");
+					}
+		
+		
+				}
+				System.out.println();
+			}
+		
 		}
-		
-		System.out.println();
-	}
-		
-		
-}
 }
