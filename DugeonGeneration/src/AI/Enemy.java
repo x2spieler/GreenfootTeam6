@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-
 import DungeonGeneration.MapField;
 import greenfoot.Actor;
 
