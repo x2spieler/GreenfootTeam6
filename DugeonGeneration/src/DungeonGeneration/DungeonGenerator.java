@@ -65,6 +65,7 @@ public class DungeonGenerator {
 	
 	//Pfad von Raum0 zu Raum1 zu Raum2 zu Raum3 ... zu RaumN erstellen, um sicher zu stellen, dass jeder Raum erreichbar ist.
 	//bitte noch fertig machen
+	//neuer Commit =)
 	public void buildPaths() {
 		
 		for(int r1 = 0; r1 < ROOM_POOL -1; r1++) {
