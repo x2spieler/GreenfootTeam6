@@ -1,6 +1,7 @@
 package AI;
 import java.util.List;
 
+import AI.IDamageable;
 import greenfoot.Actor;
 
 public abstract class Bullet extends Actor
