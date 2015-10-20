@@ -5,8 +5,6 @@ public class Enemy extends Actor implements IDamageable
 {
 	//cool
 	//zweiter Test
-	//cool
-	//zweiter Test
 	//Geiles Testkommentar
 	//dsamodmasod
 	//dlkasdklsanaslbm
