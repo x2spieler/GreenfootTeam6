@@ -6,6 +6,7 @@ public class Enemy extends Actor implements IDamageable
 	//cool
 	//zweiter Test
 	//Geiles Testkommentar
+	//dsamodmasod
 	
 	protected double velocity = -1;
 	Weapon weapon = null;
