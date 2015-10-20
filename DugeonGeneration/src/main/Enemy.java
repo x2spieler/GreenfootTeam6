@@ -4,13 +4,15 @@ import greenfoot.Actor;
 public class Enemy extends Actor implements IDamageable
 {
 
+	//Geiles Testkommentar
+	
 	protected double velocity = -1;
 	Weapon weapon = null;
 	protected int value = -1;
 	protected int hp = -1;
 	protected int viewRange = -1;
 
-	@Override
+	
 	public void damage(int dmg)
 	{
 		hp -= dmg;
