@@ -1,4 +1,4 @@
-package main;
+package AI;
 import java.util.List;
 
 import greenfoot.Actor;

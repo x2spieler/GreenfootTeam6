@@ -1,4 +1,4 @@
-package main;
+package AI;
 import greenfoot.Actor;
 
 public class Enemy extends Actor implements IDamageable

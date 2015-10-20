@@ -1,4 +1,4 @@
-package main;
+package DungeonGeneration;
 
 public class MapField {
 

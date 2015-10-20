@@ -1,4 +1,4 @@
-package main;
+package AI;
 public abstract class LongRangeWeapon extends Weapon
 {
 
