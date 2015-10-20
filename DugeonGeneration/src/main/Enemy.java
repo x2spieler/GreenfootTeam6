@@ -10,7 +10,6 @@ public class Enemy extends Actor implements IDamageable
 	protected int hp = -1;
 	protected int viewRange = -1;
 
-	@Override
 	public void damage(int dmg)
 	{
 		hp -= dmg;
