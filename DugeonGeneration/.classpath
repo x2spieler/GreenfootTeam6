@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
-	<classpathentry kind="lib" path="C:/Users/robin/Documents/Workspaces/HsH Workspaces/git/GreenfootTeam6/DugeonGeneration/lib/bluejcore.jar"/>
-	<classpathentry kind="lib" path="C:/Users/robin/Documents/Workspaces/HsH Workspaces/git/GreenfootTeam6/DugeonGeneration/lib/greenfoot.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
