@@ -44,4 +44,21 @@ public class DungeonGenerator {
 		
 	}
 	
+	public void placeRooms() {
+		//Raum wird erzeugt und platziert
+		
+		for (int i=0; i<ROOM_POOL;i++){
+		
+		rooms[i].setPosition(MegaRandom.randomInt(1,5), MegaRandom.randomInt(1,5));
+		
+		/*System.out.println("x=" + rooms[i].posX +" y= "+ rooms[i].posY);
+		
+		for (int y=0; y<rooms[i].sizeY; y++ ){
+		
+			for (int x=0; x<rooms[i].sizeX; x++ ) {
+				mapBlocks[rooms[i].posX+x][rooms[i].posY+y].isWalkable = true;
+			}
+		}*/
+		}
+}
 }
