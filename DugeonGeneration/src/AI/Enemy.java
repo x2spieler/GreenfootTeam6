@@ -9,7 +9,7 @@ import DungeonGeneration.MapField;
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
 
-//TODO: Make this abstract, when done with testing
+//TODO: Make this abstract, when done with testing 
 public /*abstract*/ class Enemy extends Actor implements IDamageable
 {
 
