@@ -3,13 +3,14 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-
-import javax.print.attribute.standard.NumberOfDocuments;
+import java.util.Random;
 
 import DungeonGeneration.MapField;
 import greenfoot.Actor;
+import greenfoot.GreenfootImage;
 
-public class Enemy extends Actor implements IDamageable
+//TODO: Make this abstract, when done with testing
+public /*abstract*/ class Enemy extends Actor implements IDamageable
 {
 
 	protected double velocity = -1;
@@ -18,8 +19,6 @@ public class Enemy extends Actor implements IDamageable
 	protected int hp = -1;
 	protected int viewRange = -1;
 	private Node currTargetNode;
-
-
 
 	public void damage(int dmg)
 	{
@@ -39,8 +38,10 @@ public class Enemy extends Actor implements IDamageable
 	{
 
 	}
-
-	private Node findPath(Point start, Point end)
+	
+	
+	//TODO: Make this private again when done with testing
+	public Node findPath(Point start, Point end)
 	{
 		IWorldInterfaceForAI wi = (IWorldInterfaceForAI) getWorld();
 		if (wi == null)
@@ -50,7 +51,31 @@ public class Enemy extends Actor implements IDamageable
 		ArrayList<Node>closedList=new ArrayList<Node>();
 		ArrayList<Node>openList=new ArrayList<Node>();
 
-		MapField[][] map=wi.getMap();
+		//MapField[][] map=wi.getMap();
+		Random r=new Random();
+		int width=50;
+		int height=50;
+		MapField[][] map=new MapField[width][height];
+		/*
+		 * Create Map, just for testing purposes
+		 */
+		for(int i=0;i<width;i++)
+		{
+			for(int j=0;j<height;j++)
+			{
+				map[i][j]=new MapField(r.nextInt(100)<95);
+			}
+		}
+		for(int i=0;i<width;i++)
+		{
+			for(int j=0;j<height;j++)
+			{
+				if(map[i][j].walkable())
+					System.out.print("#");
+				else
+					System.out.print("-");
+			}
+		}
 
 		if(!map[end.x][end.y].walkable())
 			return null;
