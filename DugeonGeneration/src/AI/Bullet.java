@@ -21,7 +21,7 @@ public abstract class Bullet extends Actor
 	}
 
 	/**
-	 * @return Returns if a collision occurred
+	 * @return Returns true if a collision occurred
 	 */
 	public boolean handleCollision()
 	{
