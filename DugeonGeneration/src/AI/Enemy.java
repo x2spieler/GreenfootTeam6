@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import DungeonGeneration.MapField;
 import greenfoot.Actor;
 
-//TODO: Make this abstract, when done with testing 
-public /*abstract*/ class Enemy extends Actor implements IDamageable
+public abstract class Enemy extends Actor implements IDamageable
 {
 
 	protected double velocity = -1;
@@ -19,7 +18,7 @@ public /*abstract*/ class Enemy extends Actor implements IDamageable
 
 	public Enemy()
 	{
-		//super();
+		
 	}
 
 	public void damage(int dmg)
@@ -41,8 +40,6 @@ public /*abstract*/ class Enemy extends Actor implements IDamageable
 
 	}
 
-
-	//TODO: Make this private again when done with testing
 	private Node findPath(Point start, Point end)
 	{
 		IWorldInterfaceForAI wi = (IWorldInterfaceForAI) getWorld();
