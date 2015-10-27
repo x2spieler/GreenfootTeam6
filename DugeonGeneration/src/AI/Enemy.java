@@ -2,10 +2,10 @@ package AI;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
-import greenfoot.Actor;
 
-public abstract class Enemy extends Actor implements IDamageable
+public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 {
 
 	protected double velocity = -1;
@@ -26,54 +26,94 @@ public abstract class Enemy extends Actor implements IDamageable
 		hp -= dmg;
 		if (hp <= 0)
 		{
-			IWorldInterfaceForAI wi = (IWorldInterfaceForAI) getWorld();
+			/*IWorldInterfaceForAI wi = (IWorldInterfaceForAI) getWorld();
 			if (wi != null)
 				wi.addPlayerScore(value);
 			else
-				System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
+				System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");*/
 		}
 	}
 
-	@Override
+	//@Override
 	public void act()
 	{
 
 	}
 
-	private Node findPath(Point start, Point end)
+	public Node findPath(Point start, Point end)
 	{
-		IWorldInterfaceForAI wi = (IWorldInterfaceForAI) getWorld();
+		/*IWorldInterfaceForAI wi = (IWorldInterfaceForAI) getWorld();
 		if (wi == null)
-			System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
+			System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");*/
 
 		ArrayList<Node>closedList=new ArrayList<Node>();
 		ArrayList<Node>openList=new ArrayList<Node>();
 
-		MapField[][] map=wi.getMap();
+	//	MapField[][] map=wi.getMap();
 		
 		//For testing
-		/*Random r=new Random();
-		int width=50;
-		int height=50;
-		MapField[][] map=new MapField[height][width];
+		DungeonGenerator dungeonGen = new DungeonGenerator();
+		
+		dungeonGen.clearMap();
+		dungeonGen.generateRooms();
+		dungeonGen.placeRooms();
+		dungeonGen.buildPaths();
+		dungeonGen.showMap();
+		System.out.println();System.out.println();System.out.println();
+		MapField[][] map=dungeonGen.getMap();
+		
+		int width=DungeonGenerator.MAP_WIDTH;
+		int height=DungeonGenerator.MAP_HEIGHT;
+		
+		boolean br=false;
+		for(int i=0;i<height;i++)
+		{
+			for(int j=0;j<width;j++)
+			{
+				if(map[i][j].walkable())
+				{
+					start.x=i;
+					start.y=j;
+					br=true;
+					break;
+				}
+			}
+		}
+		br=false;
+		for(int i=height-1;i>=0;i--)
+		{
+			for(int j=width-1;j>=0;j--)
+			{
+				if(map[i][j].walkable())
+				{
+					end.x=i;
+					end.y=j;
+					br=true;
+					break;
+				}
+			}
+		}
+		
+		/*MapField[][] map=new MapField[height][width];
+		Random r=new Random();
 		for(int i=0;i<height;i++)
 		{
 			for(int j=0;j<width;j++)
 			{
 				map[i][j]=new MapField(r.nextInt(100)<60);
 			}
-		}
+		}*/
 		String[][] mp=new String[height][width];
 		for(int i=0;i<height;i++)
 		{
 			for(int j=0;j<width;j++)
 			{
 				if(map[i][j].walkable())
-					mp[i][j]=" ";
+					mp[i][j]="#";
 				else
-					mp[i][j]="~";
+					mp[i][j]=".";
 			}
-		}*/
+		}
 
 		if(!map[end.x][end.y].walkable())
 		{
@@ -96,10 +136,10 @@ public abstract class Enemy extends Actor implements IDamageable
 		}
 		currTargetNode=endNode;
 
-		/*Node n=endNode;
+		Node n=endNode;
 		while(n!=null)
 		{
-			mp[n.x][n.y]="#";
+			mp[n.x][n.y]="0";
 			n=n.prev;
 		}
 
@@ -107,10 +147,10 @@ public abstract class Enemy extends Actor implements IDamageable
 		{
 			for(int j=0;j<width;j++)
 			{
-				System.out.print(mp[i][j]+" ");
+				System.out.print(mp[j][i]);
 			}
 			System.out.println();
-		}*/
+		}
 
 		return endNode;
 	}
