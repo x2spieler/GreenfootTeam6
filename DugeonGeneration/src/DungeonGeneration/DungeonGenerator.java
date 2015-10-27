@@ -1,8 +1,10 @@
 package DungeonGeneration;
 
+import java.awt.Point;
+
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 50;
+	public static final int ROOM_POOL = 10;
 	public static final int MAP_WIDTH = 80;
 	public static final int MAP_HEIGHT = 80;
 	
@@ -13,6 +15,8 @@ public class DungeonGenerator {
 		
 	private Room[] rooms = new Room[ROOM_POOL];
 	
+	
+	//Clears the map by setting every single field to an empty (walkable) one
 	public void clearMap() {
 		
 		for(int y = 0; y < MAP_HEIGHT; y++) {
@@ -20,15 +24,14 @@ public class DungeonGenerator {
 			for(int x = 0; x < MAP_WIDTH; x++) {
 				
 				mapBlocks[x][y] = new MapField(false); 
-				//System.out.print(mapBlocks[x][y].isWalkable + " ");
+				
 			}
 			
-			//System.out.println();
 		}
 		
 	}
 	
-	
+	//Populates the "rooms" array with random sized rectangular rooms. 
 	public void generateRooms() {
 				
 		for(int i = 0; i < ROOM_POOL; i++) {
@@ -42,7 +45,7 @@ public class DungeonGenerator {
 		
 	}
 	
-	//Die in dem Rooms-Array generierten Räume werden zufällig auf der Map platziert.
+	//Randomly places the rooms onto the map by setting the respective fields to wall (non-walkable) fields.
 	public void placeRooms() {
 		
 		for(int i = 0; i < ROOM_POOL; i++) {
@@ -63,21 +66,51 @@ public class DungeonGenerator {
 		
 	}
 	
-	//Pfad von Raum0 zu Raum1 zu Raum2 zu Raum3 ... zu RaumN erstellen, um sicher zu stellen, dass jeder Raum erreichbar ist.
-	//bitte noch fertig machen
-	//neuer Commit =)
+	//Connects all rooms by building paths from room1 to room 2, from room2 to room3, from room3 to room4 and so on to make sure every room can be reached.
 	public void buildPaths() {
 		
 		for(int r1 = 0; r1 < ROOM_POOL -1; r1++) {
 			
-			int deltaX = Math.abs(rooms[r1].getPosition().x - rooms[r1 + 1].getPosition().x);
-			int deltaY = Math.abs(rooms[r1].getPosition().y - rooms[r1 + 1].getPosition().y);
+			int deltaX = rooms[r1].getPosition().x - rooms[r1 + 1].getPosition().x;
+			int deltaY = rooms[r1].getPosition().y - rooms[r1 + 1].getPosition().y;
+			
+			int absDeltaX = Math.abs(deltaX);
+			int absDeltaY = Math.abs(deltaY);
+			
+			Point buildPosition = new Point(rooms[r1].getPosition().x,rooms[r1].getPosition().y);
+			
+			while(absDeltaX > 0 || absDeltaY > 0) {
+			
+				int minRandom = 1;
+				int maxRandom = 2;
+				
+				if(absDeltaX <= 0 )
+					minRandom = 2;
+				if(absDeltaY <= 0)
+					maxRandom = 1;
+				
+				int randomChance = MegaRandom.randomInt(minRandom, maxRandom);
+				
+				if(randomChance == 1) {
+					mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][buildPosition.y].isWalkable = true;
+					buildPosition.translate((int)Math.signum(deltaX*-1), 0);
+					absDeltaX -= 1;
+				}
+				else
+				{
+					mapBlocks[buildPosition.x][buildPosition.y + (int)Math.signum(deltaY*-1)].isWalkable = true;
+					buildPosition.translate(0, (int)Math.signum(deltaY*-1));
+					absDeltaY -= 1;
+				}
+				
+			}
+			
 			
 		}
 		
 	}
 	
-	
+	//Displays the world map in the console for debugging purposes.
 	public void showMap() {
 			
 		
