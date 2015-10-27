@@ -17,7 +17,7 @@ public class DemoWorld extends ScrollWorld {
 	 * Constructor for objects of class DemoWorld.
 	 */
 	public DemoWorld() {
-		super(600, 400, 1, 6000, 6000);
+		super(800, 600, 1, 6000, 6000);
 
 		try {
 			addCameraFollower(new MyCursor(), 0, 0);

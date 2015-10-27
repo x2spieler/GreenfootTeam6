@@ -29,12 +29,13 @@ public class MyCursor extends ScrollActor {
 
 	public void act() {
 		double delta = (System.nanoTime() - time) * 0.000000001;
+		System.out.println(delta);
 		time = System.nanoTime();
 
 		MouseInfo m = Greenfoot.getMouseInfo();
 
 		if (m != null) {
-			if (Greenfoot.mouseMoved(null)) {
+			if (Greenfoot.mouseMoved(this.getWorld())) {
 				targetX = m.getX();
 				targetY = m.getY();
 				moving = true;
@@ -51,7 +52,7 @@ public class MyCursor extends ScrollActor {
 				getWorld().setCameraLocation(
 						getWorld().getCameraX() + (int) vX,
 						getWorld().getCameraY() + (int) vY);
-				System.out.println(vX + ", " + vY);
+				// System.out.println(vX + ", " + vY);
 			} else {
 				getWorld().setCameraLocation(targetX, targetY);
 				moving = false;
