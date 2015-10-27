@@ -22,6 +22,12 @@ public class DungeonGenerator {
 		rand=new MegaRandom();
 	}
 	
+	public DungeonGenerator(int seed)
+	{
+		rand=new MegaRandom(seed);
+	}
+	
+	
 	//Clears the map by setting every single field to an empty (walkable) one
 	public void clearMap() {
 		
@@ -77,13 +83,22 @@ public class DungeonGenerator {
 		
 		for(int r1 = 0; r1 < ROOM_POOL -1; r1++) {
 			
-			int deltaX = rooms[r1].getPosition().x - rooms[r1 + 1].getPosition().x;
-			int deltaY = rooms[r1].getPosition().y - rooms[r1 + 1].getPosition().y;
+			int buildStartOffsetX = rand.randomInt(0, (rooms[r1].getSizeX()-1));
+			int buildStartOffsetY = rand.randomInt(0, (rooms[r1].getSizeY()-1));
+			
+			int buildDestinationOffsetX = rand.randomInt(0, (rooms[r1 +1].getSizeX()-1));
+			int buildDestinationOffsetY = rand.randomInt(0, (rooms[r1 +1].getSizeY()-1));
+			
+			Point buildPosition = new Point(rooms[r1].getPosition().x + buildStartOffsetX,rooms[r1].getPosition().y + buildStartOffsetY);
+			Point buildDestination = new Point(rooms[r1 +1].getPosition().x + buildDestinationOffsetX,rooms[r1 +1].getPosition().y + buildDestinationOffsetY);
+			
+			int deltaX = buildPosition.x - buildDestination.x;
+			int deltaY = buildPosition.y - buildDestination.y;
 			
 			int absDeltaX = Math.abs(deltaX);
 			int absDeltaY = Math.abs(deltaY);
 			
-			Point buildPosition = new Point(rooms[r1].getPosition().x,rooms[r1].getPosition().y);
+			//Point buildPosition = new Point(rooms[r1].getPosition().x,rooms[r1].getPosition().y);
 			
 			while(absDeltaX > 0 || absDeltaY > 0) {
 			
