@@ -1,21 +1,19 @@
 package camera;
 
 import greenfoot.Greenfoot;
-import greenfoot.MouseInfo; // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
+import greenfoot.MouseInfo;
+import greenfoot.core.WorldHandler;
 
 import java.awt.AWTException;
+import java.awt.Point;
 import java.awt.Robot;
+
+import javax.swing.SwingUtilities;
 
 import scrollWorld.ScrollActor;
 
-/**
- * Write a description of class MyCursor here.
- * 
- * @author (your name)
- * @version (a version number or a date)
- */
 public class MyCursor extends ScrollActor {
-	private static final int SPEED = 100;
+	private static final int SPEED = 800;
 	private Robot robot;
 	private boolean moving = false;
 	private long time = System.nanoTime();
@@ -29,47 +27,78 @@ public class MyCursor extends ScrollActor {
 
 	public void act() {
 		double delta = (System.nanoTime() - time) * 0.000000001;
-		System.out.println(delta);
 		time = System.nanoTime();
 
 		MouseInfo m = Greenfoot.getMouseInfo();
 
 		if (m != null) {
-			if (Greenfoot.mouseMoved(this.getWorld())) {
-				targetX = m.getX();
-				targetY = m.getY();
+			if (Greenfoot.mouseMoved(null) && !moving) {
+				int x = m.getX();
+				int y = m.getY();
+				targetX = getWorld().getCameraX() + x - getWorld().getWidth()
+						/ 2;
+				targetY = getWorld().getCameraY() + y - getWorld().getHeight()
+						/ 2;
+				setLocation(x, y);
 				moving = true;
+				// System.out.println(targetX + " " + targetY);
+			}
+
+			if (moving && !Greenfoot.mouseMoved(null)) {
+				if (targetInBounds()) {
+					int distX = targetX - getGlobalX();
+					int distY = targetY - getGlobalY();
+					// System.out.println(getGlobalX() + " " + getGlobalY());
+					double dist = Math.sqrt(distX * distX + distY * distY);
+					if (dist > 1.5 * SPEED * delta) {
+						double vX = distX / dist * SPEED * delta;
+						double vY = distY / dist * SPEED * delta;
+						getWorld().setCameraLocation(
+								getWorld().getCameraX() + (int) vX,
+								getWorld().getCameraY() + (int) vY);
+
+						Point p = new Point(getXFromCamera()
+								+ (getWorld().getWidth() / 2), getYFromCamera()
+								+ (getWorld().getHeight() / 2));
+						// System.out.println(getXFromCamera() + " "
+						// + getYFromCamera());
+						p.setLocation(p.getX() - vX, p.getY() - vY);
+						SwingUtilities.convertPointToScreen(p, WorldHandler
+								.getInstance().getWorldCanvas());
+						robot.mouseMove((int) p.getX(), (int) p.getY());
+
+						// System.out.println(vX + ", " + vY);
+					} else {
+						getWorld().setCameraLocation(targetX, targetY);
+						moving = false;
+					}
+				} else {
+					moving = false;
+				}
 			}
 		}
+		// if (m != null) {
+		// setLocation(m.getX(), m.getY());
+		// getWorld().setCameraLocation(getGlobalX(), getGlobalY());
+		// Point p = new Point(getXFromCamera(), getYFromCamera());
+		// SwingUtilities.convertPointToScreen(p, WorldHandler.getInstance()
+		// .getWorldCanvas());
+		// // System.out.println(p.getX()+", "+p.getY());
+		// // if(WorldHandler.getInstance().getWorldCanvas().contains(p1)){
+		// }
 
-		if (moving) {
-			int distX = targetX - getXFromCamera();
-			int distY = targetY - getYFromCamera();
-			double dist = Math.sqrt(distX * distX + distY * distY);
-			if (dist > 2 * SPEED * delta) {
-				double vX = distX / dist * SPEED * delta;
-				double vY = distY / dist * SPEED * delta;
-				getWorld().setCameraLocation(
-						getWorld().getCameraX() + (int) vX,
-						getWorld().getCameraY() + (int) vY);
-				// System.out.println(vX + ", " + vY);
-			} else {
-				getWorld().setCameraLocation(targetX, targetY);
-				moving = false;
-			}
+	}
+
+	private boolean targetInBounds() {
+		if (targetX - (getWorld().getWidth() / 2) >= 0
+				&& targetY - (getWorld().getHeight() / 2) >= 0
+				&& targetX - (getWorld().getWidth() / 2) <= getWorld()
+						.getFullWidth() - (getWorld().getWidth() / 2)
+				&& targetY - (getWorld().getHeight() / 2) <= getWorld()
+						.getFullHeight() - (getWorld().getHeight() / 2)) {
+			return true;
+		} else {
+			return false;
 		}
-		// System.out.println(targetX + ", " + targetY);
-
-		/*
-		 * if(m!=null){ setLocation(m.getX(), m.getY());
-		 * getWorld().setCameraLocation(getGlobalX(), getGlobalY()); Point p1 =
-		 * new Point(getXFromCamera(),getYFromCamera()); Point p = new
-		 * Point(300,200); SwingUtilities.convertPointToScreen(p,
-		 * WorldHandler.getInstance().getWorldCanvas());
-		 * //System.out.println(p.getX()+", "+p.getY());
-		 * //if(WorldHandler.getInstance().getWorldCanvas().contains(p1)){
-		 * robot.mouseMove((int)p.getX(), (int)p.getY()); //}
-		 */
-
 	}
 }
