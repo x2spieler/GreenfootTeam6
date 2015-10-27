@@ -22,6 +22,12 @@ public class DungeonGenerator {
 		rand=new MegaRandom();
 	}
 	
+	public DungeonGenerator(int seed)
+	{
+		rand=new MegaRandom(seed);
+	}
+	
+	
 	//Clears the map by setting every single field to an empty (walkable) one
 	public void clearMap() {
 		
