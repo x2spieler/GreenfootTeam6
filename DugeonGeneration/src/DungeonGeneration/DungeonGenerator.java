@@ -5,11 +5,14 @@ import java.awt.Point;
 public class DungeonGenerator {
 
 	public static final int ROOM_POOL = 10;
-	public static final int MAP_WIDTH = 80;
-	public static final int MAP_HEIGHT = 80;
+	public static final int MAP_WIDTH = 150;
+	public static final int MAP_HEIGHT = 150;
 	
-	public static final int MAX_ROOM_SIZE= 10;
+	public static final int MAX_ROOM_SIZE= 20;
 	public static final int MIN_ROOM_SIZE= 10;
+	
+	public static final int MAX_PATH_WIDTH= 6;
+	public static final int MIN_PATH_WIDTH= 2;
 	
 	private MapField[][] mapBlocks = new MapField[MAP_WIDTH][MAP_HEIGHT];
 		
@@ -109,8 +112,9 @@ public class DungeonGenerator {
 			
 			int absDeltaX = Math.abs(deltaX);
 			int absDeltaY = Math.abs(deltaY);
-			
-			//Point buildPosition = new Point(rooms[r1].getPosition().x,rooms[r1].getPosition().y);
+		
+			int buildStep = 0;
+			int randomPathWidth = rand.randomInt(MIN_PATH_WIDTH, MAX_PATH_WIDTH);
 			
 			while(absDeltaX > 0 || absDeltaY > 0) {
 			
@@ -123,17 +127,51 @@ public class DungeonGenerator {
 					maxRandom = 1;
 				
 				int randomChance = rand.randomInt(minRandom, maxRandom);
-				
+								
 				if(randomChance == 1) {
-					mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][buildPosition.y].isWalkable = true;
+					
+					
+					for(int i=0; i < randomPathWidth; i++) {
+						if((buildPosition.y - randomPathWidth/2 + i) > 0 && (buildPosition.y - randomPathWidth/2 + i) < MAP_WIDTH)
+							mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][buildPosition.y - randomPathWidth/2 + i].isWalkable = true;
+					}
+					
+					//old system
+					/*for(int i=1; i <= randomPathWidth/2; i++) {
+						mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][buildPosition.y + i].isWalkable = true;
+						mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][buildPosition.y - i].isWalkable = true;
+					}
+					*/
+					
+					//mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][buildPosition.y].isWalkable = true;
 					buildPosition.translate((int)Math.signum(deltaX*-1), 0);
 					absDeltaX -= 1;
 				}
 				else
 				{
-					mapBlocks[buildPosition.x][buildPosition.y + (int)Math.signum(deltaY*-1)].isWalkable = true;
+					
+					for(int i=0; i < randomPathWidth; i++) {
+						if((buildPosition.x - randomPathWidth/2 + i) > 0 && (buildPosition.x - randomPathWidth/2 + i) < MAP_HEIGHT)
+							mapBlocks[buildPosition.x - randomPathWidth/2 + i][buildPosition.y + (int)Math.signum(deltaY*-1)].isWalkable = true;
+					}
+					
+					//old system
+					/*for(int i=1; i <= randomPathWidth/2; i++) {
+						mapBlocks[buildPosition.x + i][buildPosition.y + (int)Math.signum(deltaY*-1)].isWalkable = true;
+						mapBlocks[buildPosition.x - i][buildPosition.y + (int)Math.signum(deltaY*-1)].isWalkable = true;
+					}
+					*/
+										
+					//mapBlocks[buildPosition.x][buildPosition.y + (int)Math.signum(deltaY*-1)].isWalkable = true;
 					buildPosition.translate(0, (int)Math.signum(deltaY*-1));
 					absDeltaY -= 1;
+				}
+				
+				buildStep++;
+				
+				if(buildStep % 6 == 0) {
+					randomPathWidth = rand.randomInt(MIN_PATH_WIDTH, MAX_PATH_WIDTH);
+
 				}
 				
 			}
