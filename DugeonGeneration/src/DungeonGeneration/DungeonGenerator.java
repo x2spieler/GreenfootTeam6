@@ -2,12 +2,12 @@ package DungeonGeneration;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 25;
-	public static final int MAP_WIDTH = 100;
-	public static final int MAP_HEIGHT = 100;
+	public static final int ROOM_POOL = 50;
+	public static final int MAP_WIDTH = 80;
+	public static final int MAP_HEIGHT = 80;
 	
 	public static final int MAX_ROOM_SIZE= 10;
-	public static final int MIN_ROOM_SIZE= 5;
+	public static final int MIN_ROOM_SIZE= 10;
 	
 	private MapField[][] mapBlocks = new MapField[MAP_WIDTH][MAP_HEIGHT];
 		
@@ -37,7 +37,7 @@ public class DungeonGenerator {
 			int randomHeight = MegaRandom.randomInt(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
 			rooms[i] = new Room(randomWidth, randomHeight);
 			
-			System.out.println("Raum " + i +" -> Width: " + rooms[i].getSizeX() + ", Height: " + rooms[i].getSizeY());
+			//System.out.println("Raum " + i +" -> Width: " + rooms[i].getSizeX() + ", Height: " + rooms[i].getSizeY());
 		}
 		
 	}
