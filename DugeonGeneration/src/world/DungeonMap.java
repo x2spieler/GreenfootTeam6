@@ -5,6 +5,7 @@ import greenfoot.GreenfootImage;
 import java.awt.Color;
 import java.awt.Point;
 
+import player.Player;
 import scrollWorld.ScrollWorld;
 import AI.Bullet;
 import AI.IDamageable;
@@ -33,14 +34,18 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		gen.buildPaths();
 		passable = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		passable.setColor(Color.green);
+		passable.fill();
 		impassable = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		impassable.setColor(Color.red);
+		impassable.fill();
 		renderMap();
+		addObject(new Player(), 0, 0);
 	}
 
 	private void renderMap() {
-		GreenfootImage background = new GreenfootImage(VIEWPORT_WIDTH
-				* TILE_SIZE, VIEWPORT_HEIGHT * TILE_SIZE);
+		GreenfootImage background = new GreenfootImage(
+				DungeonGenerator.MAP_WIDTH * TILE_SIZE,
+				DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
 		MapField[][] map = gen.getMap();
 		for (int i = 0; i < DungeonGenerator.MAP_WIDTH; i++) {
 			for (int j = 0; j < DungeonGenerator.MAP_HEIGHT; j++) {
@@ -53,7 +58,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 				}
 			}
 		}
-		setBackground(background);
+		setNewBackground(background);
 	}
 
 	@Override
