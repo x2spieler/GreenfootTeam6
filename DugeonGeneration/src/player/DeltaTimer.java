@@ -2,7 +2,7 @@ package player;
 
 import scrollWorld.ScrollActor;
 
-public class TickIndependentMover extends ScrollActor {
+public class DeltaTimer extends ScrollActor {
 	private long time = System.nanoTime();
 	private double delta;
 

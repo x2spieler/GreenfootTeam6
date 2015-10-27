@@ -3,7 +3,7 @@ package player;
 import greenfoot.Greenfoot;
 import AI.IDamageable;
 
-public class Player extends TickIndependentMover implements IDamageable {
+public class Player extends DeltaTimer implements IDamageable {
 
 	private int speed = 500;
 	private double epsilonMove = 0.0;
@@ -18,18 +18,18 @@ public class Player extends TickIndependentMover implements IDamageable {
 		super.act();
 
 		double move = speed * getDelta() / getWorld().getCellSize();
-		if (Greenfoot.isKeyDown("w")) {
+		if (Greenfoot.isKeyDown(Direction.UP.key)) {
 			setGlobalLocation(getGlobalX(), getGlobalY()
 					- ensureEventualMove(move));
-		} else if (Greenfoot.isKeyDown("a")) {
+		} else if (Greenfoot.isKeyDown(Direction.LEFT.key)) {
 			setGlobalLocation(getGlobalX() - ensureEventualMove(move),
 					getGlobalY());
 
-		} else if (Greenfoot.isKeyDown("s")) {
+		} else if (Greenfoot.isKeyDown(Direction.DOWN.key)) {
 			setGlobalLocation(getGlobalX(), getGlobalY()
 					+ ensureEventualMove(move));
 
-		} else if (Greenfoot.isKeyDown("d")) {
+		} else if (Greenfoot.isKeyDown(Direction.RIGHT.key)) {
 			setGlobalLocation(getGlobalX() + ensureEventualMove(move),
 					getGlobalY());
 
