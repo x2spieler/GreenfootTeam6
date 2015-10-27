@@ -15,6 +15,12 @@ public class DungeonGenerator {
 		
 	private Room[] rooms = new Room[ROOM_POOL];
 	
+	MegaRandom rand;
+	
+	public DungeonGenerator()
+	{
+		rand=new MegaRandom();
+	}
 	
 	//Clears the map by setting every single field to an empty (walkable) one
 	public void clearMap() {
@@ -36,8 +42,8 @@ public class DungeonGenerator {
 				
 		for(int i = 0; i < ROOM_POOL; i++) {
 			
-			int randomWidth = MegaRandom.randomInt(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
-			int randomHeight = MegaRandom.randomInt(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
+			int randomWidth = rand.randomInt(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
+			int randomHeight = rand.randomInt(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
 			rooms[i] = new Room(randomWidth, randomHeight);
 			
 			//System.out.println("Raum " + i +" -> Width: " + rooms[i].getSizeX() + ", Height: " + rooms[i].getSizeY());
@@ -50,7 +56,7 @@ public class DungeonGenerator {
 		
 		for(int i = 0; i < ROOM_POOL; i++) {
 			
-			rooms[i].setPosition(MegaRandom.randomInt(1, MAP_WIDTH - 1 - rooms[i].getSizeX()), MegaRandom.randomInt(1, MAP_HEIGHT - 1 - rooms[i].getSizeY()));
+			rooms[i].setPosition(rand.randomInt(1, MAP_WIDTH - 1 - rooms[i].getSizeX()), rand.randomInt(1, MAP_HEIGHT - 1 - rooms[i].getSizeY()));
 			
 			for (int y=0; y<rooms[i].getSizeY(); y++ ){
 				
@@ -89,7 +95,7 @@ public class DungeonGenerator {
 				if(absDeltaY <= 0)
 					maxRandom = 1;
 				
-				int randomChance = MegaRandom.randomInt(minRandom, maxRandom);
+				int randomChance = rand.randomInt(minRandom, maxRandom);
 				
 				if(randomChance == 1) {
 					mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][buildPosition.y].isWalkable = true;
