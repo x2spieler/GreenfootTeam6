@@ -27,8 +27,14 @@ public class DungeonGenerator {
 		rand=new MegaRandom(seed);
 	}
 	
+	public MapField[][] getMap() {
+		
+		return mapBlocks;
+		
+	}
 	
-	//Clears the map by setting every single field to an empty (walkable) one
+	
+	//Clears the map by setting every single field to a non-walkable one (wall)
 	public void clearMap() {
 		
 		for(int y = 0; y < MAP_HEIGHT; y++) {
@@ -57,7 +63,7 @@ public class DungeonGenerator {
 		
 	}
 	
-	//Randomly places the rooms onto the map by setting the respective fields to wall (non-walkable) fields.
+	//Randomly places the rooms onto the map by setting the respective fields to walkable fields.
 	public void placeRooms() {
 		
 		for(int i = 0; i < ROOM_POOL; i++) {
