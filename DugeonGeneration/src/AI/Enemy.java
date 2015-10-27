@@ -69,7 +69,7 @@ public abstract class Enemy extends Actor implements IDamageable
 			for(int j=0;j<width;j++)
 			{
 				if(map[i][j].walkable())
-					mp[i][j]="0";
+					mp[i][j]=" ";
 				else
 					mp[i][j]="~";
 			}
@@ -136,35 +136,26 @@ public abstract class Enemy extends Actor implements IDamageable
 			return closest;
 		}
 		int x=-1,y=-1;
+		int addX=1;
+		int addY=0;
 		for(int i=0;i<4;i++)
 		{
-			switch(i)
+			if(i==1||i==3)
 			{
-			case 0:
+				addX*=-1;
+				addY*=-1;
+			}
+			if(i==2)
 			{
-				x=closest.x-1;
-				y=closest.y;
-				break;
+				addX=0;
+				addY=1;
 			}
-			case 1:
-			{
-				x=closest.x+1;
-				y=closest.y;
-				break;
-			}
-			case 2:
-			{
-				x=closest.x;
-				y=closest.y-1;
-				break;
-			}
-			case 3:
-			{
-				x=closest.x;
-				y=closest.y+1;
-				break;
-			}
-			}
+			//1. Loop: 1 , 0
+			//2. Loop: -1, 0
+			//3. Loop: 0, 1
+			//4. Loop: 0, -1
+			x=closest.x+addX;
+			y=closest.y+addY;
 			if(x<0||y<0||x>=map.length||y>=map[0].length)
 				continue;
 			if(map[x][y].walkable()&&!closedList.contains(new Node(x, y)))
