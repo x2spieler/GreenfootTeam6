@@ -35,9 +35,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		passable = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		passable.setColor(Color.green);
 		passable.fill();
+		passable.drawImage(new GreenfootImage("grass.png"), 0, 0);
 		impassable = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		impassable.setColor(Color.red);
 		impassable.fill();
+		impassable.drawImage(new GreenfootImage("wood.png"), 0, 0);
 		renderMap();
 		addObject(new Player(), 0, 0);
 	}
