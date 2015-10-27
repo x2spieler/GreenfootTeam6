@@ -15,16 +15,22 @@ public class DungeonGenerator {
 		
 	private Room[] rooms = new Room[ROOM_POOL];
 	
+	private int mapSeed = 0;
+	
 	MegaRandom rand;
+	MegaRandom randomSeed;
 	
 	public DungeonGenerator()
 	{
-		rand=new MegaRandom();
+		randomSeed = new MegaRandom();
+		mapSeed = randomSeed.randomInt(0, Integer.MAX_VALUE-1);
+		rand=new MegaRandom(mapSeed);
 	}
 	
 	public DungeonGenerator(int seed)
 	{
-		rand=new MegaRandom(seed);
+		mapSeed = seed;
+		rand=new MegaRandom(mapSeed);
 	}
 	
 	public MapField[][] getMap() {
@@ -149,14 +155,16 @@ public class DungeonGenerator {
 			 
 					System.out.print("#");
 					
-					} else {
-						System.out.print(".");
-					}
-		
-		
+				} 
+				else {
+					System.out.print(".");
 				}
-				System.out.println();
+		
 			}
+				System.out.println();
+		}
+		
+		System.out.println("\n Map Seed: " + mapSeed);
 		
 	}
 }
