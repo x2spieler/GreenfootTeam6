@@ -11,3 +11,5 @@ public class TestForAIMain
 		e.findPath(new Point(2, 2), new Point(48, 48));
 	}
 }
+//995672767
+//659362109

@@ -22,8 +22,8 @@ public abstract class ShortRangeWeapon extends Weapon
 				//TODO: Always play the animation, the following code is only to determine if we deal damage to the player
 				
 				Point playerCoords = wi.getPlayerPosition();
-				double xDiff = playerCoords.x - getX();
-				double yDiff = playerCoords.y - getY();
+				double xDiff = playerCoords.x - getGlobalX();
+				double yDiff = playerCoords.y - getGlobalY();
 				
 				//Check if enemy looks at player
 				double angle = Math.toDegrees(Math.asin(xDiff / yDiff));
