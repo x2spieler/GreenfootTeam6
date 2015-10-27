@@ -14,6 +14,9 @@ public interface IWorldInterfaceForAI
 	
 	public MapField[][] getMap();
 	
+	/**
+	 * @return Player position in pixels, NOT IN TILES
+	 */
 	public Point getPlayerPosition();
 	
 	public int getTileSize();

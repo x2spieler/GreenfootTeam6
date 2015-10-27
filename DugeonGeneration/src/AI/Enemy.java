@@ -1,16 +1,11 @@
 package AI;
-import greenfoot.Greenfoot;
-
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Random;
 
-import bluej.graph.Moveable;
-import bluej.parser.entity.PositionedResolver;
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
 
-public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
+public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
 {
 
 	protected int stepsPerTick = -1;
@@ -22,6 +17,7 @@ public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 	boolean seesPlayer=false;
 	private Node currTargetNode=null;
 	IWorldInterfaceForAI wi = null;
+	private Point lastPlayerTile=null;
 
 	/*public Enemy()
 	{
@@ -37,8 +33,8 @@ public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 	private boolean isInRangeOfPlayer()
 	{
 		Point p=wi.getPlayerPosition();
-		double xDist=getX()-p.x;
-		double yDist=getY()-p.y;
+		double xDist=getGlobalX()-p.x;
+		double yDist=getGlobalY()-p.y;
 		return (xDist*xDist)+(yDist*yDist)<viewRangeSquared;
 	}*/
 
@@ -54,11 +50,15 @@ public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 	/*@Override
 	public void act()
 	{
+		Point currPlayerTile=wi.getPlayerPosition();
+		currPlayerTile.x/=wi.getTileSize();
+		currPlayerTile.y/=wi.getTileSize();
+		Point currTile=new Point(getGlobalX()/wi.getTileSize(), getGlobalY()/wi.getTileSize());
 		if(currTargetNode==null)
 		{
 			seesPlayer=isInRangeOfPlayer();
-			if(seesPlayer)
-				currTargetNode=findPath(wi.getPlayerPosition(), new Point(getX()/wi.getTileSize(), getY()/wi.getTileSize()));
+			if(seesPlayer&&!currPlayerTile.equals(currTile))
+				currTargetNode=findPath(currTile, currPlayerTile);
 			else
 			{
 				Random random=new Random();
@@ -71,7 +71,7 @@ public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 					if(map[x][y].walkable())
 						break;
 				}
-				currTargetNode=findPath(new Point(x, y), new Point(getX()/wi.getTileSize(), getY()/wi.getTileSize()));
+				currTargetNode=findPath(currTile, new Point(x, y));
 			}
 		}
 		else
@@ -80,21 +80,31 @@ public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 			{
 				//Sees the player - didn't see him in the last tick
 				//We can see the player now - CHASE HIM!
-				currTargetNode=findPath(wi.getPlayerPosition(), new Point(getX()/wi.getTileSize(), getY()/wi.getTileSize()));
-				Greenfoot.playSound("res/audio/ecnounterPlayer");
+				currTargetNode=findPath(currTile, currPlayerTile);
+				lastPlayerTile=currPlayerTile;
+				Greenfoot.playSound("res/audio/ecnounterPlayer.wav");
+			}
+			else if(seesPlayer)
+			{
+				if(!currPlayerTile.equals(lastPlayerTile))
+				{
+					//As long as we see him, always go straight to the player
+					currTargetNode=findPath(currTile, currPlayerTile);
+					lastPlayerTile=currPlayerTile;
+				}
 			}
 		}
 		
-		turnTowards(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
+		turnTowardsGlobalLocation(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
 		for(int i=0;i<stepsPerTick;i++)
 		{
 			move(1);
-			if(squaredDistance(currTargetNode.x, currTargetNode.y, getX(), getY())<=4)
+			if(squaredDistance(currTargetNode.x, currTargetNode.y, getGlobalX(), getGlobalY())<=4)
 			{
 				currTargetNode=currTargetNode.prev;
 				if(currTargetNode==null)
 					break;
-				turnTowards(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
+				turnTowardsGlobalLocation(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
 			}
 		}
 	}*/
@@ -256,7 +266,8 @@ public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 			//2. Loop: -1, 0
 			//3. Loop: 0, 1l
 			//4. Loop: 0, -1
-			x=closest.x+addX;
+			//TODO: Bug finden
+			x=closest.x+addX;	
 			y=closest.y+addY;
 			if(x<0||y<0||x>=map.length||y>=map[0].length)
 				continue;

@@ -1,7 +1,7 @@
 package AI;
-import greenfoot.Actor;
+import scrollWorld.ScrollActor;
 
-public abstract class Weapon extends Actor implements IWeapon
+public abstract class Weapon extends ScrollActor implements IWeapon
 {
 	protected int damage = -1;
 	protected int reloadTimeInMS = -1;

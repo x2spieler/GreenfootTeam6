@@ -1,10 +1,9 @@
 package AI;
 import java.util.List;
 
-import AI.IDamageable;
-import greenfoot.Actor;
+import scrollWorld.ScrollActor;
 
-public abstract class Bullet extends Actor
+public abstract class Bullet extends ScrollActor
 {
 	protected int stepsPerFrame = -1;
 	protected int damage = -1;
@@ -23,6 +22,7 @@ public abstract class Bullet extends Actor
 	/**
 	 * @return Returns true if a collision occurred
 	 */
+	//TODO: Don't use the greenfoot method for this
 	public boolean handleCollision()
 	{
 		List<?> intersectingObjects = getIntersectingObjects(null);
