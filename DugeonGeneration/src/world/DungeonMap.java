@@ -12,6 +12,7 @@ import AI.IDamageable;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
+import enemies.Zombie;
 
 public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
@@ -23,6 +24,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private GreenfootImage passable;
 	private GreenfootImage impassable;
+	
+	Player player;
 
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH
@@ -41,7 +44,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		impassable.fill();
 		impassable.drawImage(new GreenfootImage("wood.png"), 0, 0);
 		renderMap();
-		addObject(new Player(), 0, 0);
+		player=new Player();
+		addObject(player, 0, 0);
+
+		spawnZombies(1);
 	}
 
 	private void renderMap() {
@@ -53,7 +59,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			for (int j = 0; j < DungeonGenerator.MAP_HEIGHT; j++) {
 				if (map[i][j].walkable()) {
 					background
-							.drawImage(passable, i * TILE_SIZE, j * TILE_SIZE);
+					.drawImage(passable, i * TILE_SIZE, j * TILE_SIZE);
 				} else {
 					background.drawImage(impassable, i * TILE_SIZE, j
 							* TILE_SIZE);
@@ -62,6 +68,33 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 		setNewBackground(background);
 	}
+
+	private void spawnZombies(int num)
+	{
+		for(int k=0;k<num;k++)
+		{
+			boolean br=false;
+			Point start=new Point();
+			MapField[][] map = gen.getMap();
+			for(int i=0;i<DungeonGenerator.MAP_HEIGHT;i++)
+			{
+				for(int j=0;j<DungeonGenerator.MAP_WIDTH;j++)
+				{
+					if(map[i][j].walkable())
+					{
+						start.x=i;
+						start.y=j;
+						br=true;
+						break;
+					}
+				}
+			}
+			Zombie z=new Zombie();
+			addObject(z, start.x*TILE_SIZE+TILE_SIZE/2, start.y*TILE_SIZE+TILE_SIZE/2);
+		}
+
+	}
+
 
 	@Override
 	public void addPlayerScore(int score) {
@@ -80,12 +113,12 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	@Override
 	public MapField[][] getMap() {
-		return null;
+		return gen.getMap();
 	}
 
 	@Override
 	public Point getPlayerPosition() {
-		return null;
+		return new Point(player.getGlobalX(), player.getGlobalY());
 	}
 
 	@Override

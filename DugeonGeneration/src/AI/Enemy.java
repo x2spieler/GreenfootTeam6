@@ -1,33 +1,31 @@
 package AI;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Random;
 
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
+import greenfoot.Greenfoot;
+import scrollWorld.ScrollActor;
 
-public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
+public abstract class Enemy extends ScrollActor implements IDamageable
 {
 
 	protected int stepsPerTick = -1;
 	Weapon weapon = null;
 	protected int value = -1;
 	protected int hp = -1;
-	protected int viewRangeSquared = 10*10;
+	protected int viewRangeSquared = -1;		//In Pixels, not tiles
 	boolean cantFindWay=false;
 	boolean seesPlayer=false;
 	private Node currTargetNode=null;
 	IWorldInterfaceForAI wi = null;
 	private Point lastPlayerTile=null;
+	TargetShowActor tsa=null;
 
-	/*public Enemy()
+	public Enemy()
 	{
-		wi = (IWorldInterfaceForAI) getWorld();
-		if (wi == null)
-		{
-			wi.addPlayerScore(value);
-			System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
-			return;
-		}
+
 	}
 
 	private boolean isInRangeOfPlayer()
@@ -36,7 +34,7 @@ public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
 		double xDist=getGlobalX()-p.x;
 		double yDist=getGlobalY()-p.y;
 		return (xDist*xDist)+(yDist*yDist)<viewRangeSquared;
-	}*/
+	}
 
 	public void damage(int dmg)
 	{
@@ -47,20 +45,34 @@ public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
 		}
 	}
 
-	/*@Override
+	@Override
 	public void act()
 	{
+		if(wi==null)
+		{
+			wi = (IWorldInterfaceForAI) getWorld();
+			if (wi == null)
+			{
+				System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
+				return;
+			}
+		}
+
 		Point currPlayerTile=wi.getPlayerPosition();
 		currPlayerTile.x/=wi.getTileSize();
 		currPlayerTile.y/=wi.getTileSize();
 		Point currTile=new Point(getGlobalX()/wi.getTileSize(), getGlobalY()/wi.getTileSize());
 		if(currTargetNode==null)
 		{
-			seesPlayer=isInRangeOfPlayer();
+			if(tsa!=null){
+				getWorld().removeObject(tsa);
+			}
+			//TODO: Fix chasing the player
+			/*seesPlayer=isInRangeOfPlayer();
 			if(seesPlayer&&!currPlayerTile.equals(currTile))
 				currTargetNode=findPath(currTile, currPlayerTile);
 			else
-			{
+			{*/
 				Random random=new Random();
 				MapField[][] map=wi.getMap();
 				int x, y;
@@ -69,20 +81,33 @@ public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
 					x=random.nextInt(DungeonGenerator.MAP_WIDTH);
 					y=random.nextInt(DungeonGenerator.MAP_HEIGHT);
 					if(map[x][y].walkable())
-						break;
+					{
+						currTargetNode=findPath(currTile, new Point(x, y));
+						if(currTargetNode!=null)
+							break;
+						else
+						{
+							move(-wi.getTileSize());	//We got stuck in a wall, so get outta there by walking backwards
+							break;
+						}
+					}	
 				}
-				currTargetNode=findPath(currTile, new Point(x, y));
-			}
+
+				tsa=new TargetShowActor();
+				getWorld().addObject(tsa, x*wi.getTileSize()-wi.getTileSize()/2, y*wi.getTileSize()-wi.getTileSize()/2);
+			//}
 		}
 		else
 		{
+			//TODO: Fix chasing the player
+			/*
 			if(!seesPlayer&&isInRangeOfPlayer())
 			{
 				//Sees the player - didn't see him in the last tick
 				//We can see the player now - CHASE HIM!
 				currTargetNode=findPath(currTile, currPlayerTile);
 				lastPlayerTile=currPlayerTile;
-				Greenfoot.playSound("res/audio/ecnounterPlayer.wav");
+				Greenfoot.playSound("encounterPlayer.wav");
 			}
 			else if(seesPlayer)
 			{
@@ -92,23 +117,26 @@ public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
 					currTargetNode=findPath(currTile, currPlayerTile);
 					lastPlayerTile=currPlayerTile;
 				}
-			}
+			}*/
 		}
-		
-		turnTowardsGlobalLocation(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
-		for(int i=0;i<stepsPerTick;i++)
+
+		if(currTargetNode!=null)
 		{
-			move(1);
-			if(squaredDistance(currTargetNode.x, currTargetNode.y, getGlobalX(), getGlobalY())<=4)
+			turnTowardsGlobalLocation(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
+			for(int i=0;i<stepsPerTick;i++)
 			{
-				currTargetNode=currTargetNode.prev;
-				if(currTargetNode==null)
-					break;
-				turnTowardsGlobalLocation(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
+				move(1);
+				if(squaredDistance(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize(), getGlobalX(), getGlobalY())<=64)
+				{
+					currTargetNode=currTargetNode.prev;
+					if(currTargetNode==null)
+						break;
+					turnTowardsGlobalLocation(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
+				}
 			}
 		}
-	}*/
-	
+	}
+
 	private int squaredDistance(int x1, int y1, int x2, int y2)
 	{
 		int distX=x1-x2;
@@ -121,11 +149,10 @@ public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
 		ArrayList<Node>closedList=new ArrayList<Node>();
 		ArrayList<Node>openList=new ArrayList<Node>();
 
-		//	MapField[][] map=wi.getMap();
+		MapField[][] map=wi.getMap();
 
 		//For testing
-		DungeonGenerator dungeonGen = new DungeonGenerator();
-
+		/*DungeonGenerator dungeonGen = new DungeonGenerator();
 		dungeonGen.clearMap();
 		dungeonGen.generateRooms();
 		dungeonGen.placeRooms();
@@ -164,8 +191,7 @@ public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
 					break;
 				}
 			}
-		}
-
+		}*/
 		/*MapField[][] map=new MapField[height][width];
 		Random r=new Random();
 		for(int i=0;i<height;i++)
@@ -174,7 +200,7 @@ public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
 			{
 				map[i][j]=new MapField(r.nextInt(100)<60);
 			}
-		}*/
+		}
 		String[][] mp=new String[height][width];
 		for(int i=0;i<height;i++)
 		{
@@ -185,7 +211,7 @@ public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
 				else
 					mp[i][j]=".";
 			}
-		}
+		}*/
 
 		if(!map[end.x][end.y].walkable())
 		{
@@ -208,7 +234,7 @@ public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
 		}
 		currTargetNode=endNode;
 
-		Node n=endNode;
+		/*Node n=endNode;
 		while(n!=null)
 		{
 			mp[n.x][n.y]="0";
@@ -222,7 +248,7 @@ public /*abstract*/ class Enemy /*extends ScrollActor*/ implements IDamageable
 				System.out.print(mp[j][i]);
 			}
 			System.out.println();
-		}
+		}*/
 
 		return endNode;
 	}
