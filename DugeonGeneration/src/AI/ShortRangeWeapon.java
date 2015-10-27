@@ -1,4 +1,7 @@
 package AI;
+
+import java.awt.Point;
+
 public abstract class ShortRangeWeapon extends Weapon
 {
 
@@ -18,9 +21,9 @@ public abstract class ShortRangeWeapon extends Weapon
 				
 				//TODO: Always play the animation, the following code is only to determine if we deal damage to the player
 				
-				double[] playerCoords = wi.GetPlayerCoordinates();
-				double xDiff = playerCoords[0] - getX();
-				double yDiff = playerCoords[1] - getY();
+				Point playerCoords = wi.getPlayerPosition();
+				double xDiff = playerCoords.x - getX();
+				double yDiff = playerCoords.y - getY();
 				
 				//Check if enemy looks at player
 				double angle = Math.toDegrees(Math.asin(xDiff / yDiff));
