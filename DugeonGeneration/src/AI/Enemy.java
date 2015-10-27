@@ -1,59 +1,121 @@
 package AI;
+import greenfoot.Greenfoot;
+
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Random;
 
+import bluej.graph.Moveable;
+import bluej.parser.entity.PositionedResolver;
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
 
 public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 {
 
-	protected double velocity = -1;
+	protected int stepsPerTick = -1;
 	Weapon weapon = null;
 	protected int value = -1;
 	protected int hp = -1;
-	protected int viewRange = -1;
+	protected int viewRangeSquared = 10*10;
 	boolean cantFindWay=false;
+	boolean seesPlayer=false;
 	private Node currTargetNode=null;
+	IWorldInterfaceForAI wi = null;
 
-	public Enemy()
+	/*public Enemy()
 	{
-		
+		wi = (IWorldInterfaceForAI) getWorld();
+		if (wi == null)
+		{
+			wi.addPlayerScore(value);
+			System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
+			return;
+		}
 	}
+
+	private boolean isInRangeOfPlayer()
+	{
+		Point p=wi.getPlayerPosition();
+		double xDist=getX()-p.x;
+		double yDist=getY()-p.y;
+		return (xDist*xDist)+(yDist*yDist)<viewRangeSquared;
+	}*/
 
 	public void damage(int dmg)
 	{
 		hp -= dmg;
 		if (hp <= 0)
 		{
-			/*IWorldInterfaceForAI wi = (IWorldInterfaceForAI) getWorld();
-			if (wi != null)
-				wi.addPlayerScore(value);
-			else
-				System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");*/
+			wi.addPlayerScore(value);
 		}
 	}
 
-	//@Override
+	/*@Override
 	public void act()
 	{
-
+		if(currTargetNode==null)
+		{
+			seesPlayer=isInRangeOfPlayer();
+			if(seesPlayer)
+				currTargetNode=findPath(wi.getPlayerPosition(), new Point(getX()/wi.getTileSize(), getY()/wi.getTileSize()));
+			else
+			{
+				Random random=new Random();
+				MapField[][] map=wi.getMap();
+				int x, y;
+				while(true)		//Assumes that there is always at least one tile to walk on
+				{
+					x=random.nextInt(DungeonGenerator.MAP_WIDTH);
+					y=random.nextInt(DungeonGenerator.MAP_HEIGHT);
+					if(map[x][y].walkable())
+						break;
+				}
+				currTargetNode=findPath(new Point(x, y), new Point(getX()/wi.getTileSize(), getY()/wi.getTileSize()));
+			}
+		}
+		else
+		{
+			if(!seesPlayer&&isInRangeOfPlayer())
+			{
+				//Sees the player - didn't see him in the last tick
+				//We can see the player now - CHASE HIM!
+				currTargetNode=findPath(wi.getPlayerPosition(), new Point(getX()/wi.getTileSize(), getY()/wi.getTileSize()));
+				Greenfoot.playSound("res/audio/ecnounterPlayer");
+			}
+		}
+		
+		turnTowards(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
+		for(int i=0;i<stepsPerTick;i++)
+		{
+			move(1);
+			if(squaredDistance(currTargetNode.x, currTargetNode.y, getX(), getY())<=4)
+			{
+				currTargetNode=currTargetNode.prev;
+				if(currTargetNode==null)
+					break;
+				turnTowards(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
+			}
+		}
+	}*/
+	
+	private int squaredDistance(int x1, int y1, int x2, int y2)
+	{
+		int distX=x1-x2;
+		int distY=y1-y2;
+		return (distX*distX)+(distY*distY);
 	}
 
 	public Node findPath(Point start, Point end)
 	{
-		/*IWorldInterfaceForAI wi = (IWorldInterfaceForAI) getWorld();
-		if (wi == null)
-			System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");*/
-
 		ArrayList<Node>closedList=new ArrayList<Node>();
 		ArrayList<Node>openList=new ArrayList<Node>();
 
-	//	MapField[][] map=wi.getMap();
-		
+		//	MapField[][] map=wi.getMap();
+
 		//For testing
 		DungeonGenerator dungeonGen = new DungeonGenerator();
-		
+
 		dungeonGen.clearMap();
 		dungeonGen.generateRooms();
 		dungeonGen.placeRooms();
@@ -61,19 +123,19 @@ public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 		dungeonGen.showMap();
 		System.out.println();System.out.println();System.out.println();
 		MapField[][] map=dungeonGen.getMap();
-		
+
 		int width=DungeonGenerator.MAP_WIDTH;
 		int height=DungeonGenerator.MAP_HEIGHT;
-		
+
 		boolean br=false;
 		for(int i=0;i<height;i++)
 		{
 			for(int j=0;j<width;j++)
 			{
-				if(map[i][j].walkable())
+				if(map[j][i].walkable())
 				{
-					start.x=i;
-					start.y=j;
+					start.x=j;
+					start.y=i;
 					br=true;
 					break;
 				}
@@ -84,16 +146,16 @@ public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 		{
 			for(int j=width-1;j>=0;j--)
 			{
-				if(map[i][j].walkable())
+				if(map[j][i].walkable())
 				{
-					end.x=i;
-					end.y=j;
+					end.x=j;
+					end.y=i;
 					br=true;
 					break;
 				}
 			}
 		}
-		
+
 		/*MapField[][] map=new MapField[height][width];
 		Random r=new Random();
 		for(int i=0;i<height;i++)
@@ -120,7 +182,7 @@ public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 			System.out.println("Target field isn't walkable");
 			return null;
 		}
-			
+
 		openList.add(new Node(start.distance(end),0, end.x, end.y, null));
 
 		Node endNode=null;
@@ -192,7 +254,7 @@ public /*abstract*/ class Enemy /*extends Actor*/ implements IDamageable
 			}
 			//1. Loop: 1 , 0
 			//2. Loop: -1, 0
-			//3. Loop: 0, 1
+			//3. Loop: 0, 1l
 			//4. Loop: 0, -1
 			x=closest.x+addX;
 			y=closest.y+addY;
