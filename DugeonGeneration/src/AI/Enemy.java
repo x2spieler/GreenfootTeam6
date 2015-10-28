@@ -22,6 +22,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	IWorldInterfaceForAI wi = null;
 	private Point lastPlayerTile=null;
 	TargetShowActor tsa=null;
+	protected int notChaseRangeSquared=-1;
 
 	public Enemy()
 	{
@@ -68,11 +69,11 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 				getWorld().removeObject(tsa);
 			}
 			//TODO: Fix chasing the player
-			/*seesPlayer=isInRangeOfPlayer();
-			if(seesPlayer&&!currPlayerTile.equals(currTile))
+			seesPlayer=isInRangeOfPlayer();
+			if(seesPlayer&&!currPlayerTile.equals(currTile)&&squaredDistance(getGlobalX(), getGlobalY(), wi.getPlayerPosition().x, wi.getPlayerPosition().y)>notChaseRangeSquared)
 				currTargetNode=findPath(currTile, currPlayerTile);
 			else
-			{*/
+			{
 				Random random=new Random();
 				MapField[][] map=wi.getMap();
 				int x, y;
@@ -87,7 +88,14 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 							break;
 						else
 						{
-							move(-wi.getTileSize());	//We got stuck in a wall, so get outta there by walking backwards
+							//TODO: Fix this
+							for(int k=x-2;k<x+3;k++)
+							{
+								for(int l=y-2;l<y+3;l++)
+								{
+									//look for a free tiel for the player to place on
+								}
+							}
 							break;
 						}
 					}	
@@ -95,12 +103,12 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 
 				tsa=new TargetShowActor();
 				getWorld().addObject(tsa, x*wi.getTileSize()-wi.getTileSize()/2, y*wi.getTileSize()-wi.getTileSize()/2);
-			//}
+			}
 		}
 		else
 		{
 			//TODO: Fix chasing the player
-			/*
+			
 			if(!seesPlayer&&isInRangeOfPlayer())
 			{
 				//Sees the player - didn't see him in the last tick
@@ -117,7 +125,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 					currTargetNode=findPath(currTile, currPlayerTile);
 					lastPlayerTile=currPlayerTile;
 				}
-			}*/
+			}
 		}
 
 		if(currTargetNode!=null)
