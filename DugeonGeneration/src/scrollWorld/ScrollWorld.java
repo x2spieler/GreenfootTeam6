@@ -92,7 +92,7 @@ public abstract class ScrollWorld extends World {
 		scrollPosX = 0;
 		scrollPosY = 0;
 
-		bigBackground = new GreenfootImage(width + width, height + height);
+		bigBackground = new GreenfootImage(fullWidth, fullHeight);
 		setNewBackground(back);
 	}
 
@@ -133,11 +133,11 @@ public abstract class ScrollWorld extends World {
 	 *            The object that will be added to the world as a camera
 	 *            follower.
 	 * @param x
-	 *            The x coördinate seen from the camera where the object will be
-	 *            added.
+	 *            The x coördinate seen from the camera where the object will
+	 *            be added.
 	 * @param y
-	 *            The y coördinate seen from the camera where the object will be
-	 *            added.
+	 *            The y coördinate seen from the camera where the object will
+	 *            be added.
 	 * @see #addObject(ScrollActor, int, int)
 	 */
 	public void addCameraFollower(ScrollActor cameraFollower, int x, int y) {
@@ -262,8 +262,13 @@ public abstract class ScrollWorld extends World {
 			a.setLocation(a.getX() - dx, a.getY() - dy);
 		for (ScrollActor a : camFollowers)
 			a.setLocation(a.getX(), a.getY());
-		moveBackgroundRight(dx * cellSize);
-		moveBackgroundUp(dy * cellSize);
+
+		scrollPosX -= dx * cellSize;
+		scrollPosY -= dy * cellSize;
+		getBackground().drawImage(bigBackground, scrollPosX, scrollPosY);
+
+		// moveBackgroundRight(dx * cellSize);
+		// moveBackgroundUp(dy * cellSize);
 	}
 
 	/**

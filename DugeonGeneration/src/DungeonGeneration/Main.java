@@ -9,6 +9,7 @@ public static void main(String[] args) {
 		dungeonGen.clearMap();
 		dungeonGen.generateRooms();
 		dungeonGen.placeRooms();
+		dungeonGen.buildPaths();
 		dungeonGen.showMap();
 	}
 	

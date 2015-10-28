@@ -1,5 +1,8 @@
 package AI;
 
+import java.awt.Point;
+
+
 public class TestForAIMain
 {
 	public static void main(String[] args)
@@ -16,3 +19,5 @@ public class TestForAIMain
 		return 2;
 	}
 }
+//995672767
+//659362109
