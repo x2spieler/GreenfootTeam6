@@ -3,10 +3,14 @@ package player;
 import greenfoot.Greenfoot;
 import AI.IDamageable;
 
-public class Player extends DeltaTimer implements IDamageable {
+public class Player extends DungeonMover implements IDamageable {
 
 	private int speed = 500;
 	private double epsilonMove = 0.0;
+	private DeltaTimer timer = new DeltaTimer();
+
+	public Player() {
+	}
 
 	@Override
 	public void damage(int dmg) {
@@ -16,26 +20,40 @@ public class Player extends DeltaTimer implements IDamageable {
 	@Override
 	public void act() {
 		super.act();
+		timer.update();
 
-		double move = speed * getDelta() / getWorld().getCellSize();
+		double move = speed * timer.getDelta() / getWorld().getCellSize();
+
 		if (Greenfoot.isKeyDown(Direction.UP.key)) {
 			setGlobalLocation(getGlobalX(), getGlobalY()
 					- ensureEventualMove(move));
-		} else if (Greenfoot.isKeyDown(Direction.LEFT.key)) {
+		}
+		if (Greenfoot.isKeyDown(Direction.LEFT.key)) {
 			setGlobalLocation(getGlobalX() - ensureEventualMove(move),
 					getGlobalY());
 
-		} else if (Greenfoot.isKeyDown(Direction.DOWN.key)) {
+		}
+		if (Greenfoot.isKeyDown(Direction.DOWN.key)) {
 			setGlobalLocation(getGlobalX(), getGlobalY()
 					+ ensureEventualMove(move));
 
-		} else if (Greenfoot.isKeyDown(Direction.RIGHT.key)) {
+		}
+		if (Greenfoot.isKeyDown(Direction.RIGHT.key)) {
 			setGlobalLocation(getGlobalX() + ensureEventualMove(move),
 					getGlobalY());
 
 		}
 
 		centerCamera();
+	}
+
+	private Direction getDirection() {
+		for (Direction dir : Direction.values()) {
+			if (Greenfoot.isKeyDown(dir.key)) {
+				return dir;
+			}
+		}
+		return null;
 	}
 
 	private int ensureEventualMove(double d) {
