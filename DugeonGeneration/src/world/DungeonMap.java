@@ -1,6 +1,6 @@
 package world;
 
-import enemies.Zombie;
+import enemies.Werewolf;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 
@@ -46,7 +46,7 @@ IWorldInterfaceForAI {
 		player = new Player();
 		addObject(player, 0, 0);
 
-		spawnZombies(10);
+		spawnWerewolfs(100);
 	}
 
 	private void renderMap() {
@@ -68,14 +68,14 @@ IWorldInterfaceForAI {
 		setNewBackground(background);
 	}
 
-	private void spawnZombies(int num) {
+	private void spawnWerewolfs(int num) {
 		Random r=new Random();
 		MapField[][] map = getMap();
 		for (int k = 0; k < num; k++) {
 			int x=r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y=r.nextInt(DungeonGenerator.MAP_HEIGHT);
 			if (map[x][y].walkable()) {
-				Zombie z = new Zombie();
+				Werewolf z = new Werewolf();
 				addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y
 						* TILE_SIZE + TILE_SIZE / 2);
 			}

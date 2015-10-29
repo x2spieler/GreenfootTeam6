@@ -5,6 +5,7 @@ import java.util.Random;
 
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
+import greenfoot.GreenfootImage;
 import greenfoot.GreenfootSound;
 import scrollWorld.ScrollActor;
 import world.DungeonMap;
@@ -17,6 +18,10 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	protected int value = -1;
 	protected int hp = -1;
 	protected int viewRangeSquared = -1;		//In Pixels, not tiles
+	protected GreenfootImage idleImage=null;
+	protected GreenfootImage walk1Image=null;
+	protected GreenfootImage walk2Image=null;
+	
 	private boolean cantFindWay=false;
 	private boolean seesPlayer=false;
 	private boolean sawPlayer=false;
@@ -27,6 +32,9 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	private final int REACHED_TARGET_DISTANCE_SQUARED=2;
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
+	private short walkCounter=0;
+	private final int NUM_FRAMES_CHANGE_WALK_IMAGE=10;
+	
 
 	public Enemy()
 	{
@@ -53,6 +61,8 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	@Override
 	public void act()
 	{
+		if(getImage()==null)
+			setImage(idleImage);
 		if(wi==null)
 		{
 			wi = (IWorldInterfaceForAI) getWorld();
@@ -78,6 +88,12 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 			{
 				if(!currPlayerTile.equals(currTile))
 					currTargetNode=findPath(currTile, currPlayerTile);
+				else if(getImage()!=idleImage)
+				{
+					setImage(idleImage);
+					turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
+				}
+					
 			}
 			else
 			{
@@ -139,6 +155,17 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 					turnTowardsGlobalLocation(currTargetNode.x*TILE_SIZE+TILE_SIZE/2, currTargetNode.y*TILE_SIZE+TILE_SIZE/2);
 				}	
 			}
+			//Animate the enemie
+			if(walkCounter==NUM_FRAMES_CHANGE_WALK_IMAGE)
+			{
+				setImage(walk1Image);
+			}
+			else if(walkCounter==2*NUM_FRAMES_CHANGE_WALK_IMAGE)
+			{
+				setImage(walk2Image);
+				walkCounter=0;
+			}
+			walkCounter++;
 		}
 		sawPlayer=seesPlayer;
 	}
