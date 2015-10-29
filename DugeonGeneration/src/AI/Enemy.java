@@ -21,7 +21,8 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	private IWorldInterfaceForAI wi = null;
 	private Point lastPlayerTile=null;
 	private TargetShowActor tsa=null;
-	private final int REACHED_TARGET_DISTANCE_SQUARED=32*32;
+	private final int REACHED_TARGET_DISTANCE_SQUARED=64*64;
+	private int tileSize=-1;
 
 	public Enemy()
 	{
@@ -51,6 +52,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		if(wi==null)
 		{
 			wi = (IWorldInterfaceForAI) getWorld();
+			tileSize=wi.getTileSize();
 			if (wi == null)
 			{
 				System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
@@ -59,9 +61,9 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		}
 
 		Point currPlayerTile=wi.getPlayerPosition();
-		currPlayerTile.x/=wi.getTileSize();
-		currPlayerTile.y/=wi.getTileSize();
-		Point currTile=new Point(getGlobalX()/wi.getTileSize(), getGlobalY()/wi.getTileSize());
+		currPlayerTile.x/=tileSize;
+		currPlayerTile.y/=tileSize;
+		Point currTile=new Point(getGlobalX()/tileSize, getGlobalY()/tileSize);
 		if(currTargetNode==null)
 		{
 			if(tsa!=null){
@@ -71,7 +73,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 			seesPlayer=isInRangeOfPlayer();
 			if(seesPlayer)
 			{
-				if(squaredDistance(getGlobalX(), getGlobalY(), currPlayerTile.x*wi.getTileSize(), currPlayerTile.y*wi.getTileSize())>REACHED_TARGET_DISTANCE_SQUARED)
+				if(squaredDistance(getGlobalX(), getGlobalY(), currPlayerTile.x*tileSize, currPlayerTile.y*tileSize)>REACHED_TARGET_DISTANCE_SQUARED)
 					currTargetNode=findPath(currTile, currPlayerTile);
 			}
 			else
@@ -90,6 +92,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 							break;
 						else
 						{
+							System.out.println("Start: "+getGlobalX()+" # "+getGlobalY());
 							boolean ported=false;
 							for(int k=x-2;k<x+3;k++)
 							{
@@ -97,7 +100,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 								{
 									if(map[k][l].walkable())
 									{
-										setGlobalLocation(k*wi.getTileSize()+wi.getTileSize()/2, l*wi.getTileSize()+wi.getTileSize()/2);
+										setGlobalLocation(k*tileSize+tileSize/2, l*tileSize+tileSize/2);
 										ported=true;
 										break;
 									}
@@ -106,14 +109,14 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 									break;
 							}
 							if(!ported)
-								setGlobalLocation(x*wi.getTileSize()+wi.getTileSize()/2, y*wi.getTileSize()+wi.getTileSize()/2);
+								setGlobalLocation(x*tileSize+tileSize/2, y*tileSize+tileSize/2);
 							break;
 						}
 					}	
 				}
 
 				tsa=new TargetShowActor();
-				getWorld().addObject(tsa, x*wi.getTileSize()-wi.getTileSize()/2, y*wi.getTileSize()-wi.getTileSize()/2);
+				getWorld().addObject(tsa, x*tileSize+tileSize/2, y*tileSize+tileSize/2);
 			}
 		}
 		else
@@ -145,16 +148,16 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 
 		if(currTargetNode!=null)
 		{
-			turnTowardsGlobalLocation(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
+			turnTowardsGlobalLocation(currTargetNode.x*tileSize+tileSize/2, currTargetNode.y*tileSize+tileSize/2);
 			for(int i=0;i<stepsPerTick;i++)
 			{
 				move(1);
-				if(squaredDistance(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize(), getGlobalX(), getGlobalY())<=REACHED_TARGET_DISTANCE_SQUARED)
+				if(squaredDistance(currTargetNode.x*tileSize+tileSize/2, currTargetNode.y*tileSize+tileSize/2, getGlobalX(), getGlobalY())<=REACHED_TARGET_DISTANCE_SQUARED)
 				{
 					currTargetNode=currTargetNode.prev;
 					if(currTargetNode==null)
 						break;
-					turnTowardsGlobalLocation(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize());
+					turnTowardsGlobalLocation(currTargetNode.x*tileSize+tileSize/2, currTargetNode.y*tileSize+tileSize/2);
 				}
 			}
 		}
