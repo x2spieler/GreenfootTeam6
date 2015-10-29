@@ -1,8 +1,7 @@
 package player;
 
-import scrollWorld.ScrollActor;
 
-public class TickIndependentMover extends ScrollActor {
+public class DeltaTimer {
 	private long time = System.nanoTime();
 	private double delta;
 
@@ -15,9 +14,7 @@ public class TickIndependentMover extends ScrollActor {
 		time = System.nanoTime();
 	}
 
-	@Override
-	public void act() {
-		super.act();
+	public void update() {
 		setDeltaTime();
 	}
 

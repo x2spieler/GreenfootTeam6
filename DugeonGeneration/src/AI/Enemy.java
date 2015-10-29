@@ -5,24 +5,23 @@ import java.util.Random;
 
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
-import greenfoot.Greenfoot;
 import scrollWorld.ScrollActor;
 
 public abstract class Enemy extends ScrollActor implements IDamageable
 {
 
 	protected int stepsPerTick = -1;
-	Weapon weapon = null;
+	protected Weapon weapon = null;
 	protected int value = -1;
 	protected int hp = -1;
 	protected int viewRangeSquared = -1;		//In Pixels, not tiles
-	boolean cantFindWay=false;
-	boolean seesPlayer=false;
+	private boolean cantFindWay=false;
+	private boolean seesPlayer=false;
 	private Node currTargetNode=null;
-	IWorldInterfaceForAI wi = null;
+	private IWorldInterfaceForAI wi = null;
 	private Point lastPlayerTile=null;
-	TargetShowActor tsa=null;
-	protected int notChaseRangeSquared=-1;
+	private TargetShowActor tsa=null;
+	private final int REACHED_TARGET_DISTANCE_SQUARED=32*32;
 
 	public Enemy()
 	{
@@ -34,7 +33,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		Point p=wi.getPlayerPosition();
 		double xDist=getGlobalX()-p.x;
 		double yDist=getGlobalY()-p.y;
-		return (xDist*xDist)+(yDist*yDist)<viewRangeSquared;
+		return ((xDist*xDist)+(yDist*yDist))<viewRangeSquared;
 	}
 
 	public void damage(int dmg)
@@ -70,9 +69,11 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 			}
 			//TODO: Fix chasing the player
 			seesPlayer=isInRangeOfPlayer();
-			if(seesPlayer&&!currPlayerTile.equals(currTile)&&squaredDistance(getGlobalX(), getGlobalY(), wi.getPlayerPosition().x, wi.getPlayerPosition().y)>notChaseRangeSquared)
-				currTargetNode=findPath(currTile, currPlayerTile);
-				
+			if(seesPlayer)
+			{
+				if(squaredDistance(getGlobalX(), getGlobalY(), currPlayerTile.x*wi.getTileSize(), currPlayerTile.y*wi.getTileSize())>REACHED_TARGET_DISTANCE_SQUARED)
+					currTargetNode=findPath(currTile, currPlayerTile);
+			}
 			else
 			{
 				Random random=new Random();
@@ -118,7 +119,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		else
 		{
 			//TODO: Fix chasing the player
-			
+			/*
 			if(!seesPlayer&&isInRangeOfPlayer())
 			{
 				//Sees the player - didn't see him in the last tick
@@ -126,6 +127,8 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 				currTargetNode=findPath(currTile, currPlayerTile);
 				lastPlayerTile=currPlayerTile;
 				Greenfoot.playSound("encounterPlayer.wav");
+				if(tsa!=null)
+					getWorld().removeObject(tsa);
 			}
 			else if(seesPlayer)
 			{
@@ -134,8 +137,10 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 					//As long as we see him, always go straight to the player
 					currTargetNode=findPath(currTile, currPlayerTile);
 					lastPlayerTile=currPlayerTile;
+					if(tsa!=null)
+						getWorld().removeObject(tsa);
 				}
-			}
+			}*/
 		}
 
 		if(currTargetNode!=null)
@@ -144,7 +149,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 			for(int i=0;i<stepsPerTick;i++)
 			{
 				move(1);
-				if(squaredDistance(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize(), getGlobalX(), getGlobalY())<=64)
+				if(squaredDistance(currTargetNode.x*wi.getTileSize(), currTargetNode.y*wi.getTileSize(), getGlobalX(), getGlobalY())<=REACHED_TARGET_DISTANCE_SQUARED)
 				{
 					currTargetNode=currTargetNode.prev;
 					if(currTargetNode==null)

@@ -10,8 +10,7 @@ public class Zombie extends Enemy
 		stepsPerTick = 4;
 		value = 1;
 		hp = 50;
-		viewRangeSquared = 400*400;
-		notChaseRangeSquared=16*16;
+		viewRangeSquared = 128*128;
 		setImage(new GreenfootImage("enemy.png"));
 	}
 }
