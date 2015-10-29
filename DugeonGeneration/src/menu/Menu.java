@@ -24,6 +24,7 @@ public class Menu extends World implements IWorldWithMenu {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dungeon.switchTo();
+				Greenfoot.playSound("button_clicked.wav");
 			}
 		});
 	}

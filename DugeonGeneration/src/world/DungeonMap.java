@@ -5,6 +5,7 @@ import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 
 import java.awt.Point;
+import java.util.Random;
 
 import menu.BasicWorldWithMenu;
 import menu.Menu;
@@ -16,7 +17,7 @@ import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
 
 public class DungeonMap extends BasicWorldWithMenu implements
-		IWorldInterfaceForAI {
+IWorldInterfaceForAI {
 
 	public static final int VIEWPORT_WIDTH = 800;
 	public static final int VIEWPORT_HEIGHT = 600;
@@ -45,7 +46,7 @@ public class DungeonMap extends BasicWorldWithMenu implements
 		player = new Player();
 		addObject(player, 0, 0);
 
-		// spawnZombies(100);
+		spawnZombies(10);
 	}
 
 	private void renderMap() {
@@ -57,7 +58,7 @@ public class DungeonMap extends BasicWorldWithMenu implements
 			for (int j = 0; j < DungeonGenerator.MAP_HEIGHT; j++) {
 				if (map[i][j].walkable()) {
 					background
-							.drawImage(passable, i * TILE_SIZE, j * TILE_SIZE);
+					.drawImage(passable, i * TILE_SIZE, j * TILE_SIZE);
 				} else {
 					background.drawImage(impassable, i * TILE_SIZE, j
 							* TILE_SIZE);
@@ -68,25 +69,16 @@ public class DungeonMap extends BasicWorldWithMenu implements
 	}
 
 	private void spawnZombies(int num) {
+		Random r=new Random();
+		MapField[][] map = getMap();
 		for (int k = 0; k < num; k++) {
-			boolean br = false;
-			Point start = new Point();
-			MapField[][] map = gen.getMap();
-			for (int i = 0; i < DungeonGenerator.MAP_HEIGHT; i++) {
-				for (int j = 0; j < DungeonGenerator.MAP_WIDTH; j++) {
-					if (map[i][j].walkable()) {
-						start.x = i;
-						start.y = j;
-						br = true;
-						break;
-					}
-				}
-				if(br)
-					break;
+			int x=r.nextInt(DungeonGenerator.MAP_WIDTH);
+			int y=r.nextInt(DungeonGenerator.MAP_HEIGHT);
+			if (map[x][y].walkable()) {
+				Zombie z = new Zombie();
+				addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y
+						* TILE_SIZE + TILE_SIZE / 2);
 			}
-			Zombie z = new Zombie();
-			addObject(z, start.x * TILE_SIZE + TILE_SIZE / 2, start.y
-					* TILE_SIZE + TILE_SIZE / 2);
 		}
 
 	}

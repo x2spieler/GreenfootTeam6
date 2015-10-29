@@ -5,7 +5,9 @@ import java.util.Random;
 
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
+import greenfoot.GreenfootSound;
 import scrollWorld.ScrollActor;
+import world.DungeonMap;
 
 public abstract class Enemy extends ScrollActor implements IDamageable
 {
@@ -17,12 +19,14 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	protected int viewRangeSquared = -1;		//In Pixels, not tiles
 	private boolean cantFindWay=false;
 	private boolean seesPlayer=false;
+	private boolean sawPlayer=false;
 	private Node currTargetNode=null;
 	private IWorldInterfaceForAI wi = null;
 	private Point lastPlayerTile=null;
 	private TargetShowActor tsa=null;
-	private final int REACHED_TARGET_DISTANCE_SQUARED=64*64;
-	private int tileSize=-1;
+	private final int REACHED_TARGET_DISTANCE_SQUARED=2;
+	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
+	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
 
 	public Enemy()
 	{
@@ -52,7 +56,6 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		if(wi==null)
 		{
 			wi = (IWorldInterfaceForAI) getWorld();
-			tileSize=wi.getTileSize();
 			if (wi == null)
 			{
 				System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
@@ -60,20 +63,20 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 			}
 		}
 
+		seesPlayer=isInRangeOfPlayer();
 		Point currPlayerTile=wi.getPlayerPosition();
-		currPlayerTile.x/=tileSize;
-		currPlayerTile.y/=tileSize;
-		Point currTile=new Point(getGlobalX()/tileSize, getGlobalY()/tileSize);
+		currPlayerTile.x/=TILE_SIZE;
+		currPlayerTile.y/=TILE_SIZE;
+		Point currTile=new Point(getGlobalX()/TILE_SIZE, getGlobalY()/TILE_SIZE);
+		
 		if(currTargetNode==null)
 		{
 			if(tsa!=null){
 				getWorld().removeObject(tsa);
 			}
-			//TODO: Fix chasing the player
-			seesPlayer=isInRangeOfPlayer();
 			if(seesPlayer)
 			{
-				if(squaredDistance(getGlobalX(), getGlobalY(), currPlayerTile.x*tileSize, currPlayerTile.y*tileSize)>REACHED_TARGET_DISTANCE_SQUARED)
+				if(!currPlayerTile.equals(currTile))
 					currTargetNode=findPath(currTile, currPlayerTile);
 			}
 			else
@@ -90,46 +93,22 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 						currTargetNode=findPath(currTile, new Point(x, y));
 						if(currTargetNode!=null)
 							break;
-						else
-						{
-							System.out.println("Start: "+getGlobalX()+" # "+getGlobalY());
-							boolean ported=false;
-							for(int k=x-2;k<x+3;k++)
-							{
-								for(int l=y-2;l<y+3;l++)
-								{
-									if(map[k][l].walkable())
-									{
-										setGlobalLocation(k*tileSize+tileSize/2, l*tileSize+tileSize/2);
-										ported=true;
-										break;
-									}
-								}
-								if(ported)
-									break;
-							}
-							if(!ported)
-								setGlobalLocation(x*tileSize+tileSize/2, y*tileSize+tileSize/2);
-							break;
-						}
 					}	
 				}
 
 				tsa=new TargetShowActor();
-				getWorld().addObject(tsa, x*tileSize+tileSize/2, y*tileSize+tileSize/2);
+				getWorld().addObject(tsa, x*TILE_SIZE+TILE_SIZE/2, y*TILE_SIZE+TILE_SIZE/2);
 			}
 		}
 		else
 		{
-			//TODO: Fix chasing the player
-			/*
-			if(!seesPlayer&&isInRangeOfPlayer())
+			if(seesPlayer&&!sawPlayer)
 			{
 				//Sees the player - didn't see him in the last tick
 				//We can see the player now - CHASE HIM!
 				currTargetNode=findPath(currTile, currPlayerTile);
 				lastPlayerTile=currPlayerTile;
-				Greenfoot.playSound("encounterPlayer.wav");
+				encounterSound.play();
 				if(tsa!=null)
 					getWorld().removeObject(tsa);
 			}
@@ -143,24 +122,25 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 					if(tsa!=null)
 						getWorld().removeObject(tsa);
 				}
-			}*/
+			}
 		}
 
 		if(currTargetNode!=null)
 		{
-			turnTowardsGlobalLocation(currTargetNode.x*tileSize+tileSize/2, currTargetNode.y*tileSize+tileSize/2);
+			turnTowardsGlobalLocation(currTargetNode.x*TILE_SIZE+TILE_SIZE/2, currTargetNode.y*TILE_SIZE+TILE_SIZE/2);
 			for(int i=0;i<stepsPerTick;i++)
 			{
 				move(1);
-				if(squaredDistance(currTargetNode.x*tileSize+tileSize/2, currTargetNode.y*tileSize+tileSize/2, getGlobalX(), getGlobalY())<=REACHED_TARGET_DISTANCE_SQUARED)
+				if(squaredDistance(currTargetNode.x*TILE_SIZE+TILE_SIZE/2, currTargetNode.y*TILE_SIZE+TILE_SIZE/2, getGlobalX(), getGlobalY())<=REACHED_TARGET_DISTANCE_SQUARED)
 				{
 					currTargetNode=currTargetNode.prev;
 					if(currTargetNode==null)
 						break;
-					turnTowardsGlobalLocation(currTargetNode.x*tileSize+tileSize/2, currTargetNode.y*tileSize+tileSize/2);
-				}
+					turnTowardsGlobalLocation(currTargetNode.x*TILE_SIZE+TILE_SIZE/2, currTargetNode.y*TILE_SIZE+TILE_SIZE/2);
+				}	
 			}
 		}
+		sawPlayer=seesPlayer;
 	}
 
 	private int squaredDistance(int x1, int y1, int x2, int y2)
@@ -170,113 +150,28 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		return (distX*distX)+(distY*distY);
 	}
 
-	public Node findPath(Point start, Point end)
+	private Node findPath(Point start, Point end)
 	{
 		ArrayList<Node>closedList=new ArrayList<Node>();
 		ArrayList<Node>openList=new ArrayList<Node>();
 
 		MapField[][] map=wi.getMap();
 
-		//For testing
-		/*DungeonGenerator dungeonGen = new DungeonGenerator();
-		dungeonGen.clearMap();
-		dungeonGen.generateRooms();
-		dungeonGen.placeRooms();
-		dungeonGen.buildPaths();
-		dungeonGen.showMap();
-		System.out.println();System.out.println();System.out.println();
-		MapField[][] map=dungeonGen.getMap();
-
-		int width=DungeonGenerator.MAP_WIDTH;
-		int height=DungeonGenerator.MAP_HEIGHT;
-
-		boolean br=false;
-		for(int i=0;i<height;i++)
-		{
-			for(int j=0;j<width;j++)
-			{
-				if(map[j][i].walkable())
-				{
-					start.x=j;
-					start.y=i;
-					br=true;
-					break;
-				}
-			}
-		}
-		br=false;
-		for(int i=height-1;i>=0;i--)
-		{
-			for(int j=width-1;j>=0;j--)
-			{
-				if(map[j][i].walkable())
-				{
-					end.x=j;
-					end.y=i;
-					br=true;
-					break;
-				}
-			}
-		}*/
-		/*MapField[][] map=new MapField[height][width];
-		Random r=new Random();
-		for(int i=0;i<height;i++)
-		{
-			for(int j=0;j<width;j++)
-			{
-				map[i][j]=new MapField(r.nextInt(100)<60);
-			}
-		}
-		String[][] mp=new String[height][width];
-		for(int i=0;i<height;i++)
-		{
-			for(int j=0;j<width;j++)
-			{
-				if(map[i][j].walkable())
-					mp[i][j]="#";
-				else
-					mp[i][j]=".";
-			}
-		}*/
-
-		if(!map[end.x][end.y].walkable())
-		{
-			System.out.println("Target field isn't walkable");
-			return null;
-		}
-
-		openList.add(new Node(start.distance(end),0, end.x, end.y, null));
+		openList.add(new Node(manhattanDistance(start, end.x, end.y),0, end.x, end.y, null));
 
 		Node endNode=null;
 		while(endNode==null)
 		{
 			endNode=step(closedList, openList, map, start);
-			if(cantFindWay||!map[end.x][end.y].walkable())
+			if(cantFindWay||!map[end.x][end.y].walkable()||!map[start.x][start.y].walkable())
 			{
 				cantFindWay=false;
 				System.out.println("Couldn't find a way");
 				break;
 			}
 		}
-		currTargetNode=endNode;
 
-		/*Node n=endNode;
-		while(n!=null)
-		{
-			mp[n.x][n.y]="0";
-			n=n.prev;
-		}
-
-		for(int i=0;i<height;i++)
-		{
-			for(int j=0;j<width;j++)
-			{
-				System.out.print(mp[j][i]);
-			}
-			System.out.println();
-		}*/
-
-		return endNode;
+		return endNode.prev;
 	}
 
 	private Node step(ArrayList<Node>closedList, ArrayList<Node>openList,MapField[][] map, Point start)
@@ -289,7 +184,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		Node closest=openList.get(0);
 		for(Node node:openList)
 		{
-			if(start.distance(new Point(node.x, node.y))<start.distance(new Point(closest.x, closest.y)))
+			if(node.cost<closest.cost)
 			{
 				closest=node;
 			}
@@ -318,24 +213,26 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 			//2. Loop: -1, 0
 			//3. Loop: 0, 1l
 			//4. Loop: 0, -1
-			//TODO: Bug finden
 			x=closest.x+addX;	
 			y=closest.y+addY;
 			if(x<0||y<0||x>=map.length||y>=map[0].length)
 				continue;
-			if(map[x][y].walkable()&&!closedList.contains(new Node(x, y)))
+			Node currNode=new Node(manhattanDistance(start, x,y)+closest.movementCost+1,closest.movementCost+1, x,y, closest);
+			if(map[x][y].walkable()&&!closedList.contains(currNode))
 			{
-				int indx=openList.indexOf(new Node(x, y));
-				Node currNode=new Node(distance(start, x,y)+closest.prevEdgeCost+1,closest.prevEdgeCost+1, x,y, closest);
+				int indx=openList.indexOf(currNode);
 				if(indx==-1)
 				{
 					openList.add(currNode);
 				}
 				else
 				{
-					if(currNode.cost<openList.get(indx).cost)
+					Node inList=openList.get(indx);
+					if(currNode.cost<=inList.cost)
 					{
-						openList.set(indx, currNode);
+						inList.cost=currNode.cost;
+						inList.prev=currNode.prev;
+						inList.movementCost=currNode.movementCost;
 					}
 				}
 			}
@@ -348,22 +245,22 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		return null;
 	}
 
-	private double distance(Point start, int x, int y)
+	private double manhattanDistance(Point start, int x, int y)
 	{
-		return start.distance(new Point(x,y));
+		return Math.abs(start.x-x)+Math.abs(start.y-y);
 	}
 
 	class Node
 	{
 		double cost;
-		double prevEdgeCost;
+		double movementCost;
 		int x;
 		int y;
 		Node prev;
 
-		public Node(double cost,double prevEdgeCost, int x, int y, Node prev)
+		public Node(double cost,double movementCost, int x, int y, Node prev)
 		{
-			this.prevEdgeCost=prevEdgeCost;
+			this.movementCost=movementCost;
 			this.cost=cost;
 			this.x=x;
 			this.y=y;
