@@ -72,6 +72,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 			seesPlayer=isInRangeOfPlayer();
 			if(seesPlayer&&!currPlayerTile.equals(currTile)&&squaredDistance(getGlobalX(), getGlobalY(), wi.getPlayerPosition().x, wi.getPlayerPosition().y)>notChaseRangeSquared)
 				currTargetNode=findPath(currTile, currPlayerTile);
+				
 			else
 			{
 				Random random=new Random();
@@ -88,14 +89,23 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 							break;
 						else
 						{
-							//TODO: Fix this
+							boolean ported=false;
 							for(int k=x-2;k<x+3;k++)
 							{
 								for(int l=y-2;l<y+3;l++)
 								{
-									//look for a free tiel for the player to place on
+									if(map[k][l].walkable())
+									{
+										setGlobalLocation(k*wi.getTileSize()+wi.getTileSize()/2, l*wi.getTileSize()+wi.getTileSize()/2);
+										ported=true;
+										break;
+									}
 								}
+								if(ported)
+									break;
 							}
+							if(!ported)
+								setGlobalLocation(x*wi.getTileSize()+wi.getTileSize()/2, y*wi.getTileSize()+wi.getTileSize()/2);
 							break;
 						}
 					}	

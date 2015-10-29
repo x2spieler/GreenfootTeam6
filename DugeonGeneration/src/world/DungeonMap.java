@@ -47,7 +47,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		player=new Player();
 		addObject(player, 0, 0);
 
-		spawnZombies(1);
+		spawnZombies(20);
 	}
 
 	private void renderMap() {

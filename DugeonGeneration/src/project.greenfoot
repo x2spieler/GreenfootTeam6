@@ -1,4 +1,12 @@
 #Greenfoot project file
 class.camera.DemoWorld.image=corkboard.jpg
 class.camera.MyCursor.image=pik.png
-class.player.Player.image=ladybug_02.png
+class.player.Player.image=player.png
+mainWindow.height=397
+mainWindow.width=778
+mainWindow.x=40
+mainWindow.y=40
+package.numDependencies=0
+package.numTargets=0
+project.charset=windows-1252
+version=2.7.1
