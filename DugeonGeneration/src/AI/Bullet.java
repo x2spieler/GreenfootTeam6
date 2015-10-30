@@ -1,6 +1,7 @@
 package AI;
 import java.util.List;
 
+import player.Player;
 import scrollWorld.ScrollActor;
 
 public abstract class Bullet extends ScrollActor
@@ -30,12 +31,11 @@ public abstract class Bullet extends ScrollActor
 		{
 			for (Object o : intersectingObjects)
 			{
-				IDamageable dmgAble = (IDamageable) o;
-				if (dmgAble != null)
-				{
-					dmgAble.damage(damage);
-					return true;
-				}
+				if(!(o instanceof Player))
+					continue;
+				Player p=(Player)o;
+				p.damage(damage);
+				return true;
 			}
 			return true;
 		}

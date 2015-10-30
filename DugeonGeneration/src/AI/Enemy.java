@@ -5,6 +5,7 @@ import java.util.Random;
 
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
+import enemies.bullets.Spear;
 import greenfoot.GreenfootImage;
 import greenfoot.GreenfootSound;
 import scrollWorld.ScrollActor;
@@ -92,6 +93,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 				{
 					setImage(idleImage);
 					turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
+					getWorld().addObject(new Spear(), getGlobalX(), getGlobalY());
 				}
 					
 			}

@@ -46,7 +46,7 @@ IWorldInterfaceForAI {
 		player = new Player();
 		addObject(player, 0, 0);
 
-		spawnWerewolfs(100);
+		//spawnWerewolfs(100);
 	}
 
 	private void renderMap() {
