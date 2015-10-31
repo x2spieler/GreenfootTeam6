@@ -1,15 +1,16 @@
 package player;
 
 import greenfoot.Greenfoot;
+import greenfoot.MouseInfo;
 import AI.IDamageable;
 
-public class Player extends DungeonMover implements IDamageable {
+public class Player extends DeltaMover implements IDamageable {
 
-	private int speed = 500;
-	private double epsilonMove = 0.0;
-	private DeltaTimer timer = new DeltaTimer();
+	private Direction buttonPressed = null;
+	private Direction currentDirection = null;
 
 	public Player() {
+		super(400);
 	}
 
 	@Override
@@ -20,54 +21,74 @@ public class Player extends DungeonMover implements IDamageable {
 	@Override
 	public void act() {
 		super.act();
-		timer.update();
+		faceMouse();
 
-		double move = speed * timer.getDelta() / getWorld().getCellSize();
+		boolean forward = Greenfoot.isKeyDown(Direction.FORWARD.key);
+		boolean backward = Greenfoot.isKeyDown(Direction.BACKWARD.key);
+		boolean right = Greenfoot.isKeyDown(Direction.RIGHT.key);
+		boolean left = Greenfoot.isKeyDown(Direction.LEFT.key);
 
-		if (Greenfoot.isKeyDown(Direction.UP.key)) {
-			setGlobalLocation(getGlobalX(), getGlobalY()
-					- ensureEventualMove(move));
+		if (forward && backward) {
+			forward = false;
+			backward = false;
 		}
-		if (Greenfoot.isKeyDown(Direction.LEFT.key)) {
-			setGlobalLocation(getGlobalX() - ensureEventualMove(move),
-					getGlobalY());
-
+		if (left && right) {
+			left = false;
+			right = false;
 		}
-		if (Greenfoot.isKeyDown(Direction.DOWN.key)) {
-			setGlobalLocation(getGlobalX(), getGlobalY()
-					+ ensureEventualMove(move));
 
+		buttonPressed = getCurrentDirection();
+		if (buttonPressed != null) {
+			currentDirection = buttonPressed;
+		} else {
+			if (forward && !right && !left) {
+				currentDirection = Direction.FORWARD;
+			}
+			if (backward && !right && !left) {
+				currentDirection = Direction.BACKWARD;
+			}
+			if (!forward && !backward && right) {
+				currentDirection = Direction.RIGHT;
+			}
+			if (!forward && !backward && left) {
+				currentDirection = Direction.LEFT;
+			}
 		}
-		if (Greenfoot.isKeyDown(Direction.RIGHT.key)) {
-			setGlobalLocation(getGlobalX() + ensureEventualMove(move),
-					getGlobalY());
 
+		if ((forward && currentDirection == Direction.FORWARD)) {
+			move();
+		}
+		if ((backward && currentDirection == Direction.BACKWARD)) {
+			moveBackwards();
+		}
+		if ((right && currentDirection == Direction.RIGHT)) {
+			int move = getTickMove();
+			moveAtAngle(move - (move / 4), 90);
+		}
+		if ((left && currentDirection == Direction.LEFT)) {
+			int move = getTickMove();
+			moveAtAngle(move - (move / 4), 270);
 		}
 
 		centerCamera();
 	}
 
-	private Direction getDirection() {
-		for (Direction dir : Direction.values()) {
-			if (Greenfoot.isKeyDown(dir.key)) {
-				return dir;
+	private Direction getCurrentDirection() {
+		String key = Greenfoot.getKey();
+		for (Direction direction : Direction.values()) {
+			if (key != null && key.equals(direction.key)) {
+				return direction;
 			}
 		}
 		return null;
 	}
 
-	private int ensureEventualMove(double d) {
-		epsilonMove += d;
-		if (Math.abs(epsilonMove) > 1) {
-			d = epsilonMove;
-			if (epsilonMove > 0) {
-				epsilonMove -= (int) epsilonMove;
-			} else {
-				epsilonMove += (int) epsilonMove;
-			}
-			return (int) d;
-		} else {
-			return 0;
+	private void faceMouse() {
+		MouseInfo info = Greenfoot.getMouseInfo();
+		if (info != null) {
+			int x = info.getX();
+			int y = info.getY();
+			turnTowards(x, y);
 		}
 	}
 

@@ -1,7 +1,7 @@
 package player;
 
 public enum Direction {
-	UP("w"), LEFT("a"), DOWN("s"), RIGHT("d");
+	FORWARD("w"), LEFT("a"), BACKWARD("s"), RIGHT("d");
 
 	public final String key;
 

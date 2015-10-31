@@ -1,120 +1,179 @@
 package player;
 
-import java.awt.Point;
-
+import greenfoot.World;
 import scrollWorld.ScrollActor;
-import AI.IWorldInterfaceForAI;
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.MapField;
+import world.DungeonMap;
 
 public class DungeonMover extends ScrollActor {
 
-	private boolean firstRun = true;
+	private boolean noclip = false;
+
+	private DungeonMap world = null;
 
 	@Override
 	public void setLocation(int x, int y) {
-		// TODO Auto-generated method stub
-		super.setLocation(x, y);
-	}
-
-	@Override
-	public void setLocationFromCamera(int x, int y) {
-		// TODO Auto-generated method stub
-		super.setLocationFromCamera(x, y);
-	}
-
-	@Override
-	public void setGlobalLocation(int x, int y) {
-		Point p = new Point(x, y);
-		ensureWithinPassableTile(p);
-		super.setGlobalLocation(p.x, p.y);
+		if (world != null
+				&& world.isLegalMove(this, x + world.getCameraX() - (world.getWidth() / 2), y
+						+ world.getCameraY() - (world.getHeight() / 2))) {
+			super.setLocation(x, y);
+		}
 	}
 
 	@Override
 	public void move(int distance) {
-		// TODO Auto-generated method stub
-		super.move(distance);
+		moveAtAngle(distance, 0);
 	}
 
-	private void ensureWithinPassableTile(Point p) {
-		if (!isInPassableTile(p)) {
-			p.setLocation(getGlobalX(), getGlobalY());
+	/**
+	 * Takes the angle relative to the direction the mover is facing, so a call
+	 * of moveAtAngle(10,0) is equivalent to a call of move(10).
+	 * 
+	 * @param distance
+	 * @param angle
+	 *            the angle in degrees
+	 */
+	public void moveAtAngle(int distance, int angle) {
+		if (distance == 0 || world == null)
+			return;
+		if ((distance > 0) ? isWallAhead(0 + angle) : isWallAhead(180 + angle)) {
+			slidingMove(distance, angle);
+		} else {
+			shorteningMove(distance, angle);
 		}
 	}
 
-	private boolean isInPassableTile(Point p) {
-		IWorldInterfaceForAI world = (IWorldInterfaceForAI) getWorld();
-		MapField[][] map = world.getMap();
-		int tileSize = world.getTileSize();
+	private int addAngles(int angle1, int angle2) {
+		return (angle1 + angle2) % 360;
+	}
 
-		return map[p.x / tileSize][p.y / tileSize].walkable();
+	private void slidingMove(int distance, int angle) {
+		int rotation = addAngles(getRotation(), angle);
+		double radians = Math.toRadians(rotation);
+		double sin = Math.sin(radians);
+		double cos = Math.cos(radians);
+		int x = getGlobalX();
+		int y = getGlobalY();
+		int dx = (int) Math.round(cos * distance);
+		int dy = (int) Math.round(sin * distance);
+		boolean[] neighbours = getNeighbouringTilesAccessibility();
+		if (distance > 0) {
+			if ((!neighbours[0] && facingRight(rotation))
+					|| (!neighbours[2] && facingLeft(rotation))) {
+				dx = 0;
+			}
+			if ((!neighbours[1] && facingDown(rotation)) || (!neighbours[3] && facingUp(rotation))) {
+				dy = 0;
+			}
+		} else {
+			if ((!neighbours[0] && facingLeft(rotation))
+					|| (!neighbours[2] && facingRight(rotation))) {
+				dx = 0;
+			}
+			if ((!neighbours[1] && facingUp(rotation)) || (!neighbours[3] && facingDown(rotation))) {
+				dy = 0;
+			}
+		}
+		setGlobalLocation(x + dx, y + dy);
+	}
+
+	private boolean facingRight(int rotation) {
+		if (rotation < 90 || rotation > 270) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean facingDown(int rotation) {
+		if (rotation < 180 && rotation > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean facingUp(int rotation) {
+		if (rotation > 180) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean facingLeft(int rotation) {
+		if (rotation < 270 && rotation > 90) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean[] getNeighbouringTilesAccessibility() {
+		boolean[] ret = new boolean[4];
+		int x = getGlobalX();
+		int y = getGlobalY();
+		ret[0] = world.isInAccessibleTile(x + 1, y);
+		ret[1] = world.isInAccessibleTile(x, y + 1);
+		ret[2] = world.isInAccessibleTile(x - 1, y);
+		ret[3] = world.isInAccessibleTile(x, y - 1);
+		return ret;
+	}
+
+	private boolean isWallAhead(int angle) {
+		int rotation = addAngles(getRotation(), angle);
+		int direction = rotation / 90;
+		int x = getGlobalX();
+		int y = getGlobalY();
+		if (rotation % 90 == 0) {
+			return !world.isInAccessibleTile(x
+					+ ((direction % 2 == 0) ? ((direction == 0) ? 1 : -1) : 0), y
+					+ ((direction % 2 == 1) ? ((direction == 1) ? 1 : -1) : 0));
+		} else {
+			return !(world.isInAccessibleTile(x + ((direction % 3 == 0) ? 1 : -1), y) && world
+					.isInAccessibleTile(x, y + ((direction < 2) ? 1 : -1)));
+		}
+	}
+
+	private void shorteningMove(int distance, int angle) {
+		int rotation = addAngles(getRotation(), angle);
+		double radians = Math.toRadians(rotation);
+		double sin = Math.sin(radians);
+		double cos = Math.cos(radians);
+		int x = getGlobalX();
+		int y = getGlobalY();
+		for (int i = distance; i != 0; i -= ((distance > 0) ? 1 : -1)) {
+			int dx = (int) Math.round(cos * i);
+			int dy = (int) Math.round(sin * i);
+			if (world.isLegalMove(this, x + dx, y + dy)) {
+				setGlobalLocation(x + dx, y + dy);
+				return;
+			}
+		}
 	}
 
 	@Override
-	public void act() {
-		super.act();
-		if (firstRun
-				&& !isInPassableTile(new Point(getGlobalX(), getGlobalY()))) {
-			Point p = getNearestWalkablePoint(new Point(getGlobalX(),
-					getGlobalY()));
-			super.setGlobalLocation(p.x, p.y);
-			firstRun = false;
-		}
+	public DungeonMap getWorld() {
+		return world;
 	}
 
-	private Point ensureWithinWalkableArea(int dX, int dY) {
-		Point ret = new Point(getGlobalX(), getGlobalY());
-		IWorldInterfaceForAI world = (IWorldInterfaceForAI) getWorld();
-		MapField[][] map = world.getMap();
-		int tileSize = world.getTileSize();
-		if (map[ret.x / tileSize][ret.y / tileSize].walkable()) {
-			System.out.println("walk");
-			ret.setLocation(dX, dY);
-			if (map[ret.x / tileSize
-					+ ((ret.x % tileSize + tileSize - 1) / tileSize)][ret.y
-					/ tileSize + ((ret.y % tileSize + tileSize - 1) / tileSize)]
-					.walkable()) {
-				System.out.println("sehr gut");
-				return ret;
-			} else {
-				return getNearestWalkablePoint(ret);
-			}
+	public boolean noclip() {
+		return noclip;
+	}
+
+	public void setNoclip(boolean noclip) {
+		this.noclip = noclip;
+	}
+
+	@Override
+	protected void addedToWorld(World world) {
+		if (world == null)
+			throw new IllegalArgumentException("Are you fucking kidding me?");
+		super.addedToWorld(world);
+		if (world instanceof DungeonMap) {
+			this.world = (DungeonMap) world;
 		} else {
-			System.out.println("nix gut");
-			Point temp = getNearestWalkablePoint(ret);
-			super.setGlobalLocation(temp.x, temp.y);
-			return ensureWithinWalkableArea(dX, dY);
+			throw new IllegalArgumentException("DungeonMover must only be added to a DungeonMap");
 		}
-	}
-
-	private Point getNearestWalkablePoint(Point p) {
-		IWorldInterfaceForAI world = (IWorldInterfaceForAI) getWorld();
-		MapField[][] map = world.getMap();
-		int tileSize = world.getTileSize();
-		Point ret = new Point(p.x / tileSize, p.y / tileSize);
-
-		int smallestDX = DungeonGenerator.MAP_WIDTH;
-		int smallestDY = DungeonGenerator.MAP_HEIGHT;
-
-		for (int i = 0; i < DungeonGenerator.MAP_WIDTH; i++) {
-			for (int j = 0; j < DungeonGenerator.MAP_HEIGHT; j++) {
-				if (map[i][j].walkable()) {
-					int dX = ret.x - i;
-					int dY = ret.y - j;
-					if (Math.sqrt(dX * dX + dY * dY) < Math.sqrt(smallestDX
-							* smallestDX + smallestDY * smallestDY)) {
-						smallestDX = dX;
-						smallestDY = dY;
-					}
-				}
-			}
-		}
-		ret.x -= smallestDX;
-		ret.y -= smallestDY;
-
-		ret.x *= tileSize;
-		ret.y *= tileSize;
-		return ret;
 	}
 
 }

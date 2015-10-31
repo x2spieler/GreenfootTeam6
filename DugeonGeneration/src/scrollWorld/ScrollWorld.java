@@ -333,6 +333,7 @@ public abstract class ScrollWorld extends World {
 	/**
 	 * All the honor for this goes to Busch2207 from greenfoot.org
 	 */
+	@SuppressWarnings("unused")
 	private void moveBackgroundUp(int amount) {
 		if (amount == 0)
 			return;
@@ -348,6 +349,7 @@ public abstract class ScrollWorld extends World {
 	/**
 	 * All the honor for this goes to Busch2207 from greenfoot.org
 	 */
+	@SuppressWarnings("unused")
 	private void moveBackgroundRight(int amount) {
 		if (amount == 0)
 			return;

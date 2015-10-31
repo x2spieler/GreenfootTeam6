@@ -15,7 +15,7 @@ public class Menu extends World implements IWorldWithMenu {
 	private List<IWorldWithMenu> worlds = new ArrayList<IWorldWithMenu>();
 
 	public Menu() {
-		this(800, 600);
+		this(DungeonMap.VIEWPORT_WIDTH, DungeonMap.VIEWPORT_HEIGHT);
 		final DungeonMap dungeon = new DungeonMap(this);
 		Button button = new Button("Start");
 		addObject(button, getWidth() / 2, getHeight() / 2);

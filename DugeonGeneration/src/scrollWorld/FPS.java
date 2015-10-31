@@ -34,7 +34,7 @@ public class FPS extends Actor {
 	 */
 	public static final Mode mode = Mode.REALTIME;
 
-	private static final Color textColor = Color.BLACK;
+	private static final Color textColor = Color.RED;
 	private static final String prefix = "FPS: ";
 	private static final int updateFreq = 20;
 	private long countAct;
@@ -46,7 +46,7 @@ public class FPS extends Actor {
 	 */
 	public FPS() {
 		countAct = 0;
-		setImage(new GreenfootImage(150, 16));
+		setImage(new GreenfootImage(200, 32));
 		GreenfootImage image = getImage();
 		updateImage("-");
 	}
@@ -114,7 +114,7 @@ public class FPS extends Actor {
 	 */
 	private final void updateImage(String value) {
 		getImage().clear();
-		GreenfootImage txt = new GreenfootImage(prefix + value, 16, textColor,
+		GreenfootImage txt = new GreenfootImage(prefix + value, 32, textColor,
 				null);
 		getImage().drawImage(txt, 1, 1);
 	}
