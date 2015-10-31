@@ -49,6 +49,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		// impassable.fill();
 		renderMap();
 		player = new Player();
+		player.setMode(Player.MOVE_MODE_8_DIRECTIONS);
 		addObject(player, 0, 0);
 		addObject(new FPS(), 100, 20);
 		// player.setNoclip(true);

@@ -21,34 +21,35 @@ public class DungeonMover extends ScrollActor {
 
 	@Override
 	public void move(int distance) {
-		moveAtAngle(distance, 0);
+		moveAtAngle(distance, getRotation());
 	}
 
 	/**
-	 * Takes the angle relative to the direction the mover is facing, so a call
-	 * of moveAtAngle(10,0) is equivalent to a call of move(10).
+	 * Takes the angle to move in, so a call of moveAtAngle(10,
+	 * dungeonMover.getRotation()) is equivalent to a call of move(10).
 	 * 
 	 * @param distance
+	 *            in pixels
 	 * @param angle
-	 *            the angle in degrees
+	 *            in degrees
 	 */
 	public void moveAtAngle(int distance, int angle) {
 		if (distance == 0 || world == null)
 			return;
-		if (!noclip && ((distance > 0) ? isWallAhead(0 + angle) : isWallAhead(180 + angle))) {
+		angle = addAngles(0, angle);
+		if (!noclip && ((distance > 0) ? isWallAhead(angle) : isWallAhead(addAngles(180, angle)))) {
 			slidingMove(distance, angle);
 		} else {
 			shorteningMove(distance, angle);
 		}
 	}
 
-	private int addAngles(int angle1, int angle2) {
+	public int addAngles(int angle1, int angle2) {
 		return (angle1 + angle2) % 360;
 	}
 
 	private void slidingMove(int distance, int angle) {
-		int rotation = addAngles(getRotation(), angle);
-		double radians = Math.toRadians(rotation);
+		double radians = Math.toRadians(angle);
 		double sin = Math.sin(radians);
 		double cos = Math.cos(radians);
 		int x = getGlobalX();
@@ -57,19 +58,17 @@ public class DungeonMover extends ScrollActor {
 		int dy = (int) Math.round(sin * distance);
 		boolean[] neighbours = getNeighbouringTilesAccessibility();
 		if (distance > 0) {
-			if ((!neighbours[0] && facingRight(rotation))
-					|| (!neighbours[2] && facingLeft(rotation))) {
+			if ((!neighbours[0] && facingRight(angle)) || (!neighbours[2] && facingLeft(angle))) {
 				dx = 0;
 			}
-			if ((!neighbours[1] && facingDown(rotation)) || (!neighbours[3] && facingUp(rotation))) {
+			if ((!neighbours[1] && facingDown(angle)) || (!neighbours[3] && facingUp(angle))) {
 				dy = 0;
 			}
 		} else {
-			if ((!neighbours[0] && facingLeft(rotation))
-					|| (!neighbours[2] && facingRight(rotation))) {
+			if ((!neighbours[0] && facingLeft(angle)) || (!neighbours[2] && facingRight(angle))) {
 				dx = 0;
 			}
-			if ((!neighbours[1] && facingUp(rotation)) || (!neighbours[3] && facingDown(rotation))) {
+			if ((!neighbours[1] && facingUp(angle)) || (!neighbours[3] && facingDown(angle))) {
 				dy = 0;
 			}
 		}
@@ -120,11 +119,10 @@ public class DungeonMover extends ScrollActor {
 	}
 
 	private boolean isWallAhead(int angle) {
-		int rotation = addAngles(getRotation(), angle);
-		int direction = rotation / 90;
+		int direction = angle / 90;
 		int x = getGlobalX();
 		int y = getGlobalY();
-		if (rotation % 90 == 0) {
+		if (angle % 90 == 0) {
 			return !world.isInAccessibleTile(x
 					+ ((direction % 2 == 0) ? ((direction == 0) ? 1 : -1) : 0), y
 					+ ((direction % 2 == 1) ? ((direction == 1) ? 1 : -1) : 0));
@@ -135,8 +133,7 @@ public class DungeonMover extends ScrollActor {
 	}
 
 	private void shorteningMove(int distance, int angle) {
-		int rotation = addAngles(getRotation(), angle);
-		double radians = Math.toRadians(rotation);
+		double radians = Math.toRadians(angle);
 		double sin = Math.sin(radians);
 		double cos = Math.cos(radians);
 		int x = getGlobalX();

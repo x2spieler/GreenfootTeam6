@@ -29,7 +29,7 @@ public class DeltaMover extends DungeonMover {
 
 	/**
 	 * When overriding you will need to call super on this, or DeltaMover will
-	 * stop working.
+	 * stop working properly.
 	 */
 	@Override
 	public void act() {
@@ -46,7 +46,7 @@ public class DeltaMover extends DungeonMover {
 	 */
 	@Override
 	public void move(int distance) {
-		moveAtAngle(distance, 0);
+		moveAtAngle(distance, getRotation());
 	}
 
 	@Override
@@ -58,6 +58,10 @@ public class DeltaMover extends DungeonMover {
 			super.moveAtAngle(move, angle);
 			;
 		}
+	}
+
+	public void moveAtAngle(int angle) {
+		moveAtAngle(getTickMove(), angle);
 	}
 
 	/**
