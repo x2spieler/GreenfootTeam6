@@ -35,7 +35,7 @@ public class DungeonMover extends ScrollActor {
 	public void moveAtAngle(int distance, int angle) {
 		if (distance == 0 || world == null)
 			return;
-		if ((distance > 0) ? isWallAhead(0 + angle) : isWallAhead(180 + angle)) {
+		if (!noclip && ((distance > 0) ? isWallAhead(0 + angle) : isWallAhead(180 + angle))) {
 			slidingMove(distance, angle);
 		} else {
 			shorteningMove(distance, angle);
@@ -144,7 +144,7 @@ public class DungeonMover extends ScrollActor {
 		for (int i = distance; i != 0; i -= ((distance > 0) ? 1 : -1)) {
 			int dx = (int) Math.round(cos * i);
 			int dy = (int) Math.round(sin * i);
-			if (world.isLegalMove(this, x + dx, y + dy)) {
+			if (world.isLegalMove(this, x + dx, y + dy) || noclip) {
 				setGlobalLocation(x + dx, y + dy);
 				return;
 			}
