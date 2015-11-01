@@ -3,9 +3,9 @@ package enemies;
 import java.util.Random;
 
 import AI.Enemy;
-import enemies.weapons.short_range.ClubWithSpikes;
-import enemies.weapons.short_range.Sword;
 import greenfoot.World;
+import weapons.short_range.ClubWithSpikes;
+import weapons.short_range.Sword;
 
 public class Werewolf extends Enemy
 {	

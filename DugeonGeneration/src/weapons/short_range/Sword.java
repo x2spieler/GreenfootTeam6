@@ -1,4 +1,4 @@
-package enemies.weapons.short_range;
+package weapons.short_range;
 
 import java.awt.Point;
 
