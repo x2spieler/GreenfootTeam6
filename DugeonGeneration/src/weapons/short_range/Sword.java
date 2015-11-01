@@ -9,8 +9,12 @@ public class Sword extends ShortRangeWeapon
 	{
 		damage=20;
 		weaponName="sword";
-		loadImages();
 		this.owner=owner;
 		reloadTimeInMS=2000;
+	}
+
+	@Override
+	protected int getTicksPerAnimImg() {
+		return 10;
 	}
 }

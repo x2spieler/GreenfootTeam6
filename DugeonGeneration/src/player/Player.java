@@ -28,7 +28,7 @@ public class Player extends DeltaMover implements IDamageable {
 	@Override
 	public void damage(int dmg)
 	{
-	
+		
 	}
 
 	@Override

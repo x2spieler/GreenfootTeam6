@@ -1,33 +1,37 @@
 package weapons.abstracts;
 
-import AI.IWorldInterfaceForAI;
+import java.awt.geom.Point2D;
 
 public abstract class LongRangeWeapon extends Weapon
 {
-
-	//TODO: Implement LongRangeWeapons
-	@Override
-	public boolean use()
-	{
-		long millisNow = System.currentTimeMillis();
-		if (lastUsage + reloadTimeInMS < millisNow)
-		{
-			Bullet b = instantiateBullet();
-			b.setRotation(getRotation());
-			IWorldInterfaceForAI wi = (IWorldInterfaceForAI) getWorld();
-			if (wi != null)
-			{
-				wi.addBulletToWorld(b);
-				lastUsage = millisNow;
-			}
-				
-			else
-				System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
-		}
-		else
-			return false;
-		return true;
+	private boolean inUse=false;
+	
+	public LongRangeWeapon() {
+		isLongRangeWeapon=true;
 	}
+	
+	@Override
+	public void act()
+	{
+		super.act();
+		if(inUse&&getImage()==emptyImage)
+		{
+			//Animation completed, launch bullet now
+			Bullet b=instantiateBullet();
+			Point2D offset=b.getCopyOfOffset();
+			rotatePoint(offset, getRotation());
+			getWorld().addObject(b, 0,0);
+			b.setGlobalLocation(getGlobalX()+(int)offset.getX(), getGlobalY()+(int)offset.getY());
+			b.setRotation(getRotation());
+			inUse=false;
+		}
+	}
+	
+	 @Override
+	 protected void triggerUse()
+	 {
+		 inUse=true;
+	 }
 
 	protected abstract Bullet instantiateBullet();
 }

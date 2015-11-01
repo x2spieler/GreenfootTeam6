@@ -9,8 +9,12 @@ public class ClubWithSpikes extends ShortRangeWeapon
 	{
 		damage=20;
 		weaponName="club_spikes";
-		loadImages();
 		this.owner=owner;
 		reloadTimeInMS=3000;
+	}
+
+	@Override
+	protected int getTicksPerAnimImg() {
+		return 10;
 	}
 }

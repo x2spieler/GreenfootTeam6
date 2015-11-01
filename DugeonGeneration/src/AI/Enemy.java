@@ -10,6 +10,7 @@ import greenfoot.GreenfootSound;
 import greenfoot.World;
 import player.DeltaMover;
 import weapons.abstracts.Weapon;
+import weapons.long_range_weapon.Crossbow;
 import weapons.short_range.ClubWithSpikes;
 import weapons.short_range.Sword;
 import world.DungeonMap;
@@ -38,10 +39,11 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private Point lastPlayerTile=null;
 	private final int REACHED_TARGET_DISTANCE_SQUARED=2;
 	private final int REACHED_PLAYER_DISTANCE_SQUARED=1024;
+	private final int RPD_MULTIPLICATOR_LRW=30;			//REACHED_PLAYER_DISTANCE_MULTIPLICATOR_LONG_RANGE_WEAPONS
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
 	private short walkCounter=0;
-
+	
 	public Enemy()
 	{
 		super(0);
@@ -54,10 +56,16 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	public void addedToWorld(World w)
 	{
 		super.addedToWorld(w);
+		wi = (IWorldInterfaceForAI) getWorld();
+		if (wi == null)
+		{
+			System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
+			return;
+		}
 		loadImages();
 		createWeapon();
 	}
-	
+
 	private void loadImages()
 	{
 		idleImage=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_idle.png");
@@ -76,6 +84,9 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			break;
 		case "club_spikes":
 			weapon=new ClubWithSpikes(this);
+			break;
+		case "crossbow":
+			weapon=new Crossbow(this);
 			break;
 		default:
 			System.out.println("Seems like somebody forgot to update this switch-statement after adding new weapons.. Bad boy!");
@@ -116,15 +127,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 
 		if(getImage()==null)
 			setImage(idleImage);
-		if(wi==null)
-		{
-			wi = (IWorldInterfaceForAI) getWorld();
-			if (wi == null)
-			{
-				System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
-				return;
-			}
-		}
 
 		seesPlayer=isInRangeOfPlayer();
 		Point currPlayerTile=wi.getPlayerPosition();
@@ -136,8 +138,10 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		{
 			if(seesPlayer)
 			{
-
-				if(squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY())>REACHED_PLAYER_DISTANCE_SQUARED)
+				int squaredDistance=squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
+				if(!isAttacking&&
+						((!weapon.isLongRangeWeapon()&&squaredDistance>REACHED_PLAYER_DISTANCE_SQUARED)
+						||(weapon.isLongRangeWeapon()&&squaredDistance>RPD_MULTIPLICATOR_LRW*REACHED_PLAYER_DISTANCE_SQUARED)))
 				{
 					currTargetNode=findPath(currTile, currPlayerTile, true);
 				}
@@ -196,12 +200,21 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			}
 		}
 
-		if(currTargetNode!=null&&!isAttacking)
+		if(currTargetNode!=null)
 		{
 			turnTowardsGlobalLocation(currTargetNode.x, currTargetNode.y);
-			move();
+			if(!isAttacking)
+				move();
 			int squaredDistToTarget=squaredDistance(currTargetNode.x, currTargetNode.y, getGlobalX(), getGlobalY());
-			if((seesPlayer&&currTargetNode.prev==null&&squaredDistToTarget<=REACHED_PLAYER_DISTANCE_SQUARED)		//Target is player
+			int squaredDistanceToPlayer=squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
+			if(seesPlayer&&weapon.isLongRangeWeapon()&&
+					squaredDistanceToPlayer<=RPD_MULTIPLICATOR_LRW*REACHED_PLAYER_DISTANCE_SQUARED
+					&&canSee(new Point(getGlobalX(), getGlobalY()), wi.getPlayerPosition()))
+			{
+				//We have a LongRangeWeapon, we are close enough
+				currTargetNode=null;		
+			}
+			else if((seesPlayer&&currTargetNode.prev==null&&squaredDistToTarget<=REACHED_PLAYER_DISTANCE_SQUARED)		//Target is player
 					||(squaredDistToTarget<=REACHED_TARGET_DISTANCE_SQUARED))										//Target is a tile
 			{
 				currTargetNode=currTargetNode.prev;
@@ -221,6 +234,31 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			walkCounter++;
 		}
 		sawPlayer=seesPlayer;
+	}
+
+	/**
+	 * Super simple raytracer, might miss edges.
+	 * However, suitable for our needs
+	 */
+	private boolean canSee(Point p1, Point p2)
+	{
+		double xDir=p1.x-p2.x;
+		double yDir=p1.y-p2.y;
+		double length=Math.sqrt(xDir*xDir+yDir*yDir);
+		double xNorm=xDir/length;
+		double yNorm=yDir/length;
+		double currX=p2.x;
+		double currY=p2.y;
+		double add=TILE_SIZE;
+		DungeonMap dm=(DungeonMap)getWorld();
+		while(!(Math.abs(p1.x-currX)<1&&Math.abs(p1.y-currY)<1))
+		{
+			currX+=xNorm*add;
+			currY+=yNorm*add;
+			if(!dm.isInAccessibleTile((int)currX, (int)currY))
+				return false;
+		}
+		return true;
 	}
 
 	private int squaredDistance(int x1, int y1, int x2, int y2)
