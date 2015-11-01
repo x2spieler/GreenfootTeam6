@@ -11,7 +11,7 @@ public class Werewolf extends Enemy
 {	
 	public Werewolf()
 	{
-		stepsPerTick = 2;
+		setSpeed(175);
 		value = 1;
 		hp = 50;
 		viewRangeSquared = 32*32*5*5;
@@ -23,10 +23,16 @@ public class Werewolf extends Enemy
 		else
 			weapon=new ClubWithSpikes(this);
 	}
+	
+	@Override
+	protected int getNumFramesChangeWalkImage() {
+		return 20;
+	}
 
 	@Override
 	public void addedToWorld(World world)
 	{
+		super.addedToWorld(world);
 		world.addObject(weapon, 0, 0);
 	}
 }

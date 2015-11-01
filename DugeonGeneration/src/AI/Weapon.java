@@ -10,4 +10,9 @@ public abstract class Weapon extends ScrollActor
 	protected Enemy user=null;
 
 	public abstract boolean use();
+	
+	public int getAdditionalValue()
+	{
+		return additionalValue;
+	}
 }

@@ -7,13 +7,13 @@ import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
 import greenfoot.GreenfootImage;
 import greenfoot.GreenfootSound;
-import scrollWorld.ScrollActor;
+import player.DeltaMover;
 import world.DungeonMap;
 
-public abstract class Enemy extends ScrollActor implements IDamageable
+public abstract class Enemy extends DeltaMover implements IDamageable
 {
 
-	protected int stepsPerTick = -1;
+	protected final int NUM_FRAMES_CHANGE_WALK_IMAGE;
 	protected Weapon weapon = null;
 	protected int value = -1;
 	protected int hp = -1;
@@ -36,13 +36,15 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
 	private short walkCounter=0;
-	private final int NUM_FRAMES_CHANGE_WALK_IMAGE=10;
 
 
 	public Enemy()
 	{
-
+		super(0);
+		NUM_FRAMES_CHANGE_WALK_IMAGE=getNumFramesChangeWalkImage();
 	}
+	
+	protected abstract int getNumFramesChangeWalkImage();
 
 	protected void loadImages()
 	{
@@ -52,7 +54,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		attackImage=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_attack.png");
 	}
 
-	private boolean isInRangeOfPlayer()
+	private boolean isInRangeOfPlayer()	
 	{
 		Point p=wi.getPlayerPosition();
 		double xDist=getGlobalX()-p.x;
@@ -65,7 +67,10 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		hp -= dmg;
 		if (hp <= 0)
 		{
-			wi.addPlayerScore(value);
+			wi.addPlayerScore(value+weapon.getAdditionalValue());
+			getWorld().removeObject(weapon);
+			//TODO: Instead of immediately removing, add a fancy death animation -> alpha blend / angels?
+			getWorld().removeObject(this);
 		}
 	}
 
@@ -77,6 +82,8 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	@Override
 	public void act()
 	{
+		super.act();
+		
 		if(getImage()==null)
 			setImage(idleImage);
 		if(wi==null)
@@ -99,7 +106,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		{
 			if(seesPlayer)
 			{
-				
+
 				if(squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY())>REACHED_PLAYER_DISTANCE_SQUARED)
 				{
 					currTargetNode=findPath(currTile, currPlayerTile, true);
@@ -162,19 +169,15 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		if(currTargetNode!=null&&!isAttacking)
 		{
 			turnTowardsGlobalLocation(currTargetNode.x, currTargetNode.y);
-			for(int i=0;i<stepsPerTick;i++)
+			move();
+			int squaredDistToTarget=squaredDistance(currTargetNode.x, currTargetNode.y, getGlobalX(), getGlobalY());
+			if((seesPlayer&&currTargetNode.prev==null&&squaredDistToTarget<=REACHED_PLAYER_DISTANCE_SQUARED)		//Target is player
+					||(squaredDistToTarget<=REACHED_TARGET_DISTANCE_SQUARED))										//Target is a tile
 			{
-				move(1);
-				int squaredDistToTarget=squaredDistance(currTargetNode.x, currTargetNode.y, getGlobalX(), getGlobalY());
-				if((seesPlayer&&currTargetNode.prev==null&&squaredDistToTarget<=REACHED_PLAYER_DISTANCE_SQUARED)		//Target is player
-						||(squaredDistToTarget<=REACHED_TARGET_DISTANCE_SQUARED))										//Target is a tile
-				{
-					currTargetNode=currTargetNode.prev;
-					if(currTargetNode==null)
-						break;
+				currTargetNode=currTargetNode.prev;
+				if(currTargetNode!=null)
 					turnTowardsGlobalLocation(currTargetNode.x, currTargetNode.y);
-				}	
-			}
+			}	
 			//Animate the enemie
 			if(walkCounter==NUM_FRAMES_CHANGE_WALK_IMAGE)
 			{
