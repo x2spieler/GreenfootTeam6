@@ -1,4 +1,4 @@
-package enemies.bullets;
+package enemies.weapons.bullets;
 
 import AI.Bullet;
 import greenfoot.GreenfootImage;

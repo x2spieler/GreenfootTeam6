@@ -5,7 +5,6 @@ import java.util.Random;
 
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
-import enemies.bullets.Spear;
 import greenfoot.GreenfootImage;
 import greenfoot.GreenfootSound;
 import scrollWorld.ScrollActor;
@@ -19,18 +18,20 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	protected int value = -1;
 	protected int hp = -1;
 	protected int viewRangeSquared = -1;		//In Pixels, not tiles
+	protected String enemyName="";
 	protected GreenfootImage idleImage=null;
 	protected GreenfootImage walk1Image=null;
 	protected GreenfootImage walk2Image=null;
+	protected GreenfootImage attackImage=null;
 	
+	private boolean isAttacking=false;
 	private boolean cantFindWay=false;
 	private boolean seesPlayer=false;
 	private boolean sawPlayer=false;
 	private Node currTargetNode=null;
 	private IWorldInterfaceForAI wi = null;
 	private Point lastPlayerTile=null;
-	private TargetShowActor tsa=null;
-	private final int REACHED_TARGET_DISTANCE_SQUARED=2;
+	private final int REACHED_TARGET_DISTANCE_SQUARED=8;
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
 	private short walkCounter=0;
@@ -41,7 +42,15 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	{
 
 	}
-
+	
+	protected void loadImages()
+	{
+		idleImage=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_idle.png");
+		walk1Image=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_walk1.png");
+		walk2Image=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_walk2.png");
+		attackImage=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_attack.png");
+	}
+	
 	private boolean isInRangeOfPlayer()
 	{
 		Point p=wi.getPlayerPosition();
@@ -57,6 +66,11 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		{
 			wi.addPlayerScore(value);
 		}
+	}
+	
+	public void stopAttacking()
+	{
+		isAttacking=false;
 	}
 
 	@Override
@@ -82,18 +96,22 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		
 		if(currTargetNode==null)
 		{
-			if(tsa!=null){
-				getWorld().removeObject(tsa);
-			}
 			if(seesPlayer)
 			{
-				if(!currPlayerTile.equals(currTile))
+				if(!currPlayerTile.equals(currTile)&&squaredDistance(wi.getPlayerPosition().x+TILE_SIZE/2, wi.getPlayerPosition().y+TILE_SIZE/2, getGlobalX(), getGlobalY())>REACHED_TARGET_DISTANCE_SQUARED)
 					currTargetNode=findPath(currTile, currPlayerTile);
-				else if(getImage()!=idleImage)
+				else
 				{
-					setImage(idleImage);
-					turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
-					getWorld().addObject(new Spear(), getGlobalX(), getGlobalY());
+					if(getImage()!=idleImage&&!isAttacking)
+					{
+						setImage(idleImage);
+						turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
+					}
+					if(weapon.use())
+					{
+						isAttacking=true;
+						setImage(attackImage);
+					}	
 				}
 					
 			}
@@ -113,9 +131,6 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 							break;
 					}	
 				}
-
-				tsa=new TargetShowActor();
-				getWorld().addObject(tsa, x*TILE_SIZE+TILE_SIZE/2, y*TILE_SIZE+TILE_SIZE/2);
 			}
 		}
 		else
@@ -126,9 +141,8 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 				//We can see the player now - CHASE HIM!
 				currTargetNode=findPath(currTile, currPlayerTile);
 				lastPlayerTile=currPlayerTile;
-				encounterSound.play();
-				if(tsa!=null)
-					getWorld().removeObject(tsa);
+				//TODO: Maybe add this back in
+				//encounterSound.play();
 			}
 			else if(seesPlayer)
 			{
@@ -137,13 +151,11 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 					//As long as we see him, always go straight to the player
 					currTargetNode=findPath(currTile, currPlayerTile);
 					lastPlayerTile=currPlayerTile;
-					if(tsa!=null)
-						getWorld().removeObject(tsa);
 				}
 			}
 		}
 
-		if(currTargetNode!=null)
+		if(currTargetNode!=null&&!isAttacking)
 		{
 			turnTowardsGlobalLocation(currTargetNode.x*TILE_SIZE+TILE_SIZE/2, currTargetNode.y*TILE_SIZE+TILE_SIZE/2);
 			for(int i=0;i<stepsPerTick;i++)
