@@ -1,4 +1,4 @@
-package AI;
+package weapons.abstracts;
 import java.util.List;
 
 import player.Player;

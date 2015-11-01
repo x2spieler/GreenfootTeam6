@@ -1,7 +1,8 @@
-package AI;
+package weapons.abstracts;
 
 import java.awt.geom.Point2D;
 
+import AI.IWorldInterfaceForAI;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
 

@@ -8,6 +8,7 @@ import DungeonGeneration.MapField;
 import greenfoot.GreenfootImage;
 import greenfoot.GreenfootSound;
 import player.DeltaMover;
+import weapons.abstracts.Weapon;
 import world.DungeonMap;
 
 public abstract class Enemy extends DeltaMover implements IDamageable
@@ -36,7 +37,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
 	private short walkCounter=0;
-
 
 	public Enemy()
 	{

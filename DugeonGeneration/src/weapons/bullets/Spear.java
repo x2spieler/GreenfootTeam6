@@ -1,7 +1,7 @@
 package weapons.bullets;
 
-import AI.Bullet;
 import greenfoot.GreenfootImage;
+import weapons.abstracts.Bullet;
 
 public class Spear extends Bullet
 {

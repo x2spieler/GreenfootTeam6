@@ -3,6 +3,7 @@ package AI;
 import java.awt.Point;
 
 import DungeonGeneration.MapField;
+import weapons.abstracts.Bullet;
 
 public interface IWorldInterfaceForAI
 {

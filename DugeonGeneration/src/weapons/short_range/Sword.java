@@ -3,7 +3,7 @@ package weapons.short_range;
 import java.awt.Point;
 
 import AI.Enemy;
-import AI.ShortRangeWeapon;
+import weapons.abstracts.ShortRangeWeapon;
 
 public class Sword extends ShortRangeWeapon
 {

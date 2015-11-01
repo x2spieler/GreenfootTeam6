@@ -1,4 +1,5 @@
-package AI;
+package weapons.abstracts;
+import AI.Enemy;
 import scrollWorld.ScrollActor;
 
 public abstract class Weapon extends ScrollActor

@@ -14,7 +14,7 @@ import menu.Menu;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
-import AI.Bullet;
+import weapons.abstracts.Bullet;
 import AI.IDamageable;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;

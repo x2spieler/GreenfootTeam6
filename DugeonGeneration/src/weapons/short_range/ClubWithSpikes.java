@@ -1,7 +1,7 @@
 package weapons.short_range;
 
 import AI.Enemy;
-import AI.ShortRangeWeapon;
+import weapons.abstracts.ShortRangeWeapon;
 
 public class ClubWithSpikes extends ShortRangeWeapon
 {

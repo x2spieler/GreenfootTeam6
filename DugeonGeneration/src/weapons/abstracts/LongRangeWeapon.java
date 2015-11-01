@@ -1,4 +1,7 @@
-package AI;
+package weapons.abstracts;
+
+import AI.IWorldInterfaceForAI;
+
 public abstract class LongRangeWeapon extends Weapon
 {
 
