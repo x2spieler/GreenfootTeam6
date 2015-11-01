@@ -5,6 +5,7 @@ import greenfoot.Actor;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.PixelGrabber;
 import java.util.Random;
@@ -27,12 +28,14 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 	public static final int VIEWPORT_WIDTH = 1024;
 	public static final int VIEWPORT_HEIGHT = 768;
 	public static final int TILE_SIZE = 32;
+	private static final int viewportXTiles = (VIEWPORT_WIDTH / TILE_SIZE);
+	private static final int viewportYTiles = (VIEWPORT_HEIGHT / TILE_SIZE);
 
 	private DungeonGenerator gen;
 	private MapField[][] map;
+	private final boolean[][] fastMap;
 
-	private GreenfootImage passable;
-	private GreenfootImage impassable;
+	private final GreenfootImage passable, impassable, back, empty;
 
 	private Player player;
 
@@ -40,26 +43,25 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
 				DungeonGenerator.MAP_HEIGHT * TILE_SIZE, menu);
 		initDungeonMap();
+		fastMap = new boolean[map.length][map[0].length];
+		transcribeMap();
+		back = getBackground();
 		passable = new GreenfootImage("grass.png");
 		passable.scale(TILE_SIZE, TILE_SIZE);
-		// passable = new GreenfootImage(TILE_SIZE, TILE_SIZE);
-		// passable.setColor(Color.GREEN);
-		// passable.fill();
 		impassable = new GreenfootImage("wood.png");
 		impassable.scale(TILE_SIZE, TILE_SIZE);
-		// impassable = new GreenfootImage(TILE_SIZE, TILE_SIZE);
-		// impassable.setColor(Color.RED);
-		// impassable.fill();
-		renderMap();
+		empty = new GreenfootImage(TILE_SIZE, TILE_SIZE);
+		empty.setColor(Color.BLACK);
+		empty.fill();
 		player = new Player();
-		player.setMode(Player.MOVE_MODE_8_DIRECTIONS_POINT_AT_MOUSE);
+		player.setMode(Player.MOVE_MODE_8_DIRECTIONS);
 		addObject(player, 0, 0);
 		addObject(new FPS(), 100, 20);
 		// player.setNoclip(true);
-		 //spawnWerewolfs(100);
+		//spawnWerewolfs(100);
 	}
 
-	private void initDungeonMap() {
+	private final void initDungeonMap() {
 		gen = new DungeonGenerator();
 		gen.clearMap();
 		gen.generateRooms();
@@ -68,20 +70,76 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		map = gen.getMap();
 	}
 
-	private void renderMap() {
-		GreenfootImage background = new GreenfootImage(DungeonGenerator.MAP_WIDTH * TILE_SIZE,
-				DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
-		MapField[][] map = gen.getMap();
-		for (int i = 0; i < DungeonGenerator.MAP_WIDTH; i++) {
-			for (int j = 0; j < DungeonGenerator.MAP_HEIGHT; j++) {
-				if (map[i][j].walkable()) {
-					background.drawImage(passable, i * TILE_SIZE, j * TILE_SIZE);
-				} else {
-					background.drawImage(impassable, i * TILE_SIZE, j * TILE_SIZE);
-				}
+	private void transcribeMap() {
+		for (int i = 0; i < map.length; i++) {
+			for (int j = 0; j < map[i].length; j++) {
+				fastMap[i][j] = map[i][j].walkable();
 			}
 		}
-		setNewBackground(background);
+	}
+
+	private void renderMap(int x, int y) {
+		Point startingTile = getTileOfPixel(x, y);
+		Point startingPixel = getStartingPixel(x, y);
+
+		int pixelX = startingPixel.x;
+		int pixelY;
+
+		for (int i = startingTile.x; i <= startingTile.x + viewportXTiles; i++) {
+			pixelY = startingPixel.y;
+			for (int j = startingTile.y; j <= startingTile.y + viewportYTiles; j++) {
+				back.drawImage(getImageForTile(i, j), pixelX, pixelY);
+				pixelY += TILE_SIZE;
+			}
+			pixelX += TILE_SIZE;
+		}
+	}
+
+	private boolean cameraPositionChanged(int x, int y) {
+		return !(getCameraX() == x && getCameraY() == y);
+	}
+
+	private GreenfootImage getImageForTile(int i, int j) {
+
+		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT) ? (fastMap[i][j] ? passable
+				: impassable)
+				: empty;
+	}
+
+	public static Point getStartingPixel(int x, int y) {
+		Point ret = new Point(0, 0);
+
+		ret.x = (x > 0) ? -(x % TILE_SIZE) : (-(TILE_SIZE + x % TILE_SIZE) % TILE_SIZE);
+		ret.y = (y > 0) ? -(y % TILE_SIZE) : (-(TILE_SIZE + y % TILE_SIZE) % TILE_SIZE);
+
+		assert (ret.x <= 0);
+		assert (ret.y <= 0);
+		assert (ret.x > -TILE_SIZE);
+		assert (ret.y > -TILE_SIZE);
+
+		return ret;
+	}
+
+	public static Point getTileOfPixel(int x, int y) {
+		Point ret = new Point();
+
+		ret.x = (x >= 0) ? (x / TILE_SIZE) : (x % TILE_SIZE == 0) ? (x / TILE_SIZE) : (x
+				/ TILE_SIZE - 1);
+		ret.y = (y >= 0) ? (y / TILE_SIZE) : (y % TILE_SIZE == 0) ? (y / TILE_SIZE) : (y
+				/ TILE_SIZE - 1);
+
+		assert (x < 0) ? ret.x < 0 : ret.x >= 0;
+		assert (y < 0) ? ret.y < 0 : ret.y >= 0;
+
+		return ret;
+	}
+
+	@Override
+	public void setCameraLocation(int x, int y) {
+		if (cameraPositionChanged(x, y)) {
+			renderMap(x - VIEWPORT_WIDTH / 2, y - VIEWPORT_HEIGHT / 2);
+		}
+		super.setCameraLocation(x, y);
 	}
 
 	private void spawnWerewolfs(int num) {
@@ -135,7 +193,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 
 	public boolean isInAccessibleTile(int x, int y) {
 		if (isInMap(x, y)) {
-			return map[x / TILE_SIZE][y / TILE_SIZE].walkable();
+			return fastMap[x / TILE_SIZE][y / TILE_SIZE];
 		}
 		return false;
 	}

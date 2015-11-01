@@ -28,7 +28,7 @@ public class Player extends DeltaMover implements IDamageable {
 	@Override
 	public void damage(int dmg)
 	{
-		
+		System.out.println("Ouch! " + dmg + " damage taken.");
 	}
 
 	@Override
@@ -39,14 +39,11 @@ public class Player extends DeltaMover implements IDamageable {
 
 		if (mode == MOVE_MODE_FOLLOW_MOUSE) {
 			moveAccordingToMouse();
-		}
-		if (mode == MOVE_MODE_8_DIRECTIONS) {
+		} else if (mode == MOVE_MODE_8_DIRECTIONS) {
 			moveInOneOf8Directions();
-		}
-		if (mode == MOVE_MODE_8_DIRECTIONS_POINT_AT_MOUSE) {
+		} else if (mode == MOVE_MODE_8_DIRECTIONS_POINT_AT_MOUSE) {
 			moveInOneOf8DirectionsFacingMouse();
-		}
-		if (mode == MOVE_MODE_MOUSE_KEYBOARD_HYBRID) {
+		} else if (mode == MOVE_MODE_MOUSE_KEYBOARD_HYBRID) {
 			moveMouseKeyboardHybrid();
 		}
 

@@ -41,7 +41,8 @@ public abstract class ScrollWorld extends World {
 
 	private int camX, camY, camDir;
 
-	private final GreenfootImage bigBackground, back;
+	// private final GreenfootImage bigBackground, back;
+	private final GreenfootImage back;
 	private int scrollPosX, scrollPosY;
 
 	/**
@@ -62,8 +63,7 @@ public abstract class ScrollWorld extends World {
 	 * @throws IllegalArgumentException
 	 *             If one of the arguments is smaller or equal to 0.
 	 */
-	public ScrollWorld(int width, int height, int cellSize, int fullWidth,
-			int fullHeight) {
+	public ScrollWorld(int width, int height, int cellSize, int fullWidth, int fullHeight) {
 		super(width, height, cellSize, false);
 		this.back = getBackground();
 		this.width = back.getWidth();
@@ -72,15 +72,11 @@ public abstract class ScrollWorld extends World {
 		this.fullWidth = fullWidth;
 		this.fullHeight = fullHeight;
 		if (fullWidth <= 0)
-			throw new IllegalArgumentException("The width of the big space ("
-					+ fullWidth
-					+ ") can't be smaller then the width of the world ("
-					+ width + ")");
+			throw new IllegalArgumentException("The width of the big space (" + fullWidth
+					+ ") can't be smaller then the width of the world (" + width + ")");
 		if (fullHeight <= 0)
-			throw new IllegalArgumentException("The height of the big space ("
-					+ fullHeight
-					+ ") can't be smaller then the height of the world ("
-					+ height + ")");
+			throw new IllegalArgumentException("The height of the big space (" + fullHeight
+					+ ") can't be smaller then the height of the world (" + height + ")");
 
 		objects = new ArrayList<ScrollActor>();
 		camFollowers = new ArrayList<ScrollActor>();
@@ -92,36 +88,37 @@ public abstract class ScrollWorld extends World {
 		scrollPosX = 0;
 		scrollPosY = 0;
 
-		bigBackground = new GreenfootImage(fullWidth, fullHeight);
-		setNewBackground(back);
+		// bigBackground = new GreenfootImage(fullWidth, fullHeight);
+		// setNewBackground(back);
 	}
 
 	/** EXTRA METHODS: */
 
-	/**
-	 * Sets the background of the world. This will also initialize everything to
-	 * make the background scroll, something the normal {@link setBackground}
-	 * method doesn't.
-	 */
-	public void setNewBackground(GreenfootImage background) {
-		bigBackground.clear();
-		if (background.getWidth() == bigBackground.getWidth()
-				&& background.getHeight() == bigBackground.getHeight()) {
-			bigBackground.drawImage(background, 0, 0);
-			back.clear();
-			back.drawImage(bigBackground, scrollPosX, scrollPosY);
-			return;
-		}
-
-		bigBackground.drawImage(background, 0, 0);
-		bigBackground.drawImage(background, background.getWidth(), 0);
-		bigBackground.drawImage(background, 0, background.getHeight());
-		bigBackground.drawImage(background, background.getWidth(),
-				background.getHeight());
-
-		back.clear();
-		back.drawImage(bigBackground, scrollPosX, scrollPosY);
-	}
+	// /**
+	// * Sets the background of the world. This will also initialize everything
+	// to
+	// * make the background scroll, something the normal {@link setBackground}
+	// * method doesn't.
+	// */
+	// public void setNewBackground(GreenfootImage background) {
+	// bigBackground.clear();
+	// if (background.getWidth() == bigBackground.getWidth()
+	// && background.getHeight() == bigBackground.getHeight()) {
+	// bigBackground.drawImage(background, 0, 0);
+	// back.clear();
+	// back.drawImage(bigBackground, scrollPosX, scrollPosY);
+	// return;
+	// }
+	//
+	// bigBackground.drawImage(background, 0, 0);
+	// bigBackground.drawImage(background, background.getWidth(), 0);
+	// bigBackground.drawImage(background, 0, background.getHeight());
+	// bigBackground.drawImage(background, background.getWidth(),
+	// background.getHeight());
+	//
+	// back.clear();
+	// back.drawImage(bigBackground, scrollPosX, scrollPosY);
+	// }
 
 	/** ADDING + REMOVING OBJECTS: */
 
@@ -133,11 +130,11 @@ public abstract class ScrollWorld extends World {
 	 *            The object that will be added to the world as a camera
 	 *            follower.
 	 * @param x
-	 *            The x coördinate seen from the camera where the object will
-	 *            be added.
+	 *            The x coordinate seen from the camera where the object will be
+	 *            added.
 	 * @param y
-	 *            The y coördinate seen from the camera where the object will
-	 *            be added.
+	 *            The y coordinate seen from the camera where the object will be
+	 *            added.
 	 * @see #addObject(ScrollActor, int, int)
 	 */
 	public void addCameraFollower(ScrollActor cameraFollower, int x, int y) {
@@ -148,14 +145,14 @@ public abstract class ScrollWorld extends World {
 
 	/**
 	 * Adds an object to the the world. If the given object is a ScrollActor or
-	 * a subclass of it, the x and y coördinates are in the big space.
+	 * a subclass of it, the x and y coordinates are in the big space.
 	 * 
 	 * @param object
 	 *            The object that will be added to the world.
 	 * @param x
-	 *            The x coördinate in the world where the object will be added.
+	 *            The x coordinate in the world where the object will be added.
 	 * @param y
-	 *            The y coördinate in the world where the object will be added.
+	 *            The y coordinate in the world where the object will be added.
 	 * @see #addCameraFollower(ScrollActor, int, int)
 	 */
 	public void addObject(Actor object, int x, int y) {
@@ -169,8 +166,7 @@ public abstract class ScrollWorld extends World {
 			else if (y < 0)
 				y = 0;
 			ScrollActor sa = (ScrollActor) object;
-			super.addObject(sa, x - (camX - getWidth() / 2), y
-					- (camY - getHeight() / 2));
+			super.addObject(sa, x - (camX - getWidth() / 2), y - (camY - getHeight() / 2));
 			objects.add(sa);
 			sa.setIsCameraFollower(false);
 		} else
@@ -197,7 +193,7 @@ public abstract class ScrollWorld extends World {
 	/** RETURN VALUES: */
 
 	/**
-	 * Returns the camera's x coördinate in big space.
+	 * Returns the camera's x coordinate in big space.
 	 * 
 	 * @see #getCameraY
 	 */
@@ -206,7 +202,7 @@ public abstract class ScrollWorld extends World {
 	}
 
 	/**
-	 * Returns the camera's y coördinate in big space.
+	 * Returns the camera's y coordinate in big space.
 	 * 
 	 * @see #getCameraX
 	 */
@@ -239,21 +235,30 @@ public abstract class ScrollWorld extends World {
 	 * in the big space.
 	 * 
 	 * @param x
-	 *            The new x coördinate of the camera.
+	 *            The new x coordinate of the camera.
 	 * @param y
-	 *            The new y coördinate of the camera.
+	 *            The new y coordinate of the camera.
 	 */
 	public void setCameraLocation(int x, int y) {
 		if (camX == x && camY == y)
 			return;
-		if (x > fullWidth - getWidth() / 2)
-			x = fullWidth - getWidth() / 2;
-		else if (x < getWidth() / 2)
-			x = getWidth() / 2;
-		if (y > fullHeight - getHeight() / 2)
-			y = fullHeight - getHeight() / 2;
-		else if (y < getHeight() / 2)
-			y = getHeight() / 2;
+		// if (x > fullWidth - getWidth() / 2)
+		// x = fullWidth - getWidth() / 2;
+		// else if (x < getWidth() / 2)
+		// x = getWidth() / 2;
+		// if (y > fullHeight - getHeight() / 2)
+		// y = fullHeight - getHeight() / 2;
+		// else if (y < getHeight() / 2)
+		// y = getHeight() / 2;
+		if (x > fullWidth)
+			x = fullWidth;
+		else if (x < 0)
+			x = 0;
+		if (y > fullHeight)
+			y = fullHeight;
+		else if (y < 0)
+			y = 0;
+
 		int dx = x - camX;
 		int dy = y - camY;
 		camX = x;
@@ -263,9 +268,9 @@ public abstract class ScrollWorld extends World {
 		for (ScrollActor a : camFollowers)
 			a.setLocation(a.getX(), a.getY());
 
-		scrollPosX -= dx * cellSize;
-		scrollPosY -= dy * cellSize;
-		getBackground().drawImage(bigBackground, scrollPosX, scrollPosY);
+		// scrollPosX -= dx * cellSize;
+		// scrollPosY -= dy * cellSize;
+		// back.drawImage(bigBackground, scrollPosX, scrollPosY);
 
 		// moveBackgroundRight(dx * cellSize);
 		// moveBackgroundUp(dy * cellSize);
@@ -330,35 +335,35 @@ public abstract class ScrollWorld extends World {
 
 	/** MOVING BACKGROUND: */
 
-	/**
-	 * All the honor for this goes to Busch2207 from greenfoot.org
-	 */
-	@SuppressWarnings("unused")
-	private void moveBackgroundUp(int amount) {
-		if (amount == 0)
-			return;
-		int height = getHeight();
-		scrollPosY -= amount;
-		while (scrollPosY < 0)
-			scrollPosY += height;
-		scrollPosY %= height;
-		getBackground().drawImage(bigBackground, scrollPosX - getWidth(),
-				scrollPosY - height);
-	}
-
-	/**
-	 * All the honor for this goes to Busch2207 from greenfoot.org
-	 */
-	@SuppressWarnings("unused")
-	private void moveBackgroundRight(int amount) {
-		if (amount == 0)
-			return;
-		int width = getWidth();
-		scrollPosX -= amount;
-		while (scrollPosX < 0)
-			scrollPosX += width;
-		scrollPosX %= width;
-		getBackground().drawImage(bigBackground, scrollPosX - width,
-				scrollPosY - getHeight());
-	}
+	// /**
+	// * All the honor for this goes to Busch2207 from greenfoot.org
+	// */
+	// @SuppressWarnings("unused")
+	// private void moveBackgroundUp(int amount) {
+	// if (amount == 0)
+	// return;
+	// int height = getHeight();
+	// scrollPosY -= amount;
+	// while (scrollPosY < 0)
+	// scrollPosY += height;
+	// scrollPosY %= height;
+	// getBackground().drawImage(bigBackground, scrollPosX - getWidth(),
+	// scrollPosY - height);
+	// }
+	//
+	// /**
+	// * All the honor for this goes to Busch2207 from greenfoot.org
+	// */
+	// @SuppressWarnings("unused")
+	// private void moveBackgroundRight(int amount) {
+	// if (amount == 0)
+	// return;
+	// int width = getWidth();
+	// scrollPosX -= amount;
+	// while (scrollPosX < 0)
+	// scrollPosX += width;
+	// scrollPosX %= width;
+	// getBackground().drawImage(bigBackground, scrollPosX - width, scrollPosY -
+	// getHeight());
+	// }
 }
