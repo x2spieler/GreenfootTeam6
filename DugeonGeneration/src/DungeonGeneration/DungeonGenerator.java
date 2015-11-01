@@ -94,6 +94,7 @@ public class DungeonGenerator {
 	}
 	
 	//Connects all rooms by building paths from room1 to room 2, from room2 to room3, from room3 to room4 and so on to make sure every room can be reached.
+	//TODO: Fix single wall-tiles appearing without being connected to a wall
 	public void buildPaths() {
 		
 		for(int r1 = 0; r1 < ROOM_POOL -1; r1++) {
@@ -169,7 +170,8 @@ public class DungeonGenerator {
 				
 				buildStep++;
 				
-				if(buildStep % 6 == 0) {
+				//Added random Int for modulo devision, makes paths looks more random and neater imho
+				if(buildStep % (rand.randomInt(3, 9)) == 0) {
 					randomPathWidth = rand.randomInt(MIN_PATH_WIDTH, MAX_PATH_WIDTH);
 
 				}
