@@ -23,7 +23,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	protected GreenfootImage walk1Image=null;
 	protected GreenfootImage walk2Image=null;
 	protected GreenfootImage attackImage=null;
-	
+
 	private boolean isAttacking=false;
 	private boolean cantFindWay=false;
 	private boolean seesPlayer=false;
@@ -36,13 +36,13 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
 	private short walkCounter=0;
 	private final int NUM_FRAMES_CHANGE_WALK_IMAGE=10;
-	
+
 
 	public Enemy()
 	{
 
 	}
-	
+
 	protected void loadImages()
 	{
 		idleImage=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_idle.png");
@@ -50,7 +50,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		walk2Image=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_walk2.png");
 		attackImage=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_attack.png");
 	}
-	
+
 	private boolean isInRangeOfPlayer()
 	{
 		Point p=wi.getPlayerPosition();
@@ -67,7 +67,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 			wi.addPlayerScore(value);
 		}
 	}
-	
+
 	public void stopAttacking()
 	{
 		isAttacking=false;
@@ -93,7 +93,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		currPlayerTile.x/=TILE_SIZE;
 		currPlayerTile.y/=TILE_SIZE;
 		Point currTile=new Point(getGlobalX()/TILE_SIZE, getGlobalY()/TILE_SIZE);
-		
+
 		if(currTargetNode==null)
 		{
 			if(seesPlayer)
@@ -113,7 +113,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 						setImage(attackImage);
 					}	
 				}
-					
+
 			}
 			else
 			{
@@ -212,7 +212,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 			}
 		}
 
-		return endNode.prev;
+		return (endNode.prev!=null ? endNode.prev : null);
 	}
 
 	private Node step(ArrayList<Node>closedList, ArrayList<Node>openList,MapField[][] map, Point start)
