@@ -2,8 +2,9 @@ package AI;
 public abstract class LongRangeWeapon extends Weapon
 {
 
+	//TODO: Implement LongRangeWeapons
 	@Override
-	public void use()
+	public boolean use()
 	{
 		long millisNow = System.currentTimeMillis();
 		if (lastUsage + reloadTimeInMS < millisNow)
@@ -20,6 +21,9 @@ public abstract class LongRangeWeapon extends Weapon
 			else
 				System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
 		}
+		else
+			return false;
+		return true;
 	}
 
 	protected abstract Bullet instantiateBullet();

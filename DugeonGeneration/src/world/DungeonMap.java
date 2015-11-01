@@ -49,11 +49,11 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		// impassable.fill();
 		renderMap();
 		player = new Player();
-		player.setMode(Player.MOVE_MODE_8_DIRECTIONS);
+		player.setMode(Player.MOVE_MODE_8_DIRECTIONS_POINT_AT_MOUSE);
 		addObject(player, 0, 0);
 		addObject(new FPS(), 100, 20);
 		// player.setNoclip(true);
-		// spawnWerewolfs(100);
+		 spawnWerewolfs(100);
 	}
 
 	private void initDungeonMap() {
