@@ -58,7 +58,7 @@ import bluej.Config;
  * @author Davin McCall
  */
 
-public class DungeonTestMain {
+public class DungeonMain {
 	public static String scenarioName;
 	public static String[] args;
 
@@ -160,10 +160,10 @@ public class DungeonTestMain {
 		}
 	}
 
-	public static void toggleCursor(final boolean on) {
+	public static void setCursorHidden(final boolean hidden) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				if (on) {
+				if (!hidden) {
 					frame[0].setCursor(Cursor.getDefaultCursor());
 				} else {
 					BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
