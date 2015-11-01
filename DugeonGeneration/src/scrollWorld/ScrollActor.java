@@ -42,9 +42,8 @@ public abstract class ScrollActor extends Actor {
 	 */
 	public int getGlobalX() {
 		if (world == null)
-			throw new IllegalStateException(
-					"Actor not in world. Either is hasn't"
-							+ " been inserted, or it has been deleted.");
+			throw new IllegalStateException("Actor not in world. Either is hasn't"
+					+ " been inserted, or it has been deleted.");
 		return globalX;
 	}
 
@@ -53,31 +52,28 @@ public abstract class ScrollActor extends Actor {
 	 */
 	public int getGlobalY() {
 		if (world == null)
-			throw new IllegalStateException(
-					"Actor not in world. Either is hasn't"
-							+ " been inserted, or it has been deleted.");
+			throw new IllegalStateException("Actor not in world. Either is hasn't"
+					+ " been inserted, or it has been deleted.");
 		return globalY;
 	}
 
 	/**
-	 * Returns your x coördinate seen from the camera.
+	 * Returns your x coordinate seen from the camera.
 	 */
 	public int getXFromCamera() {
 		if (world == null)
-			throw new IllegalStateException(
-					"Actor not in world. Either is hasn't"
-							+ " been inserted, or it has been deleted.");
+			throw new IllegalStateException("Actor not in world. Either is hasn't"
+					+ " been inserted, or it has been deleted.");
 		return camX;
 	}
 
 	/**
-	 * Returns your y coördinate seen from the camera.
+	 * Returns your y coordinate seen from the camera.
 	 */
 	public int getYFromCamera() {
 		if (world == null)
-			throw new IllegalStateException(
-					"Actor not in world. Either is hasn't"
-							+ " been inserted, or it has been deleted.");
+			throw new IllegalStateException("Actor not in world. Either is hasn't"
+					+ " been inserted, or it has been deleted.");
 		return camY;
 	}
 
@@ -149,9 +145,9 @@ public abstract class ScrollActor extends Actor {
 	 * Turns towards a location in the big space.
 	 * 
 	 * @param x
-	 *            The x coördinate of the location.
+	 *            The x coordinate of the location.
 	 * @param y
-	 *            The y coördinate of the location.
+	 *            The y coordinate of the location.
 	 */
 	public void turnTowardsGlobalLocation(int x, int y) {
 		if (x == globalX && y == globalY)
@@ -165,9 +161,9 @@ public abstract class ScrollActor extends Actor {
 	 * Turns towards a location seen from the camera.
 	 * 
 	 * @param x
-	 *            The x coördinate of the location.
+	 *            The x coordinate of the location.
 	 * @param y
-	 *            The y coördinate of the location.
+	 *            The y coordinate of the location.
 	 */
 	public void turnTowardsCameraLocation(int x, int y) {
 		if (x == camX && y == camY)
@@ -183,9 +179,8 @@ public abstract class ScrollActor extends Actor {
 	 */
 	public boolean isCameraFollower() {
 		if (world == null)
-			throw new IllegalStateException(
-					"Actor not in world. Either is hasn't"
-							+ " been inserted, or it has been deleted.");
+			throw new IllegalStateException("Actor not in world. Either is hasn't"
+					+ " been inserted, or it has been deleted.");
 		return isCameraFollower;
 	}
 

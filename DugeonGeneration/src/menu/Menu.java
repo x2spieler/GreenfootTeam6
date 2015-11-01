@@ -35,6 +35,7 @@ public class Menu extends World implements IWorldWithMenu {
 
 	@Override
 	public void switchTo() {
+		// DungeonTestMain.toggleCursor(true);
 		Greenfoot.setWorld(this);
 	}
 
