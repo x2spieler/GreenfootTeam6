@@ -7,8 +7,11 @@ import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
 import greenfoot.GreenfootImage;
 import greenfoot.GreenfootSound;
+import greenfoot.World;
 import player.DeltaMover;
 import weapons.abstracts.Weapon;
+import weapons.short_range.ClubWithSpikes;
+import weapons.short_range.Sword;
 import world.DungeonMap;
 
 public abstract class Enemy extends DeltaMover implements IDamageable
@@ -24,6 +27,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	protected GreenfootImage walk1Image=null;
 	protected GreenfootImage walk2Image=null;
 	protected GreenfootImage attackImage=null;
+	protected String[] allowedWeapons;
 
 	private boolean isAttacking=false;
 	private boolean cantFindWay=false;
@@ -43,15 +47,41 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		super(0);
 		NUM_FRAMES_CHANGE_WALK_IMAGE=getNumFramesChangeWalkImage();
 	}
-	
+
 	protected abstract int getNumFramesChangeWalkImage();
 
-	protected void loadImages()
+	@Override
+	public void addedToWorld(World w)
+	{
+		super.addedToWorld(w);
+		loadImages();
+		createWeapon();
+	}
+	
+	private void loadImages()
 	{
 		idleImage=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_idle.png");
 		walk1Image=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_walk1.png");
 		walk2Image=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_walk2.png");
 		attackImage=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_attack.png");
+	}
+
+	private void createWeapon()
+	{
+		Random r=new Random();
+		switch(allowedWeapons[r.nextInt(allowedWeapons.length)])
+		{
+		case "sword":
+			weapon=new Sword(this);
+			break;
+		case "club_spikes":
+			weapon=new ClubWithSpikes(this);
+			break;
+		default:
+			System.out.println("Seems like somebody forgot to update this switch-statement after adding new weapons.. Bad boy!");
+		}
+		if(weapon!=null)
+			getWorld().addObject(weapon, 0, 0);
 	}
 
 	private boolean isInRangeOfPlayer()	
@@ -83,7 +113,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	public void act()
 	{
 		super.act();
-		
+
 		if(getImage()==null)
 			setImage(idleImage);
 		if(wi==null)

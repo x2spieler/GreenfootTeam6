@@ -15,6 +15,8 @@ import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
 import weapons.abstracts.Bullet;
+import weapons.abstracts.Weapon;
+import weapons.bullets.Spear;
 import AI.IDamageable;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;

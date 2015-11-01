@@ -1,18 +1,16 @@
 package weapons.short_range;
 
-import java.awt.Point;
-
-import AI.Enemy;
+import scrollWorld.ScrollActor;
 import weapons.abstracts.ShortRangeWeapon;
 
 public class Sword extends ShortRangeWeapon
 {
-	public Sword(Enemy user)
+	public Sword(ScrollActor owner)
 	{
 		damage=20;
 		weaponName="sword";
 		loadImages();
-		this.user=user;
+		this.owner=owner;
 		reloadTimeInMS=2000;
 	}
 }

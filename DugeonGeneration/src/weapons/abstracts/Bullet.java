@@ -1,29 +1,41 @@
 package weapons.abstracts;
 import java.util.List;
 
+import AI.Enemy;
+import AI.IDamageable;
+import player.DeltaMover;
 import player.Player;
-import scrollWorld.ScrollActor;
+import weapons.bullets.EntityType;
 
-public abstract class Bullet extends ScrollActor
+public abstract class Bullet extends DeltaMover
 {
-	protected int stepsPerFrame = -1;
 	protected int damage = -1;
-	protected int range = -1;
+	protected int lifetimeInMs = -1;
+	private long timeStampCreated=-1;
+	private EntityType typeToIgnore;
+	
+	public Bullet(EntityType typeToIgnore) 
+	{
+		super(0);
+		timeStampCreated=System.currentTimeMillis();
+		this.typeToIgnore=typeToIgnore;
+	}
 
 	public void act()
 	{
-		move(stepsPerFrame);
-		range -= stepsPerFrame;
-		if (handleCollision() || range <= 0)
+		int currX=getGlobalX();
+		int currY=getGlobalY();
+		move();
+		if ((currX==getGlobalX()&&currY==getGlobalY())||handleCollision() || timeStampCreated+lifetimeInMs<System.currentTimeMillis())
 		{
+			//Didn't move although move was called -> tried to move into wall || hit player/enemy || our time has come :(
 			getWorld().removeObject(this);
 		}
 	}
 
 	/**
-	 * @return Returns true if a collision occurred
+	 * @return Returns true if we hit a player/enemy
 	 */
-	//TODO: Don't use the greenfoot method for this
 	public boolean handleCollision()
 	{
 		List<?> intersectingObjects = getIntersectingObjects(null);
@@ -31,10 +43,12 @@ public abstract class Bullet extends ScrollActor
 		{
 			for (Object o : intersectingObjects)
 			{
-				if(!(o instanceof Player))
+				if(typeToIgnore==EntityType.ENEMY&&(o instanceof Enemy)
+						||typeToIgnore==EntityType.PLAYER&&(o instanceof Player))
 					continue;
-				Player p=(Player)o;
-				p.damage(damage);
+
+				IDamageable id=(IDamageable) o;
+				id.damage(damage);
 				return true;
 			}
 			return true;

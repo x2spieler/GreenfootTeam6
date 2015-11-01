@@ -1,22 +1,36 @@
 package weapons.abstracts;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
+import AI.Enemy;
+import AI.IDamageable;
 import AI.IWorldInterfaceForAI;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
+import player.Player;
+import weapons.bullets.EntityType;
 
 public abstract class ShortRangeWeapon extends Weapon
 {
 	protected String weaponName="";
 	protected Point2D weaponOffsetToPlayer=null;
-	
+
 	private int currRotation=0;
 	private int animTicks=0;
 	private final int TICKS_PER_ANIM_IMG=10;
 	private boolean playAnimation=false;
-	private GreenfootImage[] animImages=new GreenfootImage[4];
+	private GreenfootImage[] animImages;
 	private IWorldInterfaceForAI wi = null;
+	private ArrayList<IDamageable> hitEntities;
+	private EntityType typeToIgnore=null;
+	
+	public ShortRangeWeapon()
+	{
+		animImages=new GreenfootImage[4];
+		hitEntities=new ArrayList<IDamageable>();
+	}
 
 	protected void loadImages()
 	{
@@ -30,12 +44,14 @@ public abstract class ShortRangeWeapon extends Weapon
 	@Override
 	protected void addedToWorld(World world) 
 	{
+		super.addedToWorld(world);
 		wi=(IWorldInterfaceForAI) world;
 		if(wi==null)
 		{
 			System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
 		}
 		weaponOffsetToPlayer=new Point2D.Double(wi.getTileSize()/2,0);
+		typeToIgnore=(owner instanceof Enemy ? EntityType.ENEMY : EntityType.PLAYER);
 	}
 
 	@Override
@@ -51,12 +67,45 @@ public abstract class ShortRangeWeapon extends Weapon
 				animTicks=0;
 				playAnimation=false;
 				setImage("empty.png");
-				user.stopAttacking();
+				if(owner instanceof Enemy)
+					((Enemy)owner).stopAttacking();
+				hitEntities.clear();
 			}
-			rotatePoint(weaponOffsetToPlayer, user.getRotation()-currRotation);
-			setGlobalLocation(user.getGlobalX()+(int)weaponOffsetToPlayer.getX(), user.getGlobalY()+(int)weaponOffsetToPlayer.getY());
-			setRotation(user.getRotation());
-			currRotation=user.getRotation();
+			else
+			{
+				rotatePoint(weaponOffsetToPlayer, owner.getRotation()-currRotation);
+				setGlobalLocation(owner.getGlobalX()+(int)weaponOffsetToPlayer.getX(), owner.getGlobalY()+(int)weaponOffsetToPlayer.getY());
+				setRotation(owner.getRotation());
+				currRotation=owner.getRotation();
+				dealDamage();
+			}
+		}
+	}
+
+	/**
+	 * @return Returns true if we hit a player/enemy
+	 */
+	public void dealDamage()
+	{
+		List<?> intersectingObjects = getIntersectingObjects(null);
+		if (intersectingObjects.size() != 0)
+		{
+			for (Object o : intersectingObjects)
+			{
+				if(!(o instanceof IDamageable))
+					continue;
+				
+				if(typeToIgnore==EntityType.ENEMY&&(o instanceof Enemy)
+						||typeToIgnore==EntityType.PLAYER&&(o instanceof Player))
+					continue;
+
+				IDamageable id=(IDamageable) o;
+				if(hitEntities.contains(id))
+					continue;
+				id.damage(damage);
+				hitEntities.add(id);
+				return;
+			}
 		}
 	}
 
@@ -79,7 +128,6 @@ public abstract class ShortRangeWeapon extends Weapon
 		{
 			lastUsage = millisNow;
 			playAnimation=true;
-			wi.getPlayer().damage(damage);
 		}
 		else
 			return false;

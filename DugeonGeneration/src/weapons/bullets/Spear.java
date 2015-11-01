@@ -5,11 +5,12 @@ import weapons.abstracts.Bullet;
 
 public class Spear extends Bullet
 {
-	public Spear()
+	public Spear(EntityType typeToIgnore)
 	{
-		stepsPerFrame=4;
+		super(typeToIgnore);
 		damage=4;
-		range=300;
+		lifetimeInMs=4000;
 		setImage(new GreenfootImage("enemies/bullets/arrow.png"));
+		setSpeed(200);
 	}
 }
