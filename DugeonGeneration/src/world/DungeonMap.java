@@ -56,7 +56,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		addObject(player, 0, 0);
 		addObject(new FPS(), 100, 20);
 		// player.setNoclip(true);
-		 spawnWerewolfs(100);
+		 //spawnWerewolfs(100);
 	}
 
 	private void initDungeonMap() {

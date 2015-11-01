@@ -37,7 +37,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private Node currTargetNode=null;
 	private IWorldInterfaceForAI wi = null;
 	private Point lastPlayerTile=null;
-	private final int REACHED_TARGET_DISTANCE_SQUARED=2;
+	private final int REACHED_TARGET_DISTANCE_SQUARED=25;
 	private final int REACHED_PLAYER_DISTANCE_SQUARED=1024;
 	private final int RPD_MULTIPLICATOR_LRW=30;			//REACHED_PLAYER_DISTANCE_MULTIPLICATOR_LONG_RANGE_WEAPONS
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
@@ -134,6 +134,8 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		currPlayerTile.y/=TILE_SIZE;
 		Point currTile=new Point(getGlobalX()/TILE_SIZE, getGlobalY()/TILE_SIZE);
 
+		//TODO: Fix flickering
+		
 		if(currTargetNode==null)
 		{
 			if(seesPlayer)
