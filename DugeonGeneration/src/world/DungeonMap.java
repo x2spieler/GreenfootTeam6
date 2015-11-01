@@ -6,6 +6,7 @@ import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 
 import java.awt.Point;
+import java.awt.image.PixelGrabber;
 import java.util.Random;
 
 import menu.BasicWorldWithMenu;

@@ -31,7 +31,8 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 	private Node currTargetNode=null;
 	private IWorldInterfaceForAI wi = null;
 	private Point lastPlayerTile=null;
-	private final int REACHED_TARGET_DISTANCE_SQUARED=8;
+	private final int REACHED_TARGET_DISTANCE_SQUARED=2;
+	private final int REACHED_PLAYER_DISTANCE_SQUARED=1024;
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
 	private short walkCounter=0;
@@ -98,8 +99,11 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		{
 			if(seesPlayer)
 			{
-				if(!currPlayerTile.equals(currTile)&&squaredDistance(wi.getPlayerPosition().x+TILE_SIZE/2, wi.getPlayerPosition().y+TILE_SIZE/2, getGlobalX(), getGlobalY())>REACHED_TARGET_DISTANCE_SQUARED)
-					currTargetNode=findPath(currTile, currPlayerTile);
+				
+				if(squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY())>REACHED_PLAYER_DISTANCE_SQUARED)
+				{
+					currTargetNode=findPath(currTile, currPlayerTile, true);
+				}
 				else
 				{
 					if(getImage()!=idleImage&&!isAttacking)
@@ -126,7 +130,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 					y=random.nextInt(DungeonGenerator.MAP_HEIGHT);
 					if(map[x][y].walkable())
 					{
-						currTargetNode=findPath(currTile, new Point(x, y));
+						currTargetNode=findPath(currTile, new Point(x, y), false);
 						if(currTargetNode!=null)
 							break;
 					}	
@@ -139,7 +143,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 			{
 				//Sees the player - didn't see him in the last tick
 				//We can see the player now - CHASE HIM!
-				currTargetNode=findPath(currTile, currPlayerTile);
+				currTargetNode=findPath(currTile, currPlayerTile, true);
 				lastPlayerTile=currPlayerTile;
 				//TODO: Maybe add this back in
 				//encounterSound.play();
@@ -149,7 +153,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 				if(!currPlayerTile.equals(lastPlayerTile))
 				{
 					//As long as we see him, always go straight to the player
-					currTargetNode=findPath(currTile, currPlayerTile);
+					currTargetNode=findPath(currTile, currPlayerTile, true);
 					lastPlayerTile=currPlayerTile;
 				}
 			}
@@ -157,16 +161,18 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 
 		if(currTargetNode!=null&&!isAttacking)
 		{
-			turnTowardsGlobalLocation(currTargetNode.x*TILE_SIZE+TILE_SIZE/2, currTargetNode.y*TILE_SIZE+TILE_SIZE/2);
+			turnTowardsGlobalLocation(currTargetNode.x, currTargetNode.y);
 			for(int i=0;i<stepsPerTick;i++)
 			{
 				move(1);
-				if(squaredDistance(currTargetNode.x*TILE_SIZE+TILE_SIZE/2, currTargetNode.y*TILE_SIZE+TILE_SIZE/2, getGlobalX(), getGlobalY())<=REACHED_TARGET_DISTANCE_SQUARED)
+				int squaredDistToTarget=squaredDistance(currTargetNode.x, currTargetNode.y, getGlobalX(), getGlobalY());
+				if((seesPlayer&&currTargetNode.prev==null&&squaredDistToTarget<=REACHED_PLAYER_DISTANCE_SQUARED)		//Target is player
+						||(squaredDistToTarget<=REACHED_TARGET_DISTANCE_SQUARED))										//Target is a tile
 				{
 					currTargetNode=currTargetNode.prev;
 					if(currTargetNode==null)
 						break;
-					turnTowardsGlobalLocation(currTargetNode.x*TILE_SIZE+TILE_SIZE/2, currTargetNode.y*TILE_SIZE+TILE_SIZE/2);
+					turnTowardsGlobalLocation(currTargetNode.x, currTargetNode.y);
 				}	
 			}
 			//Animate the enemie
@@ -191,7 +197,7 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 		return (distX*distX)+(distY*distY);
 	}
 
-	private Node findPath(Point start, Point end)
+	private Node findPath(Point start, Point end, boolean toPlayer)
 	{
 		ArrayList<Node>closedList=new ArrayList<Node>();
 		ArrayList<Node>openList=new ArrayList<Node>();
@@ -211,8 +217,23 @@ public abstract class Enemy extends ScrollActor implements IDamageable
 				break;
 			}
 		}
+		if(endNode!=null)
+		{
+			Node n=endNode;
+			while(n.prev!=null)
+			{
+				n=n.prev;
+				n.x=n.x*TILE_SIZE+TILE_SIZE/2;
+				n.y=n.y*TILE_SIZE+TILE_SIZE/2;
+			}
+			if(toPlayer)
+			{
+				n.x=wi.getPlayerPosition().x;
+				n.y=wi.getPlayerPosition().y;
+			}
+		}
 
-		return (endNode.prev!=null ? endNode.prev : null);
+		return (endNode!=null ? endNode.prev : null);
 	}
 
 	private Node step(ArrayList<Node>closedList, ArrayList<Node>openList,MapField[][] map, Point start)
