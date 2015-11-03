@@ -6,6 +6,25 @@ import world.DungeonMap;
 public class DungeonMover extends ScrollActor {
 
 	private boolean noclip = false;
+	private boolean sliding;
+
+	/**
+	 * @param sliding
+	 *            If true the mover will slide when hitting a wall at an angle.
+	 *            If false the mover will stop moving when it hits a wall.
+	 */
+	public DungeonMover(boolean sliding) {
+		super();
+		this.sliding = sliding;
+	}
+
+	/**
+	 * Sliding defaults to true.
+	 */
+	public DungeonMover() {
+		super();
+		this.sliding = true;
+	}
 
 	private DungeonMap world = null;
 
@@ -44,7 +63,7 @@ public class DungeonMover extends ScrollActor {
 		}
 	}
 
-	public int addAngles(int angle1, int angle2) {
+	public static int addAngles(int angle1, int angle2) {
 		return (angle1 + angle2) % 360;
 	}
 
@@ -161,12 +180,30 @@ public class DungeonMover extends ScrollActor {
 		return world;
 	}
 
+	public boolean isTouchingWall() {
+		boolean[] neighbours = getNeighbouringTilesAccessibility();
+		for (int i = 0; i < neighbours.length; i++) {
+			if (neighbours[i]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean noclip() {
 		return noclip;
 	}
 
 	public void setNoclip(boolean noclip) {
 		this.noclip = noclip;
+	}
+
+	public boolean sliding() {
+		return sliding;
+	}
+
+	public void setSliding(boolean sliding) {
+		this.sliding = sliding;
 	}
 
 	// @Override
