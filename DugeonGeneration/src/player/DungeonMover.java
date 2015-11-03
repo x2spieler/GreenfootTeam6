@@ -183,7 +183,7 @@ public class DungeonMover extends ScrollActor {
 	public boolean isTouchingWall() {
 		boolean[] neighbours = getNeighbouringTilesAccessibility();
 		for (int i = 0; i < neighbours.length; i++) {
-			if (neighbours[i]) {
+			if (!neighbours[i]) {
 				return true;
 			}
 		}
