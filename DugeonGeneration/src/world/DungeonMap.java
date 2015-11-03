@@ -34,7 +34,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 	private final GreenfootImage passable, impassable, back, empty;
 
 	private Player player;
-	
+
 	FPS fps;
 
 	public DungeonMap(Menu menu) {
@@ -54,10 +54,10 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		player = new Player();
 		player.setMode(Player.MOVE_MODE_8_DIRECTIONS);
 		addObject(player, 0, 0);
-		fps=new FPS();
+		fps = new FPS();
 		addObject(fps, 100, 20);
 		// player.setNoclip(true);
-		//spawnWerewolfs(1);
+		spawnWerewolfs(1);
 	}
 
 	private final void initDungeonMap() {
@@ -100,14 +100,12 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 
 	private GreenfootImage getImageForTile(int i, int j) {
 
-		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT) ? (fastMap[i][j] ? passable
-				: impassable)
-				: empty;
+		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT)
+				? (fastMap[i][j] ? passable : impassable) : empty;
 	}
-	
+
 	@Override
-	public double getFPS()
-	{
+	public double getFPS() {
 		return fps.getFPS();
 	}
 
@@ -128,10 +126,8 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 	public static Point getTileOfPixel(int x, int y) {
 		Point ret = new Point();
 
-		ret.x = (x >= 0) ? (x / TILE_SIZE) : (x % TILE_SIZE == 0) ? (x / TILE_SIZE) : (x
-				/ TILE_SIZE - 1);
-		ret.y = (y >= 0) ? (y / TILE_SIZE) : (y % TILE_SIZE == 0) ? (y / TILE_SIZE) : (y
-				/ TILE_SIZE - 1);
+		ret.x = (x >= 0) ? (x / TILE_SIZE) : (x % TILE_SIZE == 0) ? (x / TILE_SIZE) : (x / TILE_SIZE - 1);
+		ret.y = (y >= 0) ? (y / TILE_SIZE) : (y % TILE_SIZE == 0) ? (y / TILE_SIZE) : (y / TILE_SIZE - 1);
 
 		assert (x < 0) ? ret.x < 0 : ret.x >= 0;
 		assert (y < 0) ? ret.y < 0 : ret.y >= 0;
@@ -151,13 +147,13 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		Random r = new Random();
 		MapField[][] map = getMap();
 		for (int k = 0; k < num; k++) {
-			Point p=getNearestAccessiblePoint(0, 0);
+			Point p = getNearestAccessiblePoint(0, 0);
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
-			x=p.x/TILE_SIZE;
-			y=p.y/TILE_SIZE;
-			x+=2;
-			y+=2;
+			x = p.x / TILE_SIZE;
+			y = p.y / TILE_SIZE;
+			x += 2;
+			y += 2;
 			if (map[x][y].walkable()) {
 				Werewolf z = new Werewolf();
 				addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
@@ -233,8 +229,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 				if (isInAccessibleTile(i, j)) {
 					int dX = x - i;
 					int dY = y - j;
-					if (Math.sqrt(dX * dX + dY * dY) < Math.sqrt(smallestDX * smallestDX
-							+ smallestDY * smallestDY)) {
+					if (Math.sqrt(dX * dX + dY * dY) < Math.sqrt(smallestDX * smallestDX + smallestDY * smallestDY)) {
 						smallestDX = dX;
 						smallestDY = dY;
 					}
