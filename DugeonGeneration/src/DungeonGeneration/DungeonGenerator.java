@@ -117,12 +117,14 @@ public class DungeonGenerator {
 						steps++;
 						if (steps == stepsize){
 									
-							int randomOffset = rand.randomInt(0, rooms[i].getSizeX());
+							int randomOffset = rand.randomInt(0, rooms[i].getSizeX()-1);
 							
 							mapBlocks[rooms[i].getPosition().x + randomOffset][rooms[i].getPosition().y + y].setFieldType(FieldType.DESTRUCTABLE);
 							
 							Crate crate = new Crate(100);
 							dm.addObject(crate, (rooms[i].getPosition().x + randomOffset) * 32 + 32/2, (rooms[i].getPosition().y + y) * 32 + 32/2);
+							//dm.addObject(crate, 50, 50);
+							
 							
 							steps = 0;
 						}

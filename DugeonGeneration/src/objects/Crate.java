@@ -2,6 +2,7 @@ package objects;
 
 import core.Mathf;
 import greenfoot.GreenfootImage;
+import greenfoot.World;
 import AI.IDamageable;
 import scrollWorld.ScrollActor;
 
@@ -52,9 +53,10 @@ public class Crate extends ScrollActor implements IDamageable{
 		imgBroken = new GreenfootImage("crate1Broken1.png");
 		
 	}
-
-	public void addedToWorld() {
-		
+	
+	@Override
+	public void addedToWorld(World world) {
+				
 		loadImage();
 		setImage(imgIdle);
 		

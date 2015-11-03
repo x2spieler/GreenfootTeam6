@@ -57,7 +57,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		fps = new FPS();
 		addObject(fps, 100, 20);
 		// player.setNoclip(true);
-		// spawnWerewolfs(1);
+		//spawnWerewolfs(100);
 	}
 
 	private final void initTiles() {
@@ -78,6 +78,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		gen.generateRooms();
 		gen.placeRooms();
 		gen.buildPaths();
+		gen.placeDestructable();
 		map = gen.getMap();
 	}
 
