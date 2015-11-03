@@ -3,7 +3,7 @@ package DungeonGeneration;
 public class Main {
 
 public static void main(String[] args) {
-		
+		/*
 		DungeonGenerator dungeonGen = new DungeonGenerator();
 		
 		dungeonGen.clearMap();
@@ -11,6 +11,7 @@ public static void main(String[] args) {
 		dungeonGen.placeRooms();
 		dungeonGen.buildPaths();
 		dungeonGen.showMap();
+		*/
 	}
 	
 }

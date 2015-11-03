@@ -73,7 +73,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 	}
 
 	private final void initDungeonMap() {
-		gen = new DungeonGenerator();
+		gen = new DungeonGenerator(this);
 		gen.clearMap();
 		gen.generateRooms();
 		gen.placeRooms();
