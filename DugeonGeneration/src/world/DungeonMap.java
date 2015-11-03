@@ -2,6 +2,8 @@ package world;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.io.IOException;
+import java.util.Map;
 import java.util.Random;
 
 import AI.IDamageable;
@@ -13,6 +15,7 @@ import enemies.Werewolf;
 import greenfoot.Actor;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
+import images.tileset.house.House;
 import menu.BasicWorldWithMenu;
 import menu.Menu;
 import player.DungeonMover;
@@ -32,20 +35,23 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 	private MapField[][] map;
 	// private final boolean[][] fastMap;
 
-	private final GreenfootImage ground, wall, back, empty, pickup, destructible;
+	private final Map<House, GreenfootImage> tiles;
+
+	private GreenfootImage ground, wall, back, empty, pickup, destructible;
 
 	private Player player;
 
 	FPS fps;
 
-	public DungeonMap(Menu menu) {
+	public DungeonMap(Menu menu) throws IOException {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
 				DungeonGenerator.MAP_HEIGHT * TILE_SIZE, menu);
 		initDungeonMap();
-		// fastMap = new boolean[map.length][map[0].length];
-		// transcribeMap();
+
+		tiles = new TilesetParser("images/tileset/house/tilesetHouse.png").getTiles();
+
 		back = getBackground();
-		ground = new GreenfootImage("grass.png");
+		ground = tiles.get(House.GROUND);
 		wall = new GreenfootImage("wood.png");
 		empty = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		pickup = new GreenfootImage(TILE_SIZE, TILE_SIZE);
