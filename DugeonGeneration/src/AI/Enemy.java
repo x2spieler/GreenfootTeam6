@@ -382,7 +382,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			}
 		}
 
-
 		openList.remove(closest);
 		closedList.add(closest);
 

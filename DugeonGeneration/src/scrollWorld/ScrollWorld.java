@@ -1,12 +1,10 @@
 package scrollWorld;
 
+import java.util.ArrayList;
+
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
-
-import java.util.ArrayList;
-
-import weapons.abstracts.Bullet;
 
 /**
  * A world which has the possibility to scroll over a really big area. That big
@@ -22,15 +20,13 @@ import weapons.abstracts.Bullet;
  * <p>
  * 
  * The world supports adding ScrollActors in 2 ways:
- * <Li>
- * Adding it in the regular way, which means that it can go off screen and come
- * back on screen.</Li>
- * <Li>
- * Adding a camera follower, which means that it will move just as much as the
- * camera does. So if you add it to the center of the screen, it will always be
- * there (except for when you change it yourself).</Li>
- * <b>IMPORTANT NOTE:</b> if your Actor isn't a subclass of ScrollActor, it will
- * looklike it is a camera follower.
+ * <Li>Adding it in the regular way, which means that it can go off screen and
+ * come back on screen.</Li>
+ * <Li>Adding a camera follower, which means that it will move just as much as
+ * the camera does. So if you add it to the center of the screen, it will always
+ * be there (except for when you change it yourself).</Li> <b>IMPORTANT
+ * NOTE:</b> if your Actor isn't a subclass of ScrollActor, it will looklike it
+ * is a camera follower.
  * 
  * @author Sven van Nigtevecht
  * @version 2.1.2
@@ -171,10 +167,10 @@ public abstract class ScrollWorld extends World {
 			super.addObject(sa, x - (camX - getWidth() / 2), y - (camY - getHeight() / 2));
 			objects.add(sa);
 			sa.setIsCameraFollower(false);
-		} else
-		{
+		} else {
 			super.addObject(object, x, y);
 		}
+
 	}
 
 	/**

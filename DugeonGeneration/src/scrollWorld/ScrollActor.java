@@ -1,19 +1,20 @@
 package scrollWorld;
 
 import greenfoot.Actor;
-import weapons.abstracts.Bullet;
+import greenfoot.World;
 
 /**
- * An actor which ca be in a ScrollWorld. It has 3 types of locations: <Li>
- * A location where it really is. That means, the location the space the camera
- * is moving over. This is the most important one. Access it by the
- * {@link getGlobalX} and the {@link getGlobalY} methods.</Li><Li>
- * A location seen from the camera. This means when it's at {@link 0,0}, it is
- * at the center of what you see. Access it by the {@link getXFromCamera} and
- * the {@link getYFromCamera} methods.</Li><Li>
- * A location on screen. This is what you would do in your usual scenarios, so
- * {@link 0,0} is the top left corner. With this library, it is the least
- * important one. Access it by the usual {@link getX} and {@link getY} methods.</Li>
+ * An actor which ca be in a ScrollWorld. It has 3 types of locations:
+ * <Li>A location where it really is. That means, the location the space the
+ * camera is moving over. This is the most important one. Access it by the
+ * {@link getGlobalX} and the {@link getGlobalY} methods.</Li>
+ * <Li>A location seen from the camera. This means when it's at {@link 0,0}, it
+ * is at the center of what you see. Access it by the {@link getXFromCamera} and
+ * the {@link getYFromCamera} methods.</Li>
+ * <Li>A location on screen. This is what you would do in your usual scenarios,
+ * so {@link 0,0} is the top left corner. With this library, it is the least
+ * important one. Access it by the usual {@link getX} and {@link getY} methods.
+ * </Li>
  * 
  * @author Sven van Nigtevecht
  * @version 2.1.5
@@ -43,8 +44,8 @@ public abstract class ScrollActor extends Actor {
 	 */
 	public int getGlobalX() {
 		if (world == null)
-			throw new IllegalStateException("Actor not in world. Either is hasn't"
-					+ " been inserted, or it has been deleted.");
+			throw new IllegalStateException(
+					"Actor not in world. Either is hasn't" + " been inserted, or it has been deleted.");
 		return globalX;
 	}
 
@@ -53,8 +54,8 @@ public abstract class ScrollActor extends Actor {
 	 */
 	public int getGlobalY() {
 		if (world == null)
-			throw new IllegalStateException("Actor not in world. Either is hasn't"
-					+ " been inserted, or it has been deleted.");
+			throw new IllegalStateException(
+					"Actor not in world. Either is hasn't" + " been inserted, or it has been deleted.");
 		return globalY;
 	}
 
@@ -63,8 +64,8 @@ public abstract class ScrollActor extends Actor {
 	 */
 	public int getXFromCamera() {
 		if (world == null)
-			throw new IllegalStateException("Actor not in world. Either is hasn't"
-					+ " been inserted, or it has been deleted.");
+			throw new IllegalStateException(
+					"Actor not in world. Either is hasn't" + " been inserted, or it has been deleted.");
 		return camX;
 	}
 
@@ -73,8 +74,8 @@ public abstract class ScrollActor extends Actor {
 	 */
 	public int getYFromCamera() {
 		if (world == null)
-			throw new IllegalStateException("Actor not in world. Either is hasn't"
-					+ " been inserted, or it has been deleted.");
+			throw new IllegalStateException(
+					"Actor not in world. Either is hasn't" + " been inserted, or it has been deleted.");
 		return camY;
 	}
 
@@ -93,13 +94,6 @@ public abstract class ScrollActor extends Actor {
 		camY = y - halfWorldHeight;
 		globalX = x + (world.getCameraX() - halfWorldWidth);
 		globalY = y + (world.getCameraY() - halfWorldHeight);
-		if(this instanceof Bullet)
-		{
-			int i=x;
-			int j=world.getCameraX();
-			int k=halfWorldWidth;
-			System.out.println(i+" # "+j+" # "+k);
-		}
 	}
 
 	/**
@@ -126,6 +120,14 @@ public abstract class ScrollActor extends Actor {
 	 * return null.
 	 */
 	public ScrollWorld getWorld() {
+		if (world == null) {
+			World tempWorld = super.getWorld();
+			if (tempWorld instanceof ScrollWorld) {
+				world = (ScrollWorld) tempWorld;
+			} else if (tempWorld != null) {
+				throw new IllegalArgumentException("ScrollActor must only be added to a ScrollWorld");
+			}
+		}
 		return world;
 	}
 
@@ -187,8 +189,8 @@ public abstract class ScrollActor extends Actor {
 	 */
 	public boolean isCameraFollower() {
 		if (world == null)
-			throw new IllegalStateException("Actor not in world. Either is hasn't"
-					+ " been inserted, or it has been deleted.");
+			throw new IllegalStateException(
+					"Actor not in world. Either is hasn't" + " been inserted, or it has been deleted.");
 		return isCameraFollower;
 	}
 
