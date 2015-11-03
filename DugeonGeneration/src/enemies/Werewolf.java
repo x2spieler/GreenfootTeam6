@@ -11,7 +11,7 @@ public class Werewolf extends Enemy
 		hp = 1;
 		viewRangeSquared = 32*32*10*10;
 		enemyName="werewolf";
-		allowedWeapons=new String[]{"sword", "club_spikes", "crossbow"};
+		allowedWeapons=new String[]{"ninja_star"};
 	}
 	
 	@Override
