@@ -58,9 +58,10 @@ public abstract class ShortRangeWeapon extends Weapon
 	}
 
 	@Override
-	public void triggerUse()
+	public boolean triggerUse()
 	{
-		//Nothing to do here
+		//Short range weapons don't have ammo, we always trigger the use
+		return true;
 	}
 
 }

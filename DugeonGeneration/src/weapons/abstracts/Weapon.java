@@ -80,6 +80,9 @@ public abstract class Weapon extends ScrollActor
 		}
 	}
 
+	/**
+	 * @return If the weapon was fired (in this term a sword is able to fire, doesn't matter). Also pays attention to the ammo
+	 */
 	public boolean use()
 	{
 		long millisNow = System.currentTimeMillis();
@@ -87,17 +90,16 @@ public abstract class Weapon extends ScrollActor
 		{
 			lastUsage = millisNow;
 			playAnimation=true;
-			triggerUse();
+			return triggerUse();
 		}
 		else
 			return false;
-		return true;
 	}
 	
 	/**
 	 * Called by use() if the weapon can be used
 	 */
-	protected abstract void triggerUse();
+	protected abstract boolean triggerUse();
 
 	public int getAdditionalValue()
 	{

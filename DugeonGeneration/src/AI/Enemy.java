@@ -215,7 +215,12 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 				move();
 			int squaredDistToTarget=squaredDistance(currTargetNode.x, currTargetNode.y, getGlobalX(), getGlobalY());
 			int squaredDistanceToPlayer=squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
-			if(seesPlayer&&weapon.isLongRangeWeapon()&&
+			if(isTouchingWall())
+			{
+				//We ran into a wall and missed our target or can't reach it - just get a new target next frame
+				currTargetNode=null;
+			}
+			else if(seesPlayer&&weapon.isLongRangeWeapon()&&
 					squaredDistanceToPlayer<=RPD_MULTIPLICATOR_LRW*REACHED_PLAYER_DISTANCE_SQUARED
 					&&canSee(new Point(getGlobalX(), getGlobalY()), wi.getPlayerPosition()))
 			{
@@ -292,8 +297,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			if(cantFindWay||!map[end.x][end.y].walkable()||!map[start.x][start.y].walkable())
 			{
 				cantFindWay=false;
-				System.out.println("Couldn't find a way");
-				break;
+				throw new IllegalStateException("Couldn't find a way");
 			}
 		}
 		if(endNode!=null)

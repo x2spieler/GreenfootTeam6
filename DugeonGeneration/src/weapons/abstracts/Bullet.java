@@ -37,7 +37,7 @@ public abstract class Bullet extends DeltaMover
 	{
 		super.act();
 		move();
-		if (handleCollision() || timeStampCreated+lifetimeInMs<System.currentTimeMillis())
+		if (isTouchingWall()||handleCollision() || timeStampCreated+lifetimeInMs<System.currentTimeMillis())
 		{
 			//Didn't move although move was called -> tried to move into wall. If we are at a rotation of x*90�, we will just stay in front of the wall until our lifetime is over || hit player/enemy || our time has come :(
 			getWorld().removeObject(this);
