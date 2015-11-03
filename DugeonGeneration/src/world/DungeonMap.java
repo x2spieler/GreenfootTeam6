@@ -67,6 +67,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		gen.generateRooms();
 		gen.placeRooms();
 		gen.buildPaths();
+		gen.placeDestructable();
 		map = gen.getMap();
 	}
 
