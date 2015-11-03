@@ -38,11 +38,11 @@ public abstract class Bullet extends DeltaMover
 		super.act();
 		int currX=getGlobalX();
 		int currY=getGlobalY();
-	//System.out.println(currX+" # "+currY);
+		//System.out.println(currX+" # "+currY);
 		move();
 		/*if (((currX==getGlobalX()||currY==getGlobalY())&&getRotation()%90!=0)||handleCollision() || timeStampCreated+lifetimeInMs<System.currentTimeMillis())
 		{
-			//Didn't move although move was called -> tried to move into wall. If we are at a rotation of x*90°, we will just stay in front of the wall until our lifetime is over || hit player/enemy || our time has come :(
+			//Didn't move although move was called -> tried to move into wall. If we are at a rotation of x*90ï¿½, we will just stay in front of the wall until our lifetime is over || hit player/enemy || our time has come :(
 			getWorld().removeObject(this);
 		}*/
 	}

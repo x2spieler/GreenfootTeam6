@@ -24,7 +24,7 @@ public abstract class LongRangeWeapon extends Weapon
 			rotatePoint(offset, getRotation());
 			getWorld().addObject(b, getGlobalX()+(int)offset.getX(), getGlobalY()+(int)offset.getY());
 			//b.setGlobalLocation(getGlobalX()+(int)offset.getX(), getGlobalY()+(int)offset.getY());
-			System.out.println(b.getGlobalX()+" # "+b.getGlobalY());
+			//System.out.println(b.getGlobalX()+" # "+b.getGlobalY());
 			b.setRotation(getRotation());
 			inUse=false;
 		}

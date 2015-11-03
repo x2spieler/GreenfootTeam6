@@ -159,8 +159,6 @@ public abstract class ScrollWorld extends World {
 	 */
 	public void addObject(Actor object, int x, int y) {
 		if (object instanceof ScrollActor) {
-			if(object instanceof Bullet)
-				System.out.println("11111111");
 			if (x >= fullWidth)
 				x = fullWidth - 1;
 			else if (x < 0)
@@ -177,7 +175,6 @@ public abstract class ScrollWorld extends World {
 		{
 			super.addObject(object, x, y);
 		}
-			
 	}
 
 	/**

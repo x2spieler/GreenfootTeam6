@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.Random;
 
+import javax.swing.Scrollable;
+
 import AI.IDamageable;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
@@ -17,6 +19,7 @@ import menu.Menu;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
+import scrollWorld.ScrollActor;
 import weapons.abstracts.Bullet;
 
 public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceForAI {
@@ -34,7 +37,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 	private final GreenfootImage passable, impassable, back, empty;
 
 	private Player player;
-	
+
 	FPS fps;
 
 	public DungeonMap(Menu menu) {
@@ -57,7 +60,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		fps=new FPS();
 		addObject(fps, 100, 20);
 		// player.setNoclip(true);
-		//spawnWerewolfs(1);
+		spawnWerewolfs(1);
 	}
 
 	private final void initDungeonMap() {
@@ -104,7 +107,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 				: impassable)
 				: empty;
 	}
-	
+
 	@Override
 	public double getFPS()
 	{
@@ -245,6 +248,14 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		y -= smallestDY;
 
 		return new Point(x, y);
+	}
+
+	@Override
+	public void removeObject(Actor object)
+	{
+		super.removeObject(object);
+		if(object instanceof Bullet)
+			System.out.println("removed Bullet");
 	}
 
 	@Override

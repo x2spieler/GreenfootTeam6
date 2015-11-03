@@ -93,6 +93,13 @@ public abstract class ScrollActor extends Actor {
 		camY = y - halfWorldHeight;
 		globalX = x + (world.getCameraX() - halfWorldWidth);
 		globalY = y + (world.getCameraY() - halfWorldHeight);
+		if(this instanceof Bullet)
+		{
+			int i=x;
+			int j=world.getCameraX();
+			int k=halfWorldWidth;
+			System.out.println(i+" # "+j+" # "+k);
+		}
 	}
 
 	/**
