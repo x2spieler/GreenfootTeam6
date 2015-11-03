@@ -43,14 +43,14 @@ public class DungeonGenerator {
 	}
 	
 	
-	//Clears the map by setting every single field to a non-walkable one (wall)
+	//Clears the map by setting every single field to fieldType wall
 	public void clearMap() {
 		
 		for(int y = 0; y < MAP_HEIGHT; y++) {
 			
 			for(int x = 0; x < MAP_WIDTH; x++) {
 				
-				mapBlocks[x][y] = new MapField(false); 
+				mapBlocks[x][y] = new MapField(FieldType.WALL); 
 				
 			}
 			
@@ -72,7 +72,7 @@ public class DungeonGenerator {
 		
 	}
 	
-	//Randomly places the rooms onto the map by setting the respective fields to walkable fields.
+	//Randomly places the rooms onto the map by setting the respective fields to fieldType GROUND
 	public void placeRooms() {
 		
 		for(int i = 0; i < ROOM_POOL; i++) {
@@ -82,7 +82,7 @@ public class DungeonGenerator {
 			for (int y=0; y<rooms[i].getSizeY(); y++ ){
 				
 				for (int x=0; x<rooms[i].getSizeX(); x++ ) {
-					mapBlocks[rooms[i].getPosition().x + x][rooms[i].getPosition().y + y].isWalkable = true;
+					mapBlocks[rooms[i].getPosition().x + x][rooms[i].getPosition().y + y].setFieldType(FieldType.GROUND);
 				}
 			}
 						
@@ -134,7 +134,7 @@ public class DungeonGenerator {
 					
 					for(int i=0; i < randomPathWidth; i++) {
 						if((buildPosition.y - randomPathWidth/2 + i) > 0 && (buildPosition.y - randomPathWidth/2 + i) < MAP_WIDTH)
-							mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][buildPosition.y - randomPathWidth/2 + i].isWalkable = true;
+							mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][buildPosition.y - randomPathWidth/2 + i].setFieldType(FieldType.GROUND);
 					}
 					
 					//old system
@@ -153,7 +153,7 @@ public class DungeonGenerator {
 					
 					for(int i=0; i < randomPathWidth; i++) {
 						if((buildPosition.x - randomPathWidth/2 + i) > 0 && (buildPosition.x - randomPathWidth/2 + i) < MAP_HEIGHT)
-							mapBlocks[buildPosition.x - randomPathWidth/2 + i][buildPosition.y + (int)Math.signum(deltaY*-1)].isWalkable = true;
+							mapBlocks[buildPosition.x - randomPathWidth/2 + i][buildPosition.y + (int)Math.signum(deltaY*-1)].setFieldType(FieldType.GROUND);
 					}
 					
 					//old system
@@ -186,18 +186,28 @@ public class DungeonGenerator {
 	//Displays the world map in the console for debugging purposes.
 	public void showMap() {
 			
-		
 		for(int y = 0; y < MAP_HEIGHT; y++) {
 		
 			for(int x = 0; x < MAP_WIDTH; x++) {
 			
-				if (mapBlocks[x][y].isWalkable == true){
-			 
+				FieldType fType = mapBlocks[x][y].getFieldType();
+				
+				switch (fType) {
+				
+				case DESTRUCTABLE:
+					System.out.print("x");
+					break;
+				case GROUND:
 					System.out.print("#");
-					
-				} 
-				else {
+					break;
+				case PICKUP:
+					System.out.print("+");
+					break;
+				case WALL:
 					System.out.print(".");
+					break;
+			
+				
 				}
 		
 			}
