@@ -8,24 +8,7 @@ public class MapField {
 	
 	public MapField(FieldType ftype) {
 		
-		fieldType = ftype;
-		
-		switch (fieldType) {
-		
-		case GROUND:
-			isWalkable = true;
-			break;
-		case DESTRUCTABLE:
-			isWalkable = false;
-			break;
-		case PICKUP:
-			isWalkable = true;
-			break;
-		case WALL:
-			isWalkable = false;
-			break;
-		
-		}
+		setFieldType(ftype);
 		
 	}
 	
@@ -54,6 +37,23 @@ public class MapField {
 	
 	public void setFieldType(FieldType ftype) {
 		fieldType = ftype;
+		
+		switch (fieldType) {
+		
+			case GROUND:
+				isWalkable = true;
+				break;
+			case DESTRUCTABLE:
+				isWalkable = false;
+				break;
+			case PICKUP:
+				isWalkable = true;
+				break;
+			case WALL:
+				isWalkable = false;
+				break;
+			
+			}	
 	}
 	
 }
