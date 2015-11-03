@@ -51,6 +51,12 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	}
 
 	protected abstract int getNumFramesChangeWalkImage();
+	
+	@Override
+	public int getHP() 
+	{
+		return -1;
+	}
 
 	@Override
 	public void addedToWorld(World w)

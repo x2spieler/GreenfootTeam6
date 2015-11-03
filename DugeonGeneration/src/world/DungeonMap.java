@@ -249,8 +249,6 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 
 	@Override
 	public void addObject(Actor object, int x, int y) {
-		if(object instanceof Bullet)
-			System.out.println("dsnuzuoasd");
 		if (object instanceof DungeonMover) {
 			if (isInAccessibleTile(x, y)) {
 				super.addObject(object, x, y);

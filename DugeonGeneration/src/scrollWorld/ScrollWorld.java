@@ -6,6 +6,8 @@ import greenfoot.World;
 
 import java.util.ArrayList;
 
+import weapons.abstracts.Bullet;
+
 /**
  * A world which has the possibility to scroll over a really big area. That big
  * area is called the big space, It scrolls over it using a camera. The camera's
@@ -157,6 +159,8 @@ public abstract class ScrollWorld extends World {
 	 */
 	public void addObject(Actor object, int x, int y) {
 		if (object instanceof ScrollActor) {
+			if(object instanceof Bullet)
+				System.out.println("11111111");
 			if (x >= fullWidth)
 				x = fullWidth - 1;
 			else if (x < 0)
@@ -170,7 +174,10 @@ public abstract class ScrollWorld extends World {
 			objects.add(sa);
 			sa.setIsCameraFollower(false);
 		} else
+		{
 			super.addObject(object, x, y);
+		}
+			
 	}
 
 	/**

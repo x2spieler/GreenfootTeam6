@@ -30,6 +30,12 @@ public class Player extends DeltaMover implements IDamageable {
 	{
 		System.out.println("Ouch! " + dmg + " damage taken.");
 	}
+	
+	@Override
+	public int getHP()
+	{
+		return -1;
+	}
 
 	@Override
 	public void act() {

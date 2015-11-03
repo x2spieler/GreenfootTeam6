@@ -84,8 +84,6 @@ public abstract class ScrollActor extends Actor {
 	 * is also off screen.
 	 */
 	public void setLocation(int x, int y) {
-		if(this instanceof Bullet)
-			System.out.println("CALLED");
 		if (world == null)
 			return;
 		super.setLocation(x, y);
