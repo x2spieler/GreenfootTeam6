@@ -21,6 +21,8 @@ public interface IWorldInterfaceForAI
 	public Point getPlayerPosition();
 	
 	public int getTileSize();
+	
+	public double getFPS();
 }
 
 

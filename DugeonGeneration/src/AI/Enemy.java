@@ -138,6 +138,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		
 		if(currTargetNode==null)
 		{
+			System.out.println("null");
 			if(seesPlayer)
 			{
 				int squaredDistance=squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
@@ -182,6 +183,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		}
 		else
 		{
+			System.out.println("not null");
 			if(seesPlayer&&!sawPlayer)
 			{
 				//Sees the player - didn't see him in the last tick

@@ -1,27 +1,23 @@
 package world;
 
+import java.awt.Color;
+import java.awt.Point;
+import java.util.Random;
+
+import AI.IDamageable;
+import AI.IWorldInterfaceForAI;
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.MapField;
 import enemies.Werewolf;
 import greenfoot.Actor;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
-
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.image.PixelGrabber;
-import java.util.Random;
-
 import menu.BasicWorldWithMenu;
 import menu.Menu;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
 import weapons.abstracts.Bullet;
-import weapons.abstracts.Weapon;
-import weapons.bullets.CrossbowArrow;
-import AI.IDamageable;
-import AI.IWorldInterfaceForAI;
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.MapField;
 
 public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceForAI {
 
@@ -38,6 +34,8 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 	private final GreenfootImage passable, impassable, back, empty;
 
 	private Player player;
+	
+	FPS fps;
 
 	public DungeonMap(Menu menu) {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
@@ -56,9 +54,10 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		player = new Player();
 		player.setMode(Player.MOVE_MODE_8_DIRECTIONS);
 		addObject(player, 0, 0);
-		addObject(new FPS(), 100, 20);
+		fps=new FPS();
+		addObject(fps, 100, 20);
 		// player.setNoclip(true);
-		//spawnWerewolfs(100);
+		spawnWerewolfs(1);
 	}
 
 	private final void initDungeonMap() {
@@ -105,6 +104,12 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 				: impassable)
 				: empty;
 	}
+	
+	@Override
+	public double getFPS()
+	{
+		return fps.getFPS();
+	}
 
 	public static Point getStartingPixel(int x, int y) {
 		Point ret = new Point(0, 0);
@@ -146,8 +151,11 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		Random r = new Random();
 		MapField[][] map = getMap();
 		for (int k = 0; k < num; k++) {
+			Point p=getNearestAccessiblePoint(0, 0);
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
+			x=p.x/TILE_SIZE;
+			y=p.y/TILE_SIZE;
 			if (map[x][y].walkable()) {
 				Werewolf z = new Werewolf();
 				addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
