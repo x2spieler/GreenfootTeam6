@@ -7,6 +7,7 @@ import java.util.Random;
 import AI.IDamageable;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
 import enemies.Werewolf;
 import greenfoot.Actor;
@@ -29,9 +30,9 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 
 	private DungeonGenerator gen;
 	private MapField[][] map;
-	private final boolean[][] fastMap;
+	// private final boolean[][] fastMap;
 
-	private final GreenfootImage passable, impassable, back, empty;
+	private final GreenfootImage ground, wall, back, empty, pickup, destructible;
 
 	private Player player;
 
@@ -41,23 +42,34 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
 				DungeonGenerator.MAP_HEIGHT * TILE_SIZE, menu);
 		initDungeonMap();
-		fastMap = new boolean[map.length][map[0].length];
-		transcribeMap();
+		// fastMap = new boolean[map.length][map[0].length];
+		// transcribeMap();
 		back = getBackground();
-		passable = new GreenfootImage("grass.png");
-		passable.scale(TILE_SIZE, TILE_SIZE);
-		impassable = new GreenfootImage("wood.png");
-		impassable.scale(TILE_SIZE, TILE_SIZE);
+		ground = new GreenfootImage("grass.png");
+		wall = new GreenfootImage("wood.png");
 		empty = new GreenfootImage(TILE_SIZE, TILE_SIZE);
-		empty.setColor(Color.BLACK);
-		empty.fill();
+		pickup = new GreenfootImage(TILE_SIZE, TILE_SIZE);
+		destructible = new GreenfootImage(TILE_SIZE, TILE_SIZE);
+		initTiles();
 		player = new Player();
 		player.setMode(Player.MOVE_MODE_8_DIRECTIONS);
 		addObject(player, 0, 0);
 		fps = new FPS();
 		addObject(fps, 100, 20);
 		// player.setNoclip(true);
-		spawnWerewolfs(1);
+		// spawnWerewolfs(1);
+	}
+
+	private final void initTiles() {
+		ground.scale(TILE_SIZE, TILE_SIZE);
+		wall.scale(TILE_SIZE, TILE_SIZE);
+		empty.setColor(Color.BLACK);
+		empty.fill();
+		pickup.setColor(Color.YELLOW);
+		pickup.fill();
+		destructible.setColor(Color.RED);
+		destructible.fill();
+
 	}
 
 	private final void initDungeonMap() {
@@ -66,17 +78,16 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		gen.generateRooms();
 		gen.placeRooms();
 		gen.buildPaths();
-		gen.placeDestructable();
 		map = gen.getMap();
 	}
 
-	private void transcribeMap() {
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map[i].length; j++) {
-				fastMap[i][j] = map[i][j].walkable();
-			}
-		}
-	}
+	// private void transcribeMap() {
+	// for (int i = 0; i < map.length; i++) {
+	// for (int j = 0; j < map[i].length; j++) {
+	// fastMap[i][j] = map[i][j].walkable();
+	// }
+	// }
+	// }
 
 	private void renderMap(int x, int y) {
 		Point startingTile = getTileOfPixel(x, y);
@@ -102,7 +113,22 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 	private GreenfootImage getImageForTile(int i, int j) {
 
 		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT)
-				? (fastMap[i][j] ? passable : impassable) : empty;
+				? getTileForFieldType(map[i][j].getFieldType()) : empty;
+	}
+
+	private GreenfootImage getTileForFieldType(FieldType type) {
+		switch (type) {
+		case GROUND:
+			return ground;
+		case WALL:
+			return wall;
+		case DESTRUCTABLE:
+			return destructible;
+		case PICKUP:
+			return pickup;
+		default:
+			throw new IllegalArgumentException("missing tile");
+		}
 	}
 
 	@Override
@@ -200,7 +226,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 
 	public boolean isInAccessibleTile(int x, int y) {
 		if (isInMap(x, y)) {
-			return fastMap[x / TILE_SIZE][y / TILE_SIZE];
+			return map[x / TILE_SIZE][y / TILE_SIZE].walkable();
 		}
 		return false;
 	}

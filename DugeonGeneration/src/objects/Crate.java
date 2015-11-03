@@ -25,8 +25,6 @@ public class Crate extends ScrollActor implements IDamageable{
 	
 	@Override
 	public void damage(int dmg) {
-		// TODO Auto-generated method stub
-		
 		if(state == State.dead) {
 			return;
 		}
@@ -41,12 +39,10 @@ public class Crate extends ScrollActor implements IDamageable{
 
 	@Override
 	public int getHP() {
-		// TODO Auto-generated method stub
 		return health;
 	}
 	
 	public int getMaxHP() {
-		// TODO Auto-generated method stub
 		return maxHealth;
 	}
 	

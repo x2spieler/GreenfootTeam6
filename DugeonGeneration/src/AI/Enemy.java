@@ -43,6 +43,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
 	private short walkCounter=0;
+	boolean isPendingKill=false;
 
 	public Enemy()
 	{
@@ -70,6 +71,14 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		}
 		loadImages();
 		createWeapon();
+	}
+	
+	/**
+	 * @return True if this enemy has been killed and is only in the world to to his death animation
+	 */
+	public boolean isPendingKill()
+	{
+		return isPendingKill;
 	}
 
 	private void loadImages()
@@ -109,15 +118,19 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		return ((xDist*xDist)+(yDist*yDist))<viewRangeSquared;
 	}
 
+	@Override
 	public void damage(int dmg)
 	{
+		if(isPendingKill)
+			return;
+		System.out.println("Graaaaar, ouuuuhhh: "+dmg);
 		hp -= dmg;
 		if (hp <= 0)
 		{
+			setImage("tombstone.png");
 			wi.addPlayerScore(value+weapon.getAdditionalValue());
 			getWorld().removeObject(weapon);
-			//TODO: Instead of immediately removing, add a fancy death animation -> alpha blend / angels?
-			getWorld().removeObject(this);
+			isPendingKill=true;
 		}
 	}
 
@@ -129,11 +142,21 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	@Override
 	public void act()
 	{
+		if(isPendingKill)
+		{
+			int transp=getImage().getTransparency();
+			transp-=1;
+			if(transp==0)
+			{
+				getWorld().removeObject(this);
+			}
+			else
+				getImage().setTransparency(transp);
+			return;
+		}
+		
 		super.act();
 		
-		//if(wi.getFPS()<45)
-			//System.out.println(wi.getFPS());
-
 		if(getImage()==null)
 			setImage(idleImage);
 
@@ -142,8 +165,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		currPlayerTile.x/=TILE_SIZE;
 		currPlayerTile.y/=TILE_SIZE;
 		Point currTile=new Point(getGlobalX()/TILE_SIZE, getGlobalY()/TILE_SIZE);
-
-		//TODO: Fix flickering
 
 		if(currTargetNode==null)
 		{
@@ -218,7 +239,12 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 				move();
 			int squaredDistToTarget=squaredDistance(currTargetNode.x, currTargetNode.y, getGlobalX(), getGlobalY());
 			int squaredDistanceToPlayer=squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
-			if(seesPlayer&&weapon.isLongRangeWeapon()&&
+			if(isTouchingWall())
+			{
+				//We ran into a wall and missed our target or can't reach it - just get a new target next frame
+				currTargetNode=null;
+			}
+			else if(seesPlayer&&weapon.isLongRangeWeapon()&&
 					squaredDistanceToPlayer<=RPD_MULTIPLICATOR_LRW*REACHED_PLAYER_DISTANCE_SQUARED
 					&&canSee(new Point(getGlobalX(), getGlobalY()), wi.getPlayerPosition()))
 			{
@@ -295,8 +321,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			if(cantFindWay||!map[end.x][end.y].walkable()||!map[start.x][start.y].walkable())
 			{
 				cantFindWay=false;
-				System.out.println("Couldn't find a way");
-				break;
+				throw new IllegalStateException("Couldn't find a way");
 			}
 		}
 		if(endNode!=null)
@@ -381,7 +406,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 				}
 			}
 		}
-
 
 		openList.remove(closest);
 		closedList.add(closest);
