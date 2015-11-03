@@ -1,6 +1,11 @@
 package DungeonGeneration;
 
+import greenfoot.World;
+
 import java.awt.Point;
+
+import objects.Crate;
+import world.DungeonMap;
 
 public class DungeonGenerator {
 
@@ -23,11 +28,15 @@ public class DungeonGenerator {
 	MegaRandom rand;
 	MegaRandom randomSeed;
 	
-	public DungeonGenerator()
+	private DungeonMap dm = null;
+	
+	public DungeonGenerator(DungeonMap dm)
 	{
 		randomSeed = new MegaRandom();
 		mapSeed = randomSeed.randomInt(0, Integer.MAX_VALUE-1);
 		rand=new MegaRandom(mapSeed);
+		
+		this.dm = dm;
 	}
 	
 	public DungeonGenerator(int seed)
@@ -107,7 +116,14 @@ public class DungeonGenerator {
 					for (int x=0; x<rooms[i].getSizeX(); x++){
 						steps++;
 						if (steps == stepsize){
-							mapBlocks[rooms[i].getPosition().x + rand.randomInt(0, rooms[i].getSizeX())][rooms[i].getPosition().y + y].setFieldType(FieldType.DESTRUCTABLE);
+									
+							int randomOffset = rand.randomInt(0, rooms[i].getSizeX());
+							
+							mapBlocks[rooms[i].getPosition().x + randomOffset][rooms[i].getPosition().y + y].setFieldType(FieldType.DESTRUCTABLE);
+							
+							Crate crate = new Crate(100);
+							dm.addObject(crate, (rooms[i].getPosition().x + randomOffset) * 32 + 32/2, (rooms[i].getPosition().y + y) * 32 + 32/2);
+							
 							steps = 0;
 						}
 						
