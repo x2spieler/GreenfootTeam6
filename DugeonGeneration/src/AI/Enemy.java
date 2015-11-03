@@ -43,6 +43,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
 	private short walkCounter=0;
+	boolean isPendingKill=false;
 
 	public Enemy()
 	{
@@ -70,6 +71,14 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		}
 		loadImages();
 		createWeapon();
+	}
+	
+	/**
+	 * @return True if this enemy has been killed and is only in the world to to his death animation
+	 */
+	public boolean isPendingKill()
+	{
+		return isPendingKill;
 	}
 
 	private void loadImages()
@@ -112,14 +121,16 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	@Override
 	public void damage(int dmg)
 	{
+		if(isPendingKill)
+			return;
 		System.out.println("Graaaaar, ouuuuhhh: "+dmg);
 		hp -= dmg;
 		if (hp <= 0)
 		{
+			setImage("tombstone.png");
 			wi.addPlayerScore(value+weapon.getAdditionalValue());
 			getWorld().removeObject(weapon);
-			//TODO: Instead of immediately removing, add a fancy death animation -> alpha blend / angels?
-			getWorld().removeObject(this);
+			isPendingKill=true;
 		}
 	}
 
@@ -131,6 +142,19 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	@Override
 	public void act()
 	{
+		if(isPendingKill)
+		{
+			int transp=getImage().getTransparency();
+			transp-=1;
+			if(transp==0)
+			{
+				getWorld().removeObject(this);
+			}
+			else
+				getImage().setTransparency(transp);
+			return;
+		}
+		
 		super.act();
 		
 		if(getImage()==null)
