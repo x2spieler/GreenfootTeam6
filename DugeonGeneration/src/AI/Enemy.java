@@ -1,19 +1,20 @@
 package AI;
+import greenfoot.GreenfootImage;
+import greenfoot.GreenfootSound;
+import greenfoot.World;
+
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.MapField;
-import greenfoot.GreenfootImage;
-import greenfoot.GreenfootSound;
-import greenfoot.World;
 import player.DeltaMover;
 import weapons.abstracts.Weapon;
 import weapons.long_range_weapon.Crossbow;
 import weapons.short_range.ClubWithSpikes;
 import weapons.short_range.Sword;
 import world.DungeonMap;
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.MapField;
 
 public abstract class Enemy extends DeltaMover implements IDamageable
 {
@@ -103,8 +104,11 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		case "crossbow":
 			weapon=new Crossbow(this);
 			break;
+		case "ninja_star":
+			weapon=new weapons.long_range_weapon.NinjaStar(this);
+			break;
 		default:
-			System.out.println("Seems like somebody forgot to update this switch-statement after adding new weapons.. Bad boy!");
+			throw new IllegalArgumentException("Seems like somebody forgot to update this switch-statement after adding new weapons.. Bad boy!");
 		}
 		if(weapon!=null)
 			getWorld().addObject(weapon, 0, 0);

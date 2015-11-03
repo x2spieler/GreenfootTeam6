@@ -14,6 +14,5 @@ public class CrossbowArrow extends Bullet
 		lifetimeInMs=4000;
 		bulletName="crossbow_arrow";
 		setSpeed(200);
-		bulletOffsetFromPlayer=new Point2D.Double(32,0);
 	}
 }

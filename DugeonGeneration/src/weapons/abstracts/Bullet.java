@@ -23,6 +23,7 @@ public abstract class Bullet extends DeltaMover
 		super(0);
 		timeStampCreated=System.currentTimeMillis();
 		this.typeToIgnore=typeToIgnore;
+		bulletOffsetFromPlayer=new Point2D.Double(32,0);;
 	}
 
 	@Override
