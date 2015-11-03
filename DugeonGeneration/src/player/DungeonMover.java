@@ -2,6 +2,7 @@ package player;
 
 import greenfoot.World;
 import scrollWorld.ScrollActor;
+import weapons.abstracts.Bullet;
 import world.DungeonMap;
 
 public class DungeonMover extends ScrollActor {

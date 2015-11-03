@@ -43,7 +43,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
 	private short walkCounter=0;
-	
+
 	public Enemy()
 	{
 		super(0);
@@ -124,6 +124,9 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	public void act()
 	{
 		super.act();
+		
+		//if(wi.getFPS()<45)
+			//System.out.println(wi.getFPS());
 
 		if(getImage()==null)
 			setImage(idleImage);
@@ -135,16 +138,15 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		Point currTile=new Point(getGlobalX()/TILE_SIZE, getGlobalY()/TILE_SIZE);
 
 		//TODO: Fix flickering
-		
+
 		if(currTargetNode==null)
 		{
-			System.out.println("null");
 			if(seesPlayer)
 			{
 				int squaredDistance=squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
 				if(!isAttacking&&
 						((!weapon.isLongRangeWeapon()&&squaredDistance>REACHED_PLAYER_DISTANCE_SQUARED)
-						||(weapon.isLongRangeWeapon()&&squaredDistance>RPD_MULTIPLICATOR_LRW*REACHED_PLAYER_DISTANCE_SQUARED)))
+								||(weapon.isLongRangeWeapon()&&squaredDistance>RPD_MULTIPLICATOR_LRW*REACHED_PLAYER_DISTANCE_SQUARED)))
 				{
 					currTargetNode=findPath(currTile, currPlayerTile, true);
 				}
@@ -183,7 +185,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		}
 		else
 		{
-			System.out.println("not null");
 			if(seesPlayer&&!sawPlayer)
 			{
 				//Sees the player - didn't see him in the last tick

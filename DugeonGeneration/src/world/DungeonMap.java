@@ -156,6 +156,8 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
 			x=p.x/TILE_SIZE;
 			y=p.y/TILE_SIZE;
+			x+=2;
+			y+=2;
 			if (map[x][y].walkable()) {
 				Werewolf z = new Werewolf();
 				addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
@@ -247,6 +249,8 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 
 	@Override
 	public void addObject(Actor object, int x, int y) {
+		if(object instanceof Bullet)
+			System.out.println("dsnuzuoasd");
 		if (object instanceof DungeonMover) {
 			if (isInAccessibleTile(x, y)) {
 				super.addObject(object, x, y);

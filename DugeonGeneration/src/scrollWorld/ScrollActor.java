@@ -1,6 +1,7 @@
 package scrollWorld;
 
 import greenfoot.Actor;
+import weapons.abstracts.Bullet;
 
 /**
  * An actor which ca be in a ScrollWorld. It has 3 types of locations: <Li>
@@ -83,6 +84,8 @@ public abstract class ScrollActor extends Actor {
 	 * is also off screen.
 	 */
 	public void setLocation(int x, int y) {
+		if(this instanceof Bullet)
+			System.out.println("CALLED");
 		if (world == null)
 			return;
 		super.setLocation(x, y);
