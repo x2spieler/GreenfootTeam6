@@ -93,12 +93,12 @@ public class DungeonGenerator {
 		
 	}
 	
-	public void placeDestroyable(){
+	public void placeDestructable(){
 			
 			for (int i = 0; i < ROOM_POOL; i++){
 				int numberOfCrates = (rooms[i].getSizeX()+rooms[i].getSizeY())/10;
 				
-				System.out.println(numberOfCrates);
+				// Debug: System.out.println(numberOfCrates);
 				int stepsize = ((rooms[i].getSizeX()*rooms[i].getSizeY())/(numberOfCrates+1));
 				int steps=0;
 				
@@ -107,7 +107,7 @@ public class DungeonGenerator {
 					for (int x=0; x<rooms[i].getSizeX(); x++){
 						steps++;
 						if (steps == stepsize){
-							mapBlocks[rooms[i].getPosition().x + rand.randomInt(0, rooms[i].getSizeX())][rooms[i].getPosition().y + y].isWalkable = false;
+							mapBlocks[rooms[i].getPosition().x + rand.randomInt(0, rooms[i].getSizeX())][rooms[i].getPosition().y + y].setFieldType(FieldType.DESTRUCTABLE);
 							steps = 0;
 						}
 						
