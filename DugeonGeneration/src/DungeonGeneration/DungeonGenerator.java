@@ -93,6 +93,32 @@ public class DungeonGenerator {
 		
 	}
 	
+	public void placeDestroyable(){
+			
+			for (int i = 0; i < ROOM_POOL; i++){
+				int numberOfCrates = (rooms[i].getSizeX()+rooms[i].getSizeY())/10;
+				
+				System.out.println(numberOfCrates);
+				int stepsize = ((rooms[i].getSizeX()*rooms[i].getSizeY())/(numberOfCrates+1));
+				int steps=0;
+				
+				for (int y = 0; y<rooms[i].getSizeY(); y++ ){
+					
+					for (int x=0; x<rooms[i].getSizeX(); x++){
+						steps++;
+						if (steps == stepsize){
+							mapBlocks[rooms[i].getPosition().x + rand.randomInt(0, rooms[i].getSizeX())][rooms[i].getPosition().y + y].isWalkable = false;
+							steps = 0;
+						}
+						
+					}
+					steps++;
+				}
+			}
+			
+			
+		}
+	
 	//Connects all rooms by building paths from room1 to room 2, from room2 to room3, from room3 to room4 and so on to make sure every room can be reached.
 	//TODO: Fix single wall-tiles appearing without being connected to a wall
 	public void buildPaths() {
