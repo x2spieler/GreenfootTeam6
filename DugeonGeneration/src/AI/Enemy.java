@@ -109,8 +109,10 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		return ((xDist*xDist)+(yDist*yDist))<viewRangeSquared;
 	}
 
+	@Override
 	public void damage(int dmg)
 	{
+		System.out.println("Graaaaar, ouuuuhhh: "+dmg);
 		hp -= dmg;
 		if (hp <= 0)
 		{
@@ -131,9 +133,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	{
 		super.act();
 		
-		//if(wi.getFPS()<45)
-			//System.out.println(wi.getFPS());
-
 		if(getImage()==null)
 			setImage(idleImage);
 
@@ -142,8 +141,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		currPlayerTile.x/=TILE_SIZE;
 		currPlayerTile.y/=TILE_SIZE;
 		Point currTile=new Point(getGlobalX()/TILE_SIZE, getGlobalY()/TILE_SIZE);
-
-		//TODO: Fix flickering
 
 		if(currTargetNode==null)
 		{

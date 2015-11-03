@@ -58,7 +58,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		fps = new FPS();
 		addObject(fps, 100, 20);
 		// player.setNoclip(true);
-		spawnWerewolfs(1);
+		spawnWerewolfs(100);
 	}
 
 	private final void initDungeonMap() {
@@ -148,13 +148,13 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		Random r = new Random();
 		MapField[][] map = getMap();
 		for (int k = 0; k < num; k++) {
-			Point p = getNearestAccessiblePoint(0, 0);
+			//Point p = getNearestAccessiblePoint(0, 0);
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
-			x = p.x / TILE_SIZE;
+			/*x = p.x / TILE_SIZE;
 			y = p.y / TILE_SIZE;
 			x += 2;
-			y += 2;
+			y += 2;*/
 			if (map[x][y].walkable()) {
 				Werewolf z = new Werewolf();
 				addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
@@ -247,8 +247,6 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 	public void removeObject(Actor object)
 	{
 		super.removeObject(object);
-		if(object instanceof Bullet)
-			System.out.println("removed Bullet");
 	}
 
 	@Override

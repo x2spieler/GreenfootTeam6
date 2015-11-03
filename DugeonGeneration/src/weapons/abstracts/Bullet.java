@@ -36,15 +36,12 @@ public abstract class Bullet extends DeltaMover
 	public void act()
 	{
 		super.act();
-		int currX=getGlobalX();
-		int currY=getGlobalY();
-		//System.out.println(currX+" # "+currY);
 		move();
-		/*if (((currX==getGlobalX()||currY==getGlobalY())&&getRotation()%90!=0)||handleCollision() || timeStampCreated+lifetimeInMs<System.currentTimeMillis())
+		if (handleCollision() || timeStampCreated+lifetimeInMs<System.currentTimeMillis())
 		{
 			//Didn't move although move was called -> tried to move into wall. If we are at a rotation of x*90�, we will just stay in front of the wall until our lifetime is over || hit player/enemy || our time has come :(
 			getWorld().removeObject(this);
-		}*/
+		}
 	}
 
 	public Point2D getCopyOfOffset()
@@ -57,7 +54,6 @@ public abstract class Bullet extends DeltaMover
 	 */
 	public boolean handleCollision()
 	{
-		//TODO: Fix collision to ignore typeToIgnore
 		List<?> intersectingObjects = getIntersectingObjects(null);
 		if (intersectingObjects.size() != 0)
 		{
@@ -74,7 +70,7 @@ public abstract class Bullet extends DeltaMover
 				id.damage(damage);
 				return true;
 			}
-			return true;
+			return false;
 		}
 		return false;
 	}
