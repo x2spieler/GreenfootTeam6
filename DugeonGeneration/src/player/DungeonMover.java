@@ -1,8 +1,6 @@
 package player;
 
-import greenfoot.World;
 import scrollWorld.ScrollActor;
-import weapons.abstracts.Bullet;
 import world.DungeonMap;
 
 public class DungeonMover extends ScrollActor {
@@ -13,9 +11,9 @@ public class DungeonMover extends ScrollActor {
 
 	@Override
 	public void setLocation(int x, int y) {
-		if (world != null
-				&& world.isLegalMove(this, x + world.getCameraX() - (world.getWidth() / 2), y
-						+ world.getCameraY() - (world.getHeight() / 2))) {
+		DungeonMap world = getWorld();
+		if (world != null && world.isLegalMove(this, x + world.getCameraX() - (world.getWidth() / 2),
+				y + world.getCameraY() - (world.getHeight() / 2))) {
 			super.setLocation(x, y);
 		}
 	}
@@ -35,6 +33,7 @@ public class DungeonMover extends ScrollActor {
 	 *            in degrees
 	 */
 	public void moveAtAngle(int distance, int angle) {
+		DungeonMap world = getWorld();
 		if (distance == 0 || world == null)
 			return;
 		angle = addAngles(0, angle);
@@ -109,6 +108,7 @@ public class DungeonMover extends ScrollActor {
 	}
 
 	private boolean[] getNeighbouringTilesAccessibility() {
+		DungeonMap world = getWorld();
 		boolean[] ret = new boolean[4];
 		int x = getGlobalX();
 		int y = getGlobalY();
@@ -120,20 +120,21 @@ public class DungeonMover extends ScrollActor {
 	}
 
 	private boolean isWallAhead(int angle) {
+		DungeonMap world = getWorld();
 		int direction = angle / 90;
 		int x = getGlobalX();
 		int y = getGlobalY();
 		if (angle % 90 == 0) {
-			return !world.isInAccessibleTile(x
-					+ ((direction % 2 == 0) ? ((direction == 0) ? 1 : -1) : 0), y
-					+ ((direction % 2 == 1) ? ((direction == 1) ? 1 : -1) : 0));
+			return !world.isInAccessibleTile(x + ((direction % 2 == 0) ? ((direction == 0) ? 1 : -1) : 0),
+					y + ((direction % 2 == 1) ? ((direction == 1) ? 1 : -1) : 0));
 		} else {
-			return !(world.isInAccessibleTile(x + ((direction % 3 == 0) ? 1 : -1), y) && world
-					.isInAccessibleTile(x, y + ((direction < 2) ? 1 : -1)));
+			return !(world.isInAccessibleTile(x + ((direction % 3 == 0) ? 1 : -1), y)
+					&& world.isInAccessibleTile(x, y + ((direction < 2) ? 1 : -1)));
 		}
 	}
 
 	private void shorteningMove(int distance, int angle) {
+		DungeonMap world = getWorld();
 		double radians = Math.toRadians(angle);
 		double sin = Math.sin(radians);
 		double cos = Math.cos(radians);
@@ -151,6 +152,12 @@ public class DungeonMover extends ScrollActor {
 
 	@Override
 	public DungeonMap getWorld() {
+		if (world == null) {
+			world = (DungeonMap) super.getWorld();
+		}
+		if (world == null) {
+			throw new IllegalStateException("World has not been set. Unable to perform that Action.");
+		}
 		return world;
 	}
 
@@ -162,16 +169,17 @@ public class DungeonMover extends ScrollActor {
 		this.noclip = noclip;
 	}
 
-	@Override
-	protected void addedToWorld(World world) {
-		if (world == null)
-			throw new IllegalArgumentException("Are you fucking kidding me?");
-		super.addedToWorld(world);
-		if (world instanceof DungeonMap) {
-			this.world = (DungeonMap) world;
-		} else {
-			throw new IllegalArgumentException("DungeonMover must only be added to a DungeonMap");
-		}
-	}
+	// @Override
+	// protected void addedToWorld(World world) {
+	// if (world == null)
+	// throw new IllegalArgumentException("Are you fucking kidding me?");
+	// super.addedToWorld(world);
+	// if (world instanceof DungeonMap) {
+	// this.world = (DungeonMap) world;
+	// } else {
+	// throw new IllegalArgumentException("DungeonMover must only be added to a
+	// DungeonMap");
+	// }
+	// }
 
 }
