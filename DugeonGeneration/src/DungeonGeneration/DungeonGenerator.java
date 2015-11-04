@@ -1,6 +1,6 @@
 package DungeonGeneration;
 
-import greenfoot.World;
+//import greenfoot.World;
 
 import java.awt.Point;
 
@@ -62,7 +62,6 @@ public class DungeonGenerator {
 				mapBlocks[x][y] = new MapField(FieldType.WALL); 
 				
 			}
-			
 		}
 		
 	}
@@ -93,16 +92,11 @@ public class DungeonGenerator {
 				for (int x=0; x<rooms[i].getSizeX(); x++ ) {
 					mapBlocks[rooms[i].getPosition().x + x][rooms[i].getPosition().y + y].setFieldType(FieldType.GROUND);
 				}
-			}
-						
+			}			
 		}
-		
-		
-		
-		
 	}
 	
-	public void placeDestructable(){
+	/*public void placeDestructable(){
 			
 			for (int i = 0; i < ROOM_POOL; i++){
 				int numberOfCrates = (rooms[i].getSizeX()+rooms[i].getSizeY())/10;
@@ -123,9 +117,6 @@ public class DungeonGenerator {
 							
 							Crate crate = new Crate(100);
 							dm.addObject(crate, (rooms[i].getPosition().x + randomOffset) * 32 + 32/2, (rooms[i].getPosition().y + y) * 32 + 32/2);
-							//dm.addObject(crate, 50, 50);
-							
-							
 							steps = 0;
 						}
 						
@@ -135,8 +126,26 @@ public class DungeonGenerator {
 			}
 			
 			
-		}
+		}*/
 	
+	public void placeDestructable(){
+		
+		for (int i = 0; i < ROOM_POOL; i++){
+			
+			int numberOfCrates = rand.randomInt(0, 3);
+			
+				for (int j=0; j<numberOfCrates;j++){
+					int randomOffsetX = rand.randomInt(0, rooms[i].getSizeX()-1);
+					int randomOffsetY = rand.randomInt(0, rooms[i].getSizeY()-1);
+					mapBlocks[rooms[i].getPosition().x + randomOffsetX][rooms[i].getPosition().y + randomOffsetY].setFieldType(FieldType.DESTRUCTABLE);
+					Crate crate = new Crate(100);
+					dm.addObject(crate, (rooms[i].getPosition().x + randomOffsetX) * 32 + 32/2, (rooms[i].getPosition().y + randomOffsetY) * 32 + 32/2);
+			}			
+		}					
+	}
+			
+				
+		
 	//Connects all rooms by building paths from room1 to room 2, from room2 to room3, from room3 to room4 and so on to make sure every room can be reached.
 	//TODO: Fix single wall-tiles appearing without being connected to a wall
 	public void buildPaths() {
