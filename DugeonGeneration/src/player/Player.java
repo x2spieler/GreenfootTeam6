@@ -1,28 +1,34 @@
 package player;
 
+import AI.IDamageable;
 import greenfoot.Greenfoot;
 import greenfoot.MouseInfo;
-import AI.IDamageable;
+import greenfoot.World;
+import weapons.abstracts.Weapon;
+import weapons.long_range_weapon.Crossbow;
 
 public class Player extends DeltaMover implements IDamageable {
-
-	public static final int MOVE_MODE_FOLLOW_MOUSE = 0;
-	public static final int MOVE_MODE_8_DIRECTIONS = 1;
-	public static final int MOVE_MODE_8_DIRECTIONS_POINT_AT_MOUSE = 2;
-	public static final int MOVE_MODE_MOUSE_KEYBOARD_HYBRID = 3;
-
-	private int mode = MOVE_MODE_FOLLOW_MOUSE;
-
-	private Direction buttonPressed = null;
-	private Direction currentDirection = null;
 
 	private boolean forward = false;
 	private boolean backward = false;
 	private boolean right = false;
 	private boolean left = false;
 
+	private boolean lmbClicked=false;
+	private boolean wasLmbClicked=false;
+
+	Weapon w=null;
+
 	public Player() {
 		super(400);
+		w=new Crossbow(this);
+	}
+
+	@Override
+	protected void addedToWorld(World world)
+	{
+		super.addedToWorld(world);
+		getWorld().addObject(w, getGlobalX(), getGlobalY());
 	}
 
 	@Override
@@ -30,7 +36,7 @@ public class Player extends DeltaMover implements IDamageable {
 	{
 		System.out.println("Ouch! " + dmg + " damage taken.");
 	}
-	
+
 	@Override
 	public int getHP()
 	{
@@ -43,75 +49,14 @@ public class Player extends DeltaMover implements IDamageable {
 
 		getKeysDown();
 
-		if (mode == MOVE_MODE_FOLLOW_MOUSE) {
-			moveAccordingToMouse();
-		} else if (mode == MOVE_MODE_8_DIRECTIONS) {
-			moveInOneOf8Directions();
-		} else if (mode == MOVE_MODE_8_DIRECTIONS_POINT_AT_MOUSE) {
-			moveInOneOf8DirectionsFacingMouse();
-		} else if (mode == MOVE_MODE_MOUSE_KEYBOARD_HYBRID) {
-			moveMouseKeyboardHybrid();
-		}
+		moveInOneOf8Directions();
 
 		centerCamera();
+
+		if(lmbClicked)
+			w.use();
 	}
 
-	private void moveMouseKeyboardHybrid() {
-		faceMouse();
-		getDominantDirection();
-		if ((forward && currentDirection == Direction.FORWARD)) {
-			move();
-		}
-		if ((backward && currentDirection == Direction.BACKWARD)) {
-			moveBackwards();
-		}
-		if ((right && currentDirection == Direction.RIGHT)) {
-			int move = getTickMove();
-			moveAtAngle(move - move / 2, getAngleForRotation(getRotation(), Direction.RIGHT));
-		}
-		if ((left && currentDirection == Direction.LEFT)) {
-			int move = getTickMove();
-			moveAtAngle(move - move / 2, getAngleForRotation(getRotation(), Direction.LEFT));
-		}
-	}
-
-	private int getAngleForRotation(int rotation, Direction dir) {
-		if (rotation <= 45 || rotation > 315 || (rotation <= 225 && rotation > 135)) {
-			return (dir == Direction.RIGHT) ? 90 : 270;
-		}
-		if ((rotation > 45 && rotation <= 135) || (rotation <= 315 && rotation > 225)) {
-			return (dir == Direction.RIGHT) ? 0 : 180;
-		}
-		return 0;
-	}
-
-	private void moveInOneOf8DirectionsFacingMouse() {
-		faceMouse();
-		if (forward && !right && !left) {
-			moveAtAngle(270);
-		}
-		if (backward && !right && !left) {
-			moveAtAngle(90);
-		}
-		if (right && !forward && !backward) {
-			moveAtAngle(0);
-		}
-		if (left && !forward && !backward) {
-			moveAtAngle(180);
-		}
-		if (right && forward) {
-			moveAtAngle(315);
-		}
-		if (right && backward) {
-			moveAtAngle(45);
-		}
-		if (left && forward) {
-			moveAtAngle(225);
-		}
-		if (left && backward) {
-			moveAtAngle(135);
-		}
-	}
 
 	private void moveInOneOf8Directions() {
 		if (forward && !right && !left) {
@@ -151,25 +96,122 @@ public class Player extends DeltaMover implements IDamageable {
 		}
 	}
 
-	private void getDominantDirection() {
-		buttonPressed = getLastKeyPressed();
-		if (buttonPressed != null) {
-			currentDirection = buttonPressed;
-		} else {
-			if (forward && !right && !left) {
-				currentDirection = Direction.FORWARD;
-			}
-			if (backward && !right && !left) {
-				currentDirection = Direction.BACKWARD;
-			}
-			if (!forward && !backward && right) {
-				currentDirection = Direction.RIGHT;
-			}
-			if (!forward && !backward && left) {
-				currentDirection = Direction.LEFT;
-			}
+	private void getKeysDown() {
+		forward = Greenfoot.isKeyDown(Direction.FORWARD.key);
+		backward = Greenfoot.isKeyDown(Direction.BACKWARD.key);
+		right = Greenfoot.isKeyDown(Direction.RIGHT.key);
+		left = Greenfoot.isKeyDown(Direction.LEFT.key);
+		if (forward && backward) {
+			forward = false;
+			backward = false;
+		}
+		if (left && right) {
+			left = false;
+			right = false;
+		}
+
+		MouseInfo info=Greenfoot.getMouseInfo();
+		if(info!=null&&info.getButton()==1)		//1 is LMB
+		{
+			if(!wasLmbClicked)
+				lmbClicked=true;
+			else
+				lmbClicked=false;
+		}
+		else
+			lmbClicked=false;
+		wasLmbClicked=(info!=null ? info.getButton()==1 : false);
+
+	}
+
+	private void faceMouse() {
+		MouseInfo info = Greenfoot.getMouseInfo();
+		if (info != null) {
+			int x = info.getX();
+			int y = info.getY();
+			turnTowards(x, y);
 		}
 	}
+
+	private void centerCamera() {
+		getWorld().setCameraLocation(getGlobalX(), getGlobalY());
+	}
+
+
+	///////////////////////////////////TO BE DELETED
+
+	/*
+	 * 
+
+	 	public static final int MOVE_MODE_FOLLOW_MOUSE = 0;
+	public static final int MOVE_MODE_8_DIRECTIONS = 1;
+	public static final int MOVE_MODE_8_DIRECTIONS_POINT_AT_MOUSE = 2;
+	public static final int MOVE_MODE_MOUSE_KEYBOARD_HYBRID = 3;
+
+	private int mode = MOVE_MODE_FOLLOW_MOUSE;
+
+	 	private Direction buttonPressed = null;
+	private Direction currentDirection = null; 
+
+
+	 if (mode == MOVE_MODE_FOLLOW_MOUSE) {
+			moveAccordingToMouse();
+		} else if (mode == MOVE_MODE_8_DIRECTIONS) {
+			moveInOneOf8Directions();
+		} else if (mode == MOVE_MODE_8_DIRECTIONS_POINT_AT_MOUSE) {
+			moveInOneOf8DirectionsFacingMouse();
+		} else if (mode == MOVE_MODE_MOUSE_KEYBOARD_HYBRID) {
+			moveMouseKeyboardHybrid();
+		}
+
+
+	private void moveMouseKeyboardHybrid() {
+		faceMouse();
+		getDominantDirection();
+		if ((forward && currentDirection == Direction.FORWARD)) {
+			move();
+		}
+		if ((backward && currentDirection == Direction.BACKWARD)) {
+			moveBackwards();
+		}
+		if ((right && currentDirection == Direction.RIGHT)) {
+			int move = getTickMove();
+			moveAtAngle(move - move / 2, getAngleForRotation(getRotation(), Direction.RIGHT));
+		}
+		if ((left && currentDirection == Direction.LEFT)) {
+			int move = getTickMove();
+			moveAtAngle(move - move / 2, getAngleForRotation(getRotation(), Direction.LEFT));
+		}
+	}
+
+	private void moveInOneOf8DirectionsFacingMouse() {
+		faceMouse();
+		if (forward && !right && !left) {
+			moveAtAngle(270);
+		}
+		if (backward && !right && !left) {
+			moveAtAngle(90);
+		}
+		if (right && !forward && !backward) {
+			moveAtAngle(0);
+		}
+		if (left && !forward && !backward) {
+			moveAtAngle(180);
+		}
+		if (right && forward) {
+			moveAtAngle(315);
+		}
+		if (right && backward) {
+			moveAtAngle(45);
+		}
+		if (left && forward) {
+			moveAtAngle(225);
+		}
+		if (left && backward) {
+			moveAtAngle(135);
+		}
+	}
+
 
 	private void moveAccordingToMouse() {
 		faceMouse();
@@ -190,19 +232,34 @@ public class Player extends DeltaMover implements IDamageable {
 		}
 	}
 
-	private void getKeysDown() {
-		forward = Greenfoot.isKeyDown(Direction.FORWARD.key);
-		backward = Greenfoot.isKeyDown(Direction.BACKWARD.key);
-		right = Greenfoot.isKeyDown(Direction.RIGHT.key);
-		left = Greenfoot.isKeyDown(Direction.LEFT.key);
-		if (forward && backward) {
-			forward = false;
-			backward = false;
+	private void getDominantDirection() {
+		buttonPressed = getLastKeyPressed();
+		if (buttonPressed != null) {
+			currentDirection = buttonPressed;
+		} else {
+			if (forward && !right && !left) {
+				currentDirection = Direction.FORWARD;
+			}
+			if (backward && !right && !left) {
+				currentDirection = Direction.BACKWARD;
+			}
+			if (!forward && !backward && right) {
+				currentDirection = Direction.RIGHT;
+			}
+			if (!forward && !backward && left) {
+				currentDirection = Direction.LEFT;
+			}
 		}
-		if (left && right) {
-			left = false;
-			right = false;
+	}
+
+	private int getAngleForRotation(int rotation, Direction dir) {
+		if (rotation <= 45 || rotation > 315 || (rotation <= 225 && rotation > 135)) {
+			return (dir == Direction.RIGHT) ? 90 : 270;
 		}
+		if ((rotation > 45 && rotation <= 135) || (rotation <= 315 && rotation > 225)) {
+			return (dir == Direction.RIGHT) ? 0 : 180;
+		}
+		return 0;
 	}
 
 	private Direction getLastKeyPressed() {
@@ -215,19 +272,6 @@ public class Player extends DeltaMover implements IDamageable {
 		return null;
 	}
 
-	private void faceMouse() {
-		MouseInfo info = Greenfoot.getMouseInfo();
-		if (info != null) {
-			int x = info.getX();
-			int y = info.getY();
-			turnTowards(x, y);
-		}
-	}
-
-	private void centerCamera() {
-		getWorld().setCameraLocation(getGlobalX(), getGlobalY());
-	}
-
 	public int getMode() {
 		return mode;
 	}
@@ -236,5 +280,9 @@ public class Player extends DeltaMover implements IDamageable {
 		if (mode >= 0 && mode < 4)
 			this.mode = mode;
 	}
+
+
+	 */
+
 
 }

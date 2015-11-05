@@ -24,7 +24,9 @@ public abstract class Weapon extends ScrollActor
 	protected EntityType typeToIgnore=null;
 	GreenfootImage emptyImage=null;
 	protected boolean isLongRangeWeapon;
-	
+	protected boolean isPlayerWeapon;
+	protected boolean launchLongRangeWeapon=false;
+
 	private int currRotation=0;
 	private int animTicks=0;
 
@@ -33,11 +35,11 @@ public abstract class Weapon extends ScrollActor
 		animImages=new GreenfootImage[4];
 		TICKS_PER_ANIM_IMG=getTicksPerAnimImg();
 	}
-	
+
 	public boolean isLongRangeWeapon() {
 		return isLongRangeWeapon;
 	}
-	
+
 	@Override
 	protected void addedToWorld(World world) 
 	{
@@ -48,15 +50,23 @@ public abstract class Weapon extends ScrollActor
 			System.out.println("Can't cast world to WorldInterfaceForAI\nSomething's clearly wrong!");
 		}
 		weaponOffsetToPlayer=new Point2D.Double(wi.getTileSize()/2,0);
-		loadImages();
 		typeToIgnore=(owner instanceof Enemy ? EntityType.ENEMY : EntityType.PLAYER);
+		isPlayerWeapon=typeToIgnore==EntityType.PLAYER;
+		loadImages();
 	}
-	
+
 	protected abstract int getTicksPerAnimImg();
-	
+
 	@Override
 	public void act()
 	{
+		if(isPlayerWeapon||playAnimation)
+		{
+			rotatePoint(weaponOffsetToPlayer, owner.getRotation()-currRotation);
+			setGlobalLocation(owner.getGlobalX()+(int)weaponOffsetToPlayer.getX(), owner.getGlobalY()+(int)weaponOffsetToPlayer.getY());
+			setRotation(owner.getRotation());
+			currRotation=owner.getRotation();
+		}
 		if(playAnimation)
 		{
 			if(animTicks%TICKS_PER_ANIM_IMG==0)
@@ -66,16 +76,15 @@ public abstract class Weapon extends ScrollActor
 			{
 				animTicks=0;
 				playAnimation=false;
-				setImage(emptyImage);
 				if(owner instanceof Enemy)
+				{
+					setImage(emptyImage);
 					((Enemy)owner).stopAttacking();
-			}
-			else
-			{
-				rotatePoint(weaponOffsetToPlayer, owner.getRotation()-currRotation);
-				setGlobalLocation(owner.getGlobalX()+(int)weaponOffsetToPlayer.getX(), owner.getGlobalY()+(int)weaponOffsetToPlayer.getY());
-				setRotation(owner.getRotation());
-				currRotation=owner.getRotation();
+				}
+				else
+					setImage(animImages[0]);
+
+				launchLongRangeWeapon=true;
 			}
 		}
 	}
@@ -88,14 +97,16 @@ public abstract class Weapon extends ScrollActor
 		long millisNow = System.currentTimeMillis();
 		if (lastUsage + reloadTimeInMS < millisNow)
 		{
-			lastUsage = millisNow;
-			playAnimation=true;
-			return triggerUse();
+			if(triggerUse())
+			{
+				lastUsage = millisNow;
+				playAnimation=true;
+				return true;
+			}	
 		}
-		else
-			return false;
+		return false;
 	}
-	
+
 	/**
 	 * Called by use() if the weapon can be used
 	 */
@@ -113,7 +124,10 @@ public abstract class Weapon extends ScrollActor
 			animImages[i]=new GreenfootImage("enemies/weapons/"+weaponName+"/"+weaponName+i+".png");
 		}
 		emptyImage=new GreenfootImage("empty.png");
-		setImage(emptyImage);
+		if(isPlayerWeapon)
+			setImage(animImages[0]);
+		else
+			setImage(emptyImage);
 	}
 
 	//Implementation credits: http://stackoverflow.com/questions/2259476/rotating-a-point-about-another-point-2d

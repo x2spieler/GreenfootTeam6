@@ -7,6 +7,7 @@ import AI.Enemy;
 import AI.IDamageable;
 import player.Player;
 import weapons.EntityType;
+import world.DungeonMap;
 
 public abstract class ShortRangeWeapon extends Weapon
 {
@@ -35,7 +36,7 @@ public abstract class ShortRangeWeapon extends Weapon
 	 */
 	public void dealDamage()
 	{
-		List<?> intersectingObjects = getIntersectingObjects(null);
+		List<?> intersectingObjects = getObjectsInRange(DungeonMap.TILE_SIZE+DungeonMap.TILE_SIZE/2, null);
 		if (intersectingObjects.size() != 0)
 		{
 			for (Object o : intersectingObjects)

@@ -4,7 +4,6 @@ import java.awt.geom.Point2D;
 
 public abstract class LongRangeWeapon extends Weapon
 {
-	private boolean inUse=false;
 	private int ammo=-1;
 	
 	public LongRangeWeapon() {
@@ -21,7 +20,7 @@ public abstract class LongRangeWeapon extends Weapon
 	public void act()
 	{
 		super.act();
-		if(inUse&&getImage()==emptyImage)
+		if(launchLongRangeWeapon)
 		{
 			//Animation completed, launch bullet now
 			Bullet b=instantiateBullet();
@@ -29,7 +28,7 @@ public abstract class LongRangeWeapon extends Weapon
 			rotatePoint(offset, getRotation());
 			getWorld().addObject(b, getGlobalX()+(int)offset.getX(), getGlobalY()+(int)offset.getY());
 			b.setRotation(getRotation());
-			inUse=false;
+			launchLongRangeWeapon=false;
 		}
 	}
 	
@@ -38,7 +37,6 @@ public abstract class LongRangeWeapon extends Weapon
 	 {
 		 if(ammo>0)
 		 {
-			 inUse=true;
 			 ammo--;
 			 return true;
 		 }
