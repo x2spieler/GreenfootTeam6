@@ -2,6 +2,7 @@ package player;
 
 import AI.IDamageable;
 import greenfoot.Greenfoot;
+import greenfoot.GreenfootImage;
 import greenfoot.MouseInfo;
 import greenfoot.World;
 import weapons.abstracts.Weapon;
@@ -17,11 +18,24 @@ public class Player extends DeltaMover implements IDamageable {
 	private boolean lmbClicked=false;
 	private boolean wasLmbClicked=false;
 
+	GreenfootImage idleImage;
+	GreenfootImage walkImgs[];
+	int animTicks;
+	private final int CHANGE_WALK_ANIMATION_FRAMES=40;
+
+	//TODO: LongRangeWEapons call parameterless constructor atm
 	Weapon w=null;
 
 	public Player() {
 		super(400);
 		w=new Crossbow(this);
+
+		idleImage=new GreenfootImage("player/player_idle.png");
+		walkImgs=new GreenfootImage[2];
+		walkImgs[0]=new GreenfootImage("player/player_walk1.png");
+		walkImgs[1]=new GreenfootImage("player/player_walk2.png");
+
+		animTicks=0;
 	}
 
 	@Override
@@ -51,6 +65,21 @@ public class Player extends DeltaMover implements IDamageable {
 
 		moveInOneOf8Directions();
 
+		if(forward||backward||right||left)
+		{
+			if(animTicks==0)
+				setImage(walkImgs[0]);
+			else if(animTicks==CHANGE_WALK_ANIMATION_FRAMES)
+				setImage(walkImgs[1]);
+
+			animTicks=(++animTicks)%(2*CHANGE_WALK_ANIMATION_FRAMES);
+		}
+		else 
+		{
+			if(getImage()!=idleImage)
+				setImage(idleImage);
+		}
+
 		centerCamera();
 
 		if(lmbClicked)
@@ -59,40 +88,43 @@ public class Player extends DeltaMover implements IDamageable {
 
 
 	private void moveInOneOf8Directions() {
-		if (forward && !right && !left) {
-			setRotation(270);
+		int walkRot=-1;
+		if (forward && !right && !left)
+			walkRot=270;
+		if (backward && !right && !left)
+			walkRot=90;
+		if (right && !forward && !backward)
+			walkRot=0;
+		if (left && !forward && !backward)
+			walkRot=180;
+		if (right && forward)
+			walkRot=315;
+		if (right && backward)
+			walkRot=45;
+		if (left && forward)
+			walkRot=225;
+		if (left && backward)
+			walkRot=135;
+
+		if(walkRot!=-1)
+		{
+			setRotation(walkRot);
 			move();
 		}
-		if (backward && !right && !left) {
-			setRotation(90);
-			move();
-		}
-		if (right && !forward && !backward) {
-			setRotation(0);
-			move();
-		}
-		if (left && !forward && !backward) {
-			setRotation(180);
-			move();
-		}
-		if (right && forward) {
-			setRotation(315);
-			move();
-		}
-		if (right && backward) {
-			setRotation(45);
-			move();
-		}
-		if (left && forward) {
-			setRotation(225);
-			move();
-		}
-		if (left && backward) {
-			setRotation(135);
-			move();
-		}
-		if (!right && !left && !forward && !backward) {
-			faceMouse();
+		faceMouse();
+		if(walkRot!=-1)
+		{
+			//TODO: Fix
+			int currRot=getRotation();
+			final int MAX_WEAPON_ROT=45;
+			int minAngle=currRot-MAX_WEAPON_ROT;
+			int maxAngle=currRot+MAX_WEAPON_ROT;
+			int add=minAngle<0 ? MAX_WEAPON_ROT : (maxAngle>360?-MAX_WEAPON_ROT:0);
+			int diff=(walkRot+add)-(currRot+add);
+			if(diff<-MAX_WEAPON_ROT)
+				setRotation(walkRot+MAX_WEAPON_ROT);
+			else if(diff>MAX_WEAPON_ROT)
+				setRotation(walkRot-MAX_WEAPON_ROT);
 		}
 	}
 
