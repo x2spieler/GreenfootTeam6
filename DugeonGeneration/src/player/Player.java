@@ -22,6 +22,8 @@ public class Player extends DeltaMover implements IDamageable {
 	GreenfootImage walkImgs[];
 	int animTicks;
 	private final int CHANGE_WALK_ANIMATION_FRAMES=40;
+	
+	private final int MAX_WEAPON_ROTATION=70;
 
 	//TODO: LongRangeWEapons call parameterless constructor atm
 	Weapon w=null;
@@ -114,17 +116,19 @@ public class Player extends DeltaMover implements IDamageable {
 		faceMouse();
 		if(walkRot!=-1)
 		{
-			//TODO: Fix
 			int currRot=getRotation();
-			final int MAX_WEAPON_ROT=45;
-			int minAngle=currRot-MAX_WEAPON_ROT;
-			int maxAngle=currRot+MAX_WEAPON_ROT;
-			int add=minAngle<0 ? MAX_WEAPON_ROT : (maxAngle>360?-MAX_WEAPON_ROT:0);
-			int diff=(walkRot+add)-(currRot+add);
-			if(diff<-MAX_WEAPON_ROT)
-				setRotation(walkRot+MAX_WEAPON_ROT);
-			else if(diff>MAX_WEAPON_ROT)
-				setRotation(walkRot-MAX_WEAPON_ROT);
+			int minAngle=walkRot-MAX_WEAPON_ROTATION;
+			int maxAngle=walkRot+MAX_WEAPON_ROTATION;
+			
+			if(walkRot-currRot<-180)		//Compensate the "jump" from 0° - 360° and vice versa
+				currRot-=360;
+			else if(walkRot-currRot>180)
+				currRot+=360;
+			
+			if(currRot<minAngle)
+				setRotation(minAngle);
+			else if(currRot>maxAngle)
+				setRotation(maxAngle);
 		}
 	}
 
