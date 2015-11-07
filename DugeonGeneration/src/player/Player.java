@@ -25,12 +25,11 @@ public class Player extends DeltaMover implements IDamageable {
 	
 	private final int MAX_WEAPON_ROTATION=70;
 
-	//TODO: LongRangeWEapons call parameterless constructor atm
 	Weapon w=null;
 
 	public Player() {
-		super(400);
-		w=new Crossbow(this);
+		super(400); 
+		w=new Crossbow(this, 30);
 
 		idleImage=new GreenfootImage("player/player_idle.png");
 		walkImgs=new GreenfootImage[2];

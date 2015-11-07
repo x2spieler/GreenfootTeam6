@@ -6,11 +6,6 @@ public abstract class LongRangeWeapon extends Weapon
 {
 	private int ammo=-1;
 	
-	public LongRangeWeapon() {
-		isLongRangeWeapon=true;
-		ammo=Integer.MAX_VALUE;
-	}
-	
 	public LongRangeWeapon(int ammo) {
 		isLongRangeWeapon=true;
 		this.ammo=ammo;

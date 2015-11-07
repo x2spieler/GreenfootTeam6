@@ -102,10 +102,10 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			weapon=new ClubWithSpikes(this);
 			break;
 		case "crossbow":
-			weapon=new Crossbow(this);
+			weapon=new Crossbow(this, Integer.MAX_VALUE);
 			break;
 		case "ninja_star":
-			weapon=new weapons.long_range_weapon.NinjaStar(this);
+			weapon=new weapons.long_range_weapon.NinjaStar(this, Integer.MAX_VALUE);
 			break;
 		default:
 			throw new IllegalArgumentException("Seems like somebody forgot to update this switch-statement after adding new weapons.. Bad boy!");

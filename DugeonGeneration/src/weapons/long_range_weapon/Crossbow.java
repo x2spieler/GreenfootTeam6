@@ -7,8 +7,9 @@ import weapons.bullets.CrossbowArrow;
 
 public class Crossbow extends LongRangeWeapon{
 	
-	public Crossbow(ScrollActor owner)
+	public Crossbow(ScrollActor owner, int ammo)
 	{
+		super(ammo);
 		damage=20;
 		weaponName="crossbow";
 		this.owner=owner;

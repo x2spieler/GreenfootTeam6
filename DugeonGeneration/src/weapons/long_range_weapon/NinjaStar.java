@@ -7,8 +7,9 @@ import weapons.abstracts.LongRangeWeapon;
 public class NinjaStar extends LongRangeWeapon
 {
 
-	public NinjaStar(ScrollActor owner) 
+	public NinjaStar(ScrollActor owner, int ammo)
 	{
+		super(ammo);
 		damage=20;
 		weaponName="ninja_star";
 		this.owner=owner;
