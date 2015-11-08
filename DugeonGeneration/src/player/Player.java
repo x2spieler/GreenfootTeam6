@@ -254,6 +254,12 @@ public class Player extends DeltaMover implements IDamageable {
 			currHP=maxHP;
 	}
 
+	/**
+	 * 
+	 * @param bullet
+	 * @param num
+	 * @return True if ammo was added / false if the player has no weapon that uses the given Bullets
+	 */
 	@SuppressWarnings("rawtypes")
 	public boolean addAmmo(Class bullet, int num)
 	{
