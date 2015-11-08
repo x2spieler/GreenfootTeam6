@@ -290,7 +290,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		double yNorm=yDir/length;
 		double currX=p2.x;
 		double currY=p2.y;
-		double add=TILE_SIZE;
+		double add=TILE_SIZE/4;
 		DungeonMap dm=(DungeonMap)getWorld();
 		while(!(Math.abs(p1.x-currX)<1&&Math.abs(p1.y-currY)<1))
 		{

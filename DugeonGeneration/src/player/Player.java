@@ -29,8 +29,9 @@ public class Player extends DeltaMover implements IDamageable {
 
 	public Player() {
 		super(400); 
+		//TODO: Add support for multiple weapons and scrolling
+		//TODO: Implement player dying
 		w=new Crossbow(this, 30);
-
 		idleImage=new GreenfootImage("player/player_idle.png");
 		walkImgs=new GreenfootImage[2];
 		walkImgs[0]=new GreenfootImage("player/player_walk1.png");
