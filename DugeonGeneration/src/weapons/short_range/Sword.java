@@ -11,6 +11,7 @@ public class Sword extends ShortRangeWeapon
 		weaponName="sword";
 		this.owner=owner;
 		reloadTimeInMS=2000;
+		additionalValue=1;
 	}
 
 	@Override

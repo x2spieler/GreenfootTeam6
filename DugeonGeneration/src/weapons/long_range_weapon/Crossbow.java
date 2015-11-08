@@ -14,6 +14,7 @@ public class Crossbow extends LongRangeWeapon{
 		weaponName="crossbow";
 		this.owner=owner;
 		reloadTimeInMS=2000;
+		additionalValue=1;
 	}
 
 	@Override

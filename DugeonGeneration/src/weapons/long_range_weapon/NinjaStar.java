@@ -15,6 +15,7 @@ public class NinjaStar extends LongRangeWeapon
 		weaponName="ninja_star";
 		this.owner=owner;
 		reloadTimeInMS=2000;
+		additionalValue=1;
 	}
 	
 	@Override

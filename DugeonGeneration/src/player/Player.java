@@ -38,6 +38,8 @@ public class Player extends DeltaMover implements IDamageable {
 
 	private int maxHP=-1;
 	private int currHP=-1;
+	
+	private int score=0;
 
 	private ArrayList<QueuedBuff> queuedBuffs;
 
@@ -110,6 +112,15 @@ public class Player extends DeltaMover implements IDamageable {
 
 	public int getMaxHP() {
 		return maxHP;
+	}
+	
+	public int getScore() {
+		return score;
+	}
+	
+	public void addScore(int s)
+	{
+		score+=s;
 	}
 
 	@Override

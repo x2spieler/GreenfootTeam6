@@ -11,6 +11,7 @@ public class ClubWithSpikes extends ShortRangeWeapon
 		weaponName="club_spikes";
 		this.owner=owner;
 		reloadTimeInMS=3000;
+		additionalValue=1;
 	}
 
 	@Override

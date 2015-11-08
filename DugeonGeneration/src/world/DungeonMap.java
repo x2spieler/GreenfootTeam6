@@ -192,7 +192,7 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 
 	@Override
 	public void addPlayerScore(int score) {
-
+		player.addScore(score);
 	}
 
 	@Override
