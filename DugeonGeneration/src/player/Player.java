@@ -27,7 +27,7 @@ public class Player extends DeltaMover implements IDamageable {
 	GreenfootImage idleImage;
 	GreenfootImage walkImgs[];
 	int animTicks;
-	private final int CHANGE_WALK_ANIMATION_FRAMES=40;
+	private final int CHANGE_WALK_ANIMATION_FRAMES=20;
 
 	private final int MAX_WEAPON_ROTATION=70;
 
@@ -188,8 +188,10 @@ public class Player extends DeltaMover implements IDamageable {
 		}
 		else 
 		{
-			if(getImage()!=idleImage)
+			if(!currWeapon.isPlayingAnimation()&&getImage()!=idleImage)
 				setImage(idleImage);
+			else if(currWeapon.isPlayingAnimation()&&getImage()!=walkImgs[0])
+				setImage(walkImgs[0]);
 		}
 	}
 

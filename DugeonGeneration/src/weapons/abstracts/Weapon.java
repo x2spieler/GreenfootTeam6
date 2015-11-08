@@ -58,6 +58,11 @@ public abstract class Weapon extends ScrollActor
 	{
 		return weaponName;
 	}
+	
+	public boolean isPlayingAnimation()
+	{
+		return playAnimation;
+	}
 
 	@Override
 	protected void addedToWorld(World world) 
