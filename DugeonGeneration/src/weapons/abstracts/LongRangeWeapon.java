@@ -56,4 +56,6 @@ public abstract class LongRangeWeapon extends Weapon
 	 }
 
 	protected abstract Bullet instantiateBullet();
+	
+	public abstract boolean areBulletsClassOf(Class c);
 }

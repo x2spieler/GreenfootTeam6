@@ -53,6 +53,11 @@ public abstract class Weapon extends ScrollActor
 		active=false;
 		setImage(emptyImage);
 	}
+	
+	public String getWeaponName()
+	{
+		return weaponName;
+	}
 
 	@Override
 	protected void addedToWorld(World world) 

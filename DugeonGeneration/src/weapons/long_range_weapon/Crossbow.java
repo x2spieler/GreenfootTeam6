@@ -25,4 +25,9 @@ public class Crossbow extends LongRangeWeapon{
 	protected int getTicksPerAnimImg() {
 		return 30;
 	}
+
+	@Override
+	public boolean areBulletsClassOf(Class c) {
+		return c==CrossbowArrow.class;
+	}
 }

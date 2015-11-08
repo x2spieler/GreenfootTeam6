@@ -7,6 +7,7 @@ import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 import greenfoot.MouseInfo;
 import greenfoot.World;
+import weapons.abstracts.LongRangeWeapon;
 import weapons.abstracts.Weapon;
 import weapons.long_range_weapon.Crossbow;
 import weapons.long_range_weapon.NinjaStar;
@@ -34,19 +35,23 @@ public class Player extends DeltaMover implements IDamageable {
 
 	Weapon currWeapon=null;
 	int currWeaponIndx=0;
-	
-	private int hp=-1;
+
+	private int maxHP=-1;
+	private int currHP=-1;
+
+	private ArrayList<QueuedBuff> queuedBuffs;
 
 	public Player(int hp) {
 		super(400); 
-		//TODO: Implement buffs
-		this.hp=hp;
-		
+
+		this.maxHP=hp;
+		this.currHP=hp;
+
 		weapons=new ArrayList<Weapon>();
-		weapons.add(new Sword(this));
-		weapons.add(new ClubWithSpikes(this));
-		weapons.add(new Crossbow(this, 30));
-		weapons.add(new NinjaStar(this, 30));
+		addWeapon(new Sword(this));
+		addWeapon(new ClubWithSpikes(this));
+		addWeapon(new Crossbow(this, 30));
+		addWeapon(new NinjaStar(this, 30));
 
 		idleImage=new GreenfootImage("player/player_idle.png");
 		walkImgs=new GreenfootImage[2];
@@ -54,6 +59,8 @@ public class Player extends DeltaMover implements IDamageable {
 		walkImgs[1]=new GreenfootImage("player/player_walk2.png");
 
 		animTicks=0;
+
+		queuedBuffs=new ArrayList<QueuedBuff>();
 	}
 
 	@Override
@@ -69,25 +76,26 @@ public class Player extends DeltaMover implements IDamageable {
 		setWeapon(0);
 	}
 
-	private void setWeapon(int wpnIndx)
+	private boolean setWeapon(int wpnIndx)
 	{
 		if(wpnIndx>=weapons.size())
 		{
 			System.out.println("Invalid weapon index");
-			return;
+			return false;
 		}
 		if(currWeapon!=null)
 			currWeapon.deactivateWeapon();
 		currWeapon=weapons.get(wpnIndx);
 		currWeapon.activateWeapon();
+		return true;
 	}
 
 	@Override
 	public void damage(int dmg)
 	{
 		System.out.println("Ouch! " + dmg + " damage taken.");
-		hp-=dmg;
-		if(hp<=0)
+		currHP-=dmg;
+		if(currHP<=0)
 		{
 			System.out.println("Player died");
 			Greenfoot.stop();
@@ -97,7 +105,11 @@ public class Player extends DeltaMover implements IDamageable {
 	@Override
 	public int getHP()
 	{
-		return hp;
+		return currHP;
+	}
+
+	public int getMaxHP() {
+		return maxHP;
 	}
 
 	@Override
@@ -107,17 +119,18 @@ public class Player extends DeltaMover implements IDamageable {
 		getKeysDown();
 
 		moveInOneOf8Directions();
-		
+
 		updateCurrentWeapon();
 
 		animatePlayer();
+
+		processQueuedBuffs();
 
 		centerCamera();
 
 		if(lmbClicked)
 			currWeapon.use();
 	}
-
 
 	private void moveInOneOf8Directions() {
 		int walkRot=-1;
@@ -161,7 +174,7 @@ public class Player extends DeltaMover implements IDamageable {
 				setRotation(maxAngle);
 		}
 	}
-	
+
 	private void animatePlayer()
 	{
 		if(forward||backward||right||left)
@@ -206,15 +219,15 @@ public class Player extends DeltaMover implements IDamageable {
 			lmbClicked=false;
 		wasLmbClicked=(info!=null ? info.getButton()==1 : false);
 	}
-	
+
 	private void updateCurrentWeapon()
 	{
 		for(int i=1;i<10;i++)
 		{
 			if(Greenfoot.isKeyDown(i+"")&&(i-1)!=currWeaponIndx)
 			{
-				setWeapon(i-1);
-				currWeaponIndx=i-1;
+				if(setWeapon(i-1))
+					currWeaponIndx=i-1;
 			}
 		}
 	}
@@ -232,6 +245,100 @@ public class Player extends DeltaMover implements IDamageable {
 		getWorld().setCameraLocation(getGlobalX(), getGlobalY());
 	}
 
+	///////////////////////// BUFFS AND POWERUPS
+	
+	public void heal(int hp)
+	{
+		currHP+=hp;
+		if(currHP>maxHP)
+			currHP=maxHP;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public boolean addAmmo(Class bullet, int num)
+	{
+		for(Weapon w:weapons)
+		{
+			if(!w.isLongRangeWeapon())
+				continue;
+			LongRangeWeapon lrw=(LongRangeWeapon)w;
+			if(lrw.areBulletsClassOf(bullet))
+			{
+				lrw.addAmmo(num);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Adds the weapon to the players weapon list
+	 * If he already has the weapon and it is a LongRangeWeapon, only the ammo weapon
+	 * @param weapon
+	 */
+	public void addWeapon(Weapon weapon)
+	{
+		for(Weapon w:weapons)
+		{
+			if(w.getWeaponName().equals(weapon.getWeaponName()))
+			{
+				if(w.isLongRangeWeapon())
+				{
+					LongRangeWeapon lrw=(LongRangeWeapon)w;
+					lrw.addAmmo(((LongRangeWeapon)weapon).getAmmo());
+				}
+				return;
+			}
+		}
+		weapons.add(weapon);
+	}
+	
+	public void addBuff(Buff buff, double param, int durationInMs)
+	{
+		switch(buff)
+		{
+		case SPEED_MULTIPLIER:
+			setSpeed((int)(getSpeed()*param));
+			if(durationInMs!=-1)
+				queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, 1.d/param));
+			break;
+		case MAX_HP:
+			maxHP+=(int)param;
+			if(durationInMs!=-1)
+				queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, -param));
+			break;
+		}
+	}
+
+	private void processQueuedBuffs()
+	{
+		for(int i=0;i<queuedBuffs.size();)
+		{
+			QueuedBuff qb=queuedBuffs.get(i);
+			if(qb.timeStamp<System.currentTimeMillis())
+			{
+				addBuff(qb.buff, qb.param, -1);
+				queuedBuffs.remove(i);
+			}
+			else
+				i++;
+		}
+	}
+	
+
+	class QueuedBuff
+	{
+		long timeStamp=-1;
+		Buff buff;
+		double param;
+
+		public QueuedBuff(long timeStamp, Buff buff, double param)
+		{
+			this.timeStamp=timeStamp;
+			this.buff=buff;
+			this.param=param;
+		}
+	}
 
 	///////////////////////////////////TO BE DELETED
 
