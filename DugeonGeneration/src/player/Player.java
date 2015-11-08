@@ -1,5 +1,7 @@
 package player;
 
+import java.util.ArrayList;
+
 import AI.IDamageable;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
@@ -7,6 +9,9 @@ import greenfoot.MouseInfo;
 import greenfoot.World;
 import weapons.abstracts.Weapon;
 import weapons.long_range_weapon.Crossbow;
+import weapons.long_range_weapon.NinjaStar;
+import weapons.short_range.ClubWithSpikes;
+import weapons.short_range.Sword;
 
 public class Player extends DeltaMover implements IDamageable {
 
@@ -22,16 +27,27 @@ public class Player extends DeltaMover implements IDamageable {
 	GreenfootImage walkImgs[];
 	int animTicks;
 	private final int CHANGE_WALK_ANIMATION_FRAMES=40;
-	
+
 	private final int MAX_WEAPON_ROTATION=70;
 
-	Weapon w=null;
+	private ArrayList<Weapon> weapons;
 
-	public Player() {
+	Weapon currWeapon=null;
+	int currWeaponIndx=0;
+	
+	private int hp=-1;
+
+	public Player(int hp) {
 		super(400); 
-		//TODO: Add support for multiple weapons and scrolling
-		//TODO: Implement player dying
-		w=new Crossbow(this, 30);
+		//TODO: Implement buffs
+		this.hp=hp;
+		
+		weapons=new ArrayList<Weapon>();
+		weapons.add(new Sword(this));
+		weapons.add(new ClubWithSpikes(this));
+		weapons.add(new Crossbow(this, 30));
+		weapons.add(new NinjaStar(this, 30));
+
 		idleImage=new GreenfootImage("player/player_idle.png");
 		walkImgs=new GreenfootImage[2];
 		walkImgs[0]=new GreenfootImage("player/player_walk1.png");
@@ -44,19 +60,44 @@ public class Player extends DeltaMover implements IDamageable {
 	protected void addedToWorld(World world)
 	{
 		super.addedToWorld(world);
-		getWorld().addObject(w, getGlobalX(), getGlobalY());
+
+		for(Weapon w:weapons)
+		{
+			getWorld().addObject(w, getGlobalX(), getGlobalY());
+			w.deactivateWeapon();
+		}
+		setWeapon(0);
+	}
+
+	private void setWeapon(int wpnIndx)
+	{
+		if(wpnIndx>=weapons.size())
+		{
+			System.out.println("Invalid weapon index");
+			return;
+		}
+		if(currWeapon!=null)
+			currWeapon.deactivateWeapon();
+		currWeapon=weapons.get(wpnIndx);
+		currWeapon.activateWeapon();
 	}
 
 	@Override
 	public void damage(int dmg)
 	{
 		System.out.println("Ouch! " + dmg + " damage taken.");
+		hp-=dmg;
+		if(hp<=0)
+		{
+			System.out.println("Player died");
+			Greenfoot.stop();
+		}
 	}
 
 	@Override
 	public int getHP()
 	{
-		return -1;
+		return hp;
 	}
 
 	@Override
@@ -66,26 +107,15 @@ public class Player extends DeltaMover implements IDamageable {
 		getKeysDown();
 
 		moveInOneOf8Directions();
+		
+		updateCurrentWeapon();
 
-		if(forward||backward||right||left)
-		{
-			if(animTicks==0)
-				setImage(walkImgs[0]);
-			else if(animTicks==CHANGE_WALK_ANIMATION_FRAMES)
-				setImage(walkImgs[1]);
-
-			animTicks=(++animTicks)%(2*CHANGE_WALK_ANIMATION_FRAMES);
-		}
-		else 
-		{
-			if(getImage()!=idleImage)
-				setImage(idleImage);
-		}
+		animatePlayer();
 
 		centerCamera();
 
 		if(lmbClicked)
-			w.use();
+			currWeapon.use();
 	}
 
 
@@ -119,16 +149,34 @@ public class Player extends DeltaMover implements IDamageable {
 			int currRot=getRotation();
 			int minAngle=walkRot-MAX_WEAPON_ROTATION;
 			int maxAngle=walkRot+MAX_WEAPON_ROTATION;
-			
+
 			if(walkRot-currRot<-180)		//Compensate the "jump" from 0° - 360° and vice versa
 				currRot-=360;
 			else if(walkRot-currRot>180)
 				currRot+=360;
-			
+
 			if(currRot<minAngle)
 				setRotation(minAngle);
 			else if(currRot>maxAngle)
 				setRotation(maxAngle);
+		}
+	}
+	
+	private void animatePlayer()
+	{
+		if(forward||backward||right||left)
+		{
+			if(animTicks==0)
+				setImage(walkImgs[0]);
+			else if(animTicks==CHANGE_WALK_ANIMATION_FRAMES)
+				setImage(walkImgs[1]);
+
+			animTicks=(++animTicks)%(2*CHANGE_WALK_ANIMATION_FRAMES);
+		}
+		else 
+		{
+			if(getImage()!=idleImage)
+				setImage(idleImage);
 		}
 	}
 
@@ -157,7 +205,18 @@ public class Player extends DeltaMover implements IDamageable {
 		else
 			lmbClicked=false;
 		wasLmbClicked=(info!=null ? info.getButton()==1 : false);
-
+	}
+	
+	private void updateCurrentWeapon()
+	{
+		for(int i=1;i<10;i++)
+		{
+			if(Greenfoot.isKeyDown(i+"")&&(i-1)!=currWeaponIndx)
+			{
+				setWeapon(i-1);
+				currWeaponIndx=i-1;
+			}
+		}
 	}
 
 	private void faceMouse() {

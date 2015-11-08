@@ -22,9 +22,9 @@ public class DemoWorld extends ScrollWorld {
 		// Greenfoot.stop();
 		// System.err.println("no Robot #_#");
 		// }
-		addObject(new Player(), 0, 0);
+		/*addObject(new Player(), 0, 0);
 
-		addObject(new FPS(), 85, 15); // FPS isn't a subclass of
+		addObject(new FPS(), 85, 15); // FPS isn't a subclass of*/
 		// ScrollActor, so it will looklike it's a camera follower
 	}
 

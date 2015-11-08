@@ -29,6 +29,7 @@ public abstract class Weapon extends ScrollActor
 
 	private int currRotation=0;
 	private int animTicks=0;
+	private boolean active=false;
 
 	public Weapon()
 	{
@@ -38,6 +39,19 @@ public abstract class Weapon extends ScrollActor
 
 	public boolean isLongRangeWeapon() {
 		return isLongRangeWeapon;
+	}
+	
+	public void activateWeapon()
+	{
+		active=true;
+		setImage(animImages[0]);
+	}
+	
+	public void deactivateWeapon()
+	{
+		playAnimation=false;
+		active=false;
+		setImage(emptyImage);
 	}
 
 	@Override
@@ -60,7 +74,7 @@ public abstract class Weapon extends ScrollActor
 	@Override
 	public void act()
 	{
-		if(isPlayerWeapon||playAnimation)
+		if((isPlayerWeapon&&active)||playAnimation)
 		{
 			rotatePoint(weaponOffsetToPlayer, owner.getRotation()-currRotation);
 			setGlobalLocation(owner.getGlobalX()+(int)weaponOffsetToPlayer.getX(), owner.getGlobalY()+(int)weaponOffsetToPlayer.getY());
@@ -101,6 +115,7 @@ public abstract class Weapon extends ScrollActor
 			{
 				lastUsage = millisNow;
 				playAnimation=true;
+				animTicks=0;
 				return true;
 			}	
 		}

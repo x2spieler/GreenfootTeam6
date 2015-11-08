@@ -57,14 +57,14 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		pickup = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		destructible = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		initTiles();
-		player = new Player();
+		player = new Player(10);
 		//player.setMode(Player.MOVE_MODE_8_DIRECTIONS);
 		addObject(player, 0, 0);
 		fps = new FPS();
 		addObject(fps, 100, 20);
 		// player.setNoclip(true);
 
-		spawnWerewolfs(100);
+		spawnWerewolfs(10);
 
 	}
 
