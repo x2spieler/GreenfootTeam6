@@ -1,27 +1,26 @@
 package world;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Random;
-
-import AI.IDamageable;
-import AI.IWorldInterfaceForAI;
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.FieldType;
-import DungeonGeneration.MapField;
 import enemies.Werewolf;
 import greenfoot.Actor;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
-import images.tileset.house.House;
+
+import java.awt.Color;
+import java.awt.Point;
+import java.io.IOException;
+import java.util.Random;
+
 import menu.BasicWorldWithMenu;
 import menu.Menu;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
 import weapons.abstracts.Bullet;
+import AI.IDamageable;
+import AI.IWorldInterfaceForAI;
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.FieldType;
+import DungeonGeneration.MapField;
 
 public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceForAI {
 
@@ -35,8 +34,6 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 	private MapField[][] map;
 	// private final boolean[][] fastMap;
 
-	private final Map<House, GreenfootImage> tiles;
-
 	private GreenfootImage ground, wall, back, empty, pickup, destructible;
 
 	private Player player;
@@ -48,10 +45,8 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 				DungeonGenerator.MAP_HEIGHT * TILE_SIZE, menu);
 		initDungeonMap();
 
-		tiles = new TilesetParser("images/tileset/house/tilesetHouse.png").getTiles();
-
 		back = getBackground();
-		ground = tiles.get(House.GROUND);
+		ground = new GreenfootImage("grass.png");
 		wall = new GreenfootImage("wood.png");
 		empty = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		pickup = new GreenfootImage(TILE_SIZE, TILE_SIZE);
@@ -90,14 +85,6 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 		map = gen.getMap();
 	}
 
-	// private void transcribeMap() {
-	// for (int i = 0; i < map.length; i++) {
-	// for (int j = 0; j < map[i].length; j++) {
-	// fastMap[i][j] = map[i][j].walkable();
-	// }
-	// }
-	// }
-
 	private void renderMap(int x, int y) {
 		Point startingTile = getTileOfPixel(x, y);
 		Point startingPixel = getStartingPixel(x, y);
@@ -121,8 +108,8 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 
 	private GreenfootImage getImageForTile(int i, int j) {
 
-		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT)
-				? getTileForFieldType(map[i][j].getFieldType()) : empty;
+		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT) ? getTileForFieldType(map[i][j]
+				.getFieldType()) : empty;
 	}
 
 	private GreenfootImage getTileForFieldType(FieldType type) {
@@ -257,7 +244,8 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 				if (isInAccessibleTile(i, j)) {
 					int dX = x - i;
 					int dY = y - j;
-					if (Math.sqrt(dX * dX + dY * dY) < Math.sqrt(smallestDX * smallestDX + smallestDY * smallestDY)) {
+					if (Math.sqrt(dX * dX + dY * dY) < Math.sqrt(smallestDX * smallestDX
+							+ smallestDY * smallestDY)) {
 						smallestDX = dX;
 						smallestDY = dY;
 					}
