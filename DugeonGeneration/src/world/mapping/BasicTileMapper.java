@@ -37,6 +37,8 @@ public abstract class BasicTileMapper<E extends Enum<E> & ITileset> {
 		public int y();
 
 		public int getTileSize();
+
+		public DungeonTile getDungeonTile();
 	}
 
 	protected class TilesetParser {
