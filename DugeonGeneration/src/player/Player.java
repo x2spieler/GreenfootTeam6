@@ -64,6 +64,9 @@ public class Player extends DeltaMover implements IDamageable {
 
 		queuedBuffs=new ArrayList<QueuedBuff>();
 	}
+	
+	//TODO: Prevent damage through walls
+	//TODO: Use mouse scroll and modulo for changing wepaons
 
 	@Override
 	protected void addedToWorld(World world)
@@ -174,7 +177,7 @@ public class Player extends DeltaMover implements IDamageable {
 			int minAngle=walkRot-MAX_WEAPON_ROTATION;
 			int maxAngle=walkRot+MAX_WEAPON_ROTATION;
 
-			if(walkRot-currRot<-180)		//Compensate the "jump" from 0° - 360° and vice versa
+			if(walkRot-currRot<-180)		//Compensate the "jump" from 0ï¿½ - 360ï¿½ and vice versa
 				currRot-=360;
 			else if(walkRot-currRot>180)
 				currRot+=360;

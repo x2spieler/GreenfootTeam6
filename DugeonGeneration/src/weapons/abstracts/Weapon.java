@@ -26,7 +26,9 @@ public abstract class Weapon extends ScrollActor
 	protected boolean isLongRangeWeapon;
 	protected boolean isPlayerWeapon;
 	protected boolean launchLongRangeWeapon=false;
-
+	
+	private int showWeaponWhileChanging=0;
+	private final int SHOW_WEAPON_ON_CHANGE_DUR=30;
 	private int currRotation=0;
 	private int animTicks=0;
 	private boolean active=false;
@@ -45,6 +47,7 @@ public abstract class Weapon extends ScrollActor
 	{
 		active=true;
 		setImage(animImages[0]);
+		showWeaponWhileChanging=SHOW_WEAPON_ON_CHANGE_DUR;
 	}
 	
 	public void deactivateWeapon()
@@ -52,6 +55,7 @@ public abstract class Weapon extends ScrollActor
 		playAnimation=false;
 		active=false;
 		setImage(emptyImage);
+		showWeaponWhileChanging=0;
 	}
 	
 	public String getWeaponName()
@@ -111,6 +115,13 @@ public abstract class Weapon extends ScrollActor
 				launchLongRangeWeapon=true;
 			}
 		}
+		else
+		{
+			if(getImage()!=emptyImage&&showWeaponWhileChanging==0)
+				setImage(emptyImage);
+			if(showWeaponWhileChanging>0)
+				showWeaponWhileChanging--;
+		}
 	}
 
 	/**
@@ -126,6 +137,7 @@ public abstract class Weapon extends ScrollActor
 				lastUsage = millisNow;
 				playAnimation=true;
 				animTicks=0;
+				showWeaponWhileChanging=0;
 				return true;
 			}	
 		}
