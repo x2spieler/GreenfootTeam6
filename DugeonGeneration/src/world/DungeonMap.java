@@ -1,9 +1,5 @@
 package world;
 
-import enemies.Werewolf;
-import greenfoot.Actor;
-import greenfoot.GreenfootImage;
-
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
@@ -12,12 +8,6 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-import player.DungeonMover;
-import player.Player;
-import scrollWorld.FPS;
-import scrollWorld.ScrollWorld;
-import weapons.abstracts.Bullet;
-import weapons.abstracts.Weapon;
 import AI.IDamageable;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
@@ -25,6 +15,16 @@ import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
 import core.FrameType;
 import core.GodFrame;
+import enemies.Werewolf;
+import greenfoot.Actor;
+import greenfoot.GreenfootImage;
+import player.DungeonMover;
+import player.Player;
+import scrollWorld.FPS;
+import scrollWorld.ScrollWorld;
+import weapons.abstracts.Bullet;
+import weapons.abstracts.Weapon;
+import world.mapping.DungeonMapper;
 
 public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
@@ -39,10 +39,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	// private final boolean[][] fastMap;
 
 	private GreenfootImage ground, wall, back, empty, pickup, destructible;
+	private final GreenfootImage[][] tileMap;
 
 	private Player player;
 
-	private GodFrame godFrame=null;
+	private GodFrame godFrame = null;
 
 	FPS fps;
 
@@ -50,7 +51,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
 				DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
 		initDungeonMap();
-
+		tileMap = new DungeonMapper(map).getImageForTilesetHouse();
 		back = getBackground();
 		ground = new GreenfootImage("grass.png");
 		wall = new GreenfootImage("wood.png");
@@ -59,7 +60,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		destructible = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		initTiles();
 		player = new Player(10);
-		//player.setMode(Player.MOVE_MODE_8_DIRECTIONS);
+		// player.setMode(Player.MOVE_MODE_8_DIRECTIONS);
 		addObject(player, 0, 0);
 		fps = new FPS();
 		addObject(fps, 100, 20);
@@ -69,42 +70,34 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	}
 
-	public void createGodFrame(JFrame frame)
-	{
-		godFrame=new GodFrame(frame, this);
+	public void createGodFrame(JFrame frame) {
+		godFrame = new GodFrame(frame, this);
 		changeToFrame(FrameType.MAIN_MENU);
 	}
 
-	public void addMouseListenerToContentPane(MouseWheelListener listener)
-	{
+	public void addMouseListenerToContentPane(MouseWheelListener listener) {
 		godFrame.addScrollListener(listener);
 	}
 
-	public void changeToFrame(FrameType type)
-	{
+	public void changeToFrame(FrameType type) {
 		godFrame.changeToFrame(type);
 	}
 
-	public void updateHealthLabel(int health)
-	{
+	public void updateHealthLabel(int health) {
 		godFrame.updateHealthLabel(health);
 	}
-	
-	public void updateScoreLabel(int score)
-	{
+
+	public void updateScoreLabel(int score) {
 		godFrame.updateScoreLabel(score);
 	}
 
-
-	public void updateAmmoLabel(Weapon w)
-	{
-		if(godFrame!=null)
+	public void updateAmmoLabel(Weapon w) {
+		if (godFrame != null)
 			godFrame.updateAmmoLabel(w);
 	}
 
-	public void updateWeaponName(Weapon w)
-	{
-		if(godFrame!=null)
+	public void updateWeaponName(Weapon w) {
+		if (godFrame != null)
 			godFrame.updateWeaponName(w);
 	}
 
@@ -153,8 +146,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private GreenfootImage getImageForTile(int i, int j) {
 
-		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT) ? getTileForFieldType(map[i][j]
-				.getFieldType()) : empty;
+		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT)
+				? getTileForFieldType(map[i][j].getFieldType()) : empty;
 	}
 
 	private GreenfootImage getTileForFieldType(FieldType type) {
@@ -285,8 +278,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 				if (isInAccessibleTile(i, j)) {
 					int dX = x - i;
 					int dY = y - j;
-					if (Math.sqrt(dX * dX + dY * dY) < Math.sqrt(smallestDX * smallestDX
-							+ smallestDY * smallestDY)) {
+					if (Math.sqrt(dX * dX + dY * dY) < Math.sqrt(smallestDX * smallestDX + smallestDY * smallestDY)) {
 						smallestDX = dX;
 						smallestDY = dY;
 					}

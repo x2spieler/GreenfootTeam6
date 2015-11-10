@@ -18,16 +18,17 @@ public class HouseTileLoader implements ITileLoader {
 		String[] ids = { "UpperLeftInnerCorner11", "UpperLeftInnerCorner12", "UpperRightInnerCorner11",
 				"UpperRightInnerCorner12", "WallFront11", "WallCenter", "UpperLefttOuterCornerSpecial",
 				"UpperRightOuterCornerSpecial", "empty", "UpperLeftInnerCorner21", "UpperLeftInnerCorner22",
-				"UpperRightInnerCorner21", "UpperRightInnerCorner22", "WallFront21", "UpperLefttOuterCorner11",
-				"UpperLefttOuterCorner12", "UpperRightOuterCorner11", "UpperRightOuterCorner12",
+				"UpperRightInnerCorner21", "UpperRightInnerCorner22", "WallFront21", "UpperLeftOuterCorner11",
+				"UpperLeftOuterCorner12", "UpperRightOuterCorner11", "UpperRightOuterCorner12",
 				"UpperLeftInnerCorner31", "UpperLeftInnerCorner32", "UpperRightInnerCorner31",
-				"UpperRightInnerCorner32", "WallFront31", "UpperLefttOuterCorner21", "UpperLefttOuterCorner22",
+				"UpperRightInnerCorner32", "WallFront31", "UpperLeftOuterCorner21", "UpperLeftOuterCorner22",
 				"UpperRightOuterCorner21", "UpperRightOuterCorner22", "LowerLeftInnerCorner11",
 				"LowerLeftInnerCorner12", "LowerRightInnerCorner11", "LowerRightInnerCorner12", "WallBack11",
-				"LowerLeftOuterCorner11", "LowerLeftOuterCorner12", "LowerRightOuterCorner11", "LowerLeftOuterCorner12",
-				"LowerLeftInnerCornerSpecial11", "LowerLeftInnerCornerSpecial12", "LowerRightInnerCornerSpecial11",
-				"LowerRightInnerCornerSpecial12", "WallBackSpecial", "LowerLeftOuterCorner21", "LowerLeftOuterCorner22",
-				"LowerLeftOuterCorner21", "LowerLeftOuterCorner22", "Floor11", "Floor12", "Floor13", "Floor14", "empty",
+				"LowerLeftOuterCorner11", "LowerLeftOuterCorner12", "LowerRightOuterCorner11",
+				"LowerRightOuterCorner12", "LowerLeftInnerCornerSpecial11", "LowerLeftInnerCornerSpecial12",
+				"LowerRightInnerCornerSpecial11", "LowerRightInnerCornerSpecial12", "WallBackSpecial",
+				"LowerLeftOuterCorner21", "LowerLeftOuterCorner22", "LowerRightOuterCorner21",
+				"LowerRightOuterCorner22", "Floor11", "Floor12", "Floor13", "Floor14", "empty",
 				"LowerLeftOuterCorner31", "LowerLeftOuterCorner32", "LowerRightOuterCorner31",
 				"LowerRightOuterCorner32", "empty", "Floor22", "Floor23", "Floor24", "Floor25", "WallLeft11",
 				"WallLeft12", "WallRight11", "wallRight12", "empty", "Floor32", "DoubleCornerLeft11",
@@ -138,9 +139,10 @@ public class HouseTileLoader implements ITileLoader {
 	}
 
 	private ITileBlock getUpperLeftInnerCorner() {
-		return new TileBlock(2, 3, findTile("UpperLeftInnerCorner11"), findTile("UpperLeftInnerCorner12"),
+		ITile[] tiles = { findTile("UpperLeftInnerCorner11"), findTile("UpperLeftInnerCorner12"),
 				findTile("UpperLeftInnerCorner21"), findTile("UpperLeftInnerCorner22"),
-				findTile("UpperLeftInnerCorner31"), findTile("UpperLeftInnerCorner32"));
+				findTile("UpperLeftInnerCorner31"), findTile("UpperLeftInnerCorner32") };
+		return new TileBlock(2, 3, tiles);
 	}
 
 	private ITileBlock getUpperRightOuterCorner() {

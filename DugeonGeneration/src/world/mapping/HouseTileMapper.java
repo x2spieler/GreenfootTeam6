@@ -96,6 +96,8 @@ public class HouseTileMapper {
 	}
 
 	private boolean fitsMapAt(int i, int j, FieldType[][] field) {
+		if (i >= 0 || j >= 0 || (i + field.length) < map.length || (j + field[0].length) < map[0].length)
+			return false;
 		for (int k = 0; k < field.length; k++) {
 			for (int k2 = 0; k2 < field[k].length; k2++) {
 				if (!(field[k][k2] == map[i + k][j + k2].getFieldType())) {

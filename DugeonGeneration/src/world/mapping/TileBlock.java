@@ -15,7 +15,7 @@ public class TileBlock implements ITileBlock {
 		int k = 0;
 		for (int i = 0; i < y; i++) {
 			for (int j = 0; j < x; j++) {
-				block[i][j] = tiles[k];
+				block[j][i] = tiles[k];
 				k++;
 			}
 		}
