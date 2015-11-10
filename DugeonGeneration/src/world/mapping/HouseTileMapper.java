@@ -1,95 +1,196 @@
 package world.mapping;
 
-import greenfoot.GreenfootImage;
-
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import world.mapping.HouseTileMapper.House;
-import world.mapping.BasicTileMapper.ITileset;
-import world.mapping.DungeonTile.TileAttribute;
+import DungeonGeneration.FieldType;
+import DungeonGeneration.MapField;
+import greenfoot.GreenfootImage;
 
-public class HouseTileMapper extends BasicTileMapper<House> {
+public class HouseTileMapper {
 
-	private final static String resource = "images/tileset/house/tilesetHouse.png";
+	public final static DungeonGeneration.FieldType[][] UpperLeftInner, UpperRightInner, LowerLeftInner,
+			LowerRightInner, UpperLeftOuter, UpperRightOuter, LowerLeftOuter, LowerRightOuter, WallFront, WallBack,
+			WallLeft, WallRight;
 
-	public HouseTileMapper(DungeonTile[][] dungeon) throws IOException {
-		super(dungeon, resource, House.class);
+	static {
+		UpperLeftInner = new FieldType[][] { { FieldType.WALL, FieldType.WALL }, { FieldType.WALL, FieldType.WALL },
+				{ FieldType.WALL, FieldType.GROUND } };
+		UpperRightInner = new FieldType[][] { { FieldType.WALL, FieldType.WALL }, { FieldType.WALL, FieldType.WALL },
+				{ FieldType.GROUND, FieldType.WALL } };
+		LowerLeftInner = new FieldType[][] { { FieldType.WALL, FieldType.GROUND }, { FieldType.WALL, FieldType.WALL } };
+		LowerRightInner = new FieldType[][] { { FieldType.GROUND, FieldType.WALL },
+				{ FieldType.WALL, FieldType.WALL } };
+		UpperLeftOuter = new FieldType[][] { { FieldType.GROUND, FieldType.GROUND },
+				{ FieldType.GROUND, FieldType.WALL } };
+		UpperRightOuter = new FieldType[][] { { FieldType.GROUND, FieldType.GROUND },
+				{ FieldType.WALL, FieldType.GROUND } };
+		LowerLeftOuter = new FieldType[][] { { FieldType.GROUND, FieldType.WALL }, { FieldType.GROUND, FieldType.WALL },
+				{ FieldType.GROUND, FieldType.GROUND } };
+		LowerRightOuter = new FieldType[][] { { FieldType.WALL, FieldType.GROUND },
+				{ FieldType.WALL, FieldType.GROUND }, { FieldType.GROUND, FieldType.GROUND } };
+		WallFront = new FieldType[][] { { FieldType.WALL }, { FieldType.WALL }, { FieldType.GROUND } };
+		WallBack = new FieldType[][] { { FieldType.GROUND }, { FieldType.WALL } };
+		WallLeft = new FieldType[][] { { FieldType.GROUND, FieldType.WALL } };
+		WallRight = new FieldType[][] { { FieldType.WALL, FieldType.GROUND } };
 	}
 
-	@Override
-	protected GreenfootImage[][] mapTiles(DungeonTile[][] dungeon, Map<House, GreenfootImage> map) {
-		// TODO map tiles to semantic map.
-		return null;
+	private ITileLoader loader = new HouseTileLoader();
+
+	private List<ITileBlock> blocks;
+
+	private Map<FieldType[][], ITileBlock> blockMap;
+
+	private MapField[][] map;
+
+	private GreenfootImage[][] images;
+
+	public HouseTileMapper(MapField[][] map) throws IOException {
+		this.map = map;
+		images = new GreenfootImage[map.length][map[0].length];
+		blocks = loader.loadTiles();
+		blockMap = new HashMap<>();
+		initMap();
+		mapTiles();
 	}
 
-	// TODO: FAR from finished.
-	enum House implements ITileset {
-		Tile11(0, 0, TileAttribute.wall), Tile12(1, 0, TileAttribute.wall), Tile13(2, 0,
-				TileAttribute.wall), Tile14(3, 0, TileAttribute.wall), Tile15(4, 0,
-				TileAttribute.wall), Tile16(5, 0, TileAttribute.wall), Tile17(6, 0,
-				TileAttribute.ground), Tile18(7, 0, TileAttribute.ground), Tile19(8, 0), Tile21(0,
-				1, TileAttribute.wall), Tile22(1, 1, TileAttribute.wall), Tile23(2, 1,
-				TileAttribute.wall), Tile24(3, 1, TileAttribute.wall), Tile25(4, 1,
-				TileAttribute.wall), Tile26(5, 1, TileAttribute.ground), Tile27(6, 1,
-				TileAttribute.ground), Tile28(7, 1, TileAttribute.ground), Tile29(8, 1,
-				TileAttribute.ground), Tile31(0, 2, TileAttribute.wall), Tile32(1, 2,
-				TileAttribute.ground), Tile33(2, 2, TileAttribute.ground), Tile34(3, 2,
-				TileAttribute.wall), Tile35(4, 2, TileAttribute.ground), Tile36(5, 2,
-				TileAttribute.ground), Tile37(6, 2, TileAttribute.wall), Tile38(7, 2,
-				TileAttribute.wall), Tile39(8, 2, TileAttribute.ground), Tile41(0, 3,
-				TileAttribute.wall), Tile42(1, 3, TileAttribute.ground), Tile43(2, 3,
-				TileAttribute.ground), Tile44(3, 3, TileAttribute.wall), Tile45(4, 3,
-				TileAttribute.ground), Tile46(5, 3, TileAttribute.ground), Tile47(6, 3,
-				TileAttribute.wall), Tile48(7, 3, TileAttribute.wall), Tile49(8, 3,
-				TileAttribute.ground), Tile51(0, 4, TileAttribute.wall), Tile52(1, 4,
-				TileAttribute.ground), Tile53(2, 4, TileAttribute.ground), Tile54(3, 4,
-				TileAttribute.wall), Tile55(4, 4, TileAttribute.ground), Tile56(5, 4,
-				TileAttribute.ground), Tile57(6, 4, TileAttribute.wall), Tile58(7, 4,
-				TileAttribute.wall), Tile59(8, 4, TileAttribute.ground), Tile61(0, 5,
-				TileAttribute.ground), Tile62(1, 5, TileAttribute.ground), Tile63(2, 5,
-				TileAttribute.ground), Tile64(3, 5, TileAttribute.ground), Tile65(4, 5), Tile66(5,
-				5, TileAttribute.ground), Tile67(6, 5, TileAttribute.ground), Tile68(7, 5,
-				TileAttribute.ground), Tile69(8, 5, TileAttribute.ground), Tile71(0, 6), Tile72(1,
-				6, TileAttribute.ground), Tile73(2, 6, TileAttribute.ground), Tile74(3, 6,
-				TileAttribute.ground), Tile75(4, 6, TileAttribute.ground), Tile76(5, 6,
-				TileAttribute.ground), Tile77(6, 6, TileAttribute.wall), Tile78(7, 6,
-				TileAttribute.wall), Tile79(8, 6, TileAttribute.ground), Tile81(0, 7), Tile82(1, 7,
-				TileAttribute.ground), Tile83(2, 7, TileAttribute.wall), Tile84(3, 7,
-				TileAttribute.wall), Tile85(4, 7, TileAttribute.wall), Tile86(5, 7,
-				TileAttribute.wall), Tile87(6, 7, TileAttribute.ground), Tile88(7, 7), Tile89(8, 7), Tile91(
-				0, 8), Tile92(1, 8, TileAttribute.ground), Tile93(2, 8, TileAttribute.ground), Tile94(
-				3, 8, TileAttribute.wall), Tile95(4, 8, TileAttribute.wall), Tile96(5, 8,
-				TileAttribute.ground), Tile97(6, 8, TileAttribute.ground), Tile98(7, 8,
-				TileAttribute.ground), Tile99(8, 8, TileAttribute.ground);
+	private void initMap() {
+		blockMap.put(UpperLeftInner, blocks.get(0));
+		blockMap.put(UpperRightInner, blocks.get(1));
+		blockMap.put(LowerLeftInner, blocks.get(2));
+		blockMap.put(LowerRightInner, blocks.get(3));
+		blockMap.put(UpperLeftOuter, blocks.get(4));
+		blockMap.put(UpperRightOuter, blocks.get(5));
+		blockMap.put(LowerLeftOuter, blocks.get(6));
+		blockMap.put(LowerRightOuter, blocks.get(7));
+		blockMap.put(WallFront, blocks.get(8));
+		blockMap.put(WallBack, blocks.get(9));
+		blockMap.put(WallLeft, blocks.get(10));
+		blockMap.put(WallRight, blocks.get(11));
+	}
 
-		private final int x, y;
-		private final DungeonTile tile;
+	public GreenfootImage[][] getImageArray() {
+		return images;
+	}
 
-		House(int x, int y, TileAttribute... attribute) {
-			this.x = x;
-			this.y = y;
-			tile = new DungeonTile(attribute);
-		}
-
-		@Override
-		public int x() {
-			return x;
-		}
-
-		@Override
-		public int y() {
-			return y;
-		}
-
-		@Override
-		public int getTileSize() {
-			return 32;
-		}
-
-		@Override
-		public DungeonTile getDungeonTile() {
-			return tile;
+	private void mapTiles() {
+		for (int k = 0; k < 2; k++) {
+			for (int i = 0; i < images.length; i++) {
+				for (int j = 0; j < images[0].length; j++) {
+					findBlockFor(i, j);
+				}
+			}
 		}
 	}
+
+	private void findBlockFor(int i, int j) {
+		if (images[i][j] != null)
+			return;
+		for (FieldType[][] tb : blockMap.keySet()) {
+			if (fitsMapAt(i, j, tb)) {
+				blockMap.get(tb).transcribe(i, j, images);
+			}
+		}
+	}
+
+	private boolean fitsMapAt(int i, int j, FieldType[][] field) {
+		for (int k = 0; k < field.length; k++) {
+			for (int k2 = 0; k2 < field[k].length; k2++) {
+				if (!(field[k][k2] == map[i + k][j + k2].getFieldType())) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private boolean isInMap(int i, int j) {
+		if (i >= 0 && i < map.length && j >= 0 && j < map[0].length) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isWall(int i, int j) {
+		if (!isInMap(i, j))
+			return false;
+		return map[i][j].getFieldType().equals(FieldType.WALL);
+	}
+
+	private boolean isGround(int i, int j) {
+		if (!isInMap(i, j))
+			return false;
+		return map[i][j].getFieldType().equals(FieldType.GROUND);
+	}
+
+	private int countAdjacentGroundTiles(int i, int j) {
+		int ret = 0;
+		if (isGround(i + 1, j)) {
+			ret++;
+		}
+		if (isGround(i, j + 1)) {
+			ret++;
+		}
+		if (isGround(i - 1, j)) {
+			ret++;
+		}
+		if (isGround(i, j - 1)) {
+			ret++;
+		}
+		return ret;
+	}
+
+	private int countDiagonalAdjacentGroundTiles(int i, int j) {
+		int ret = 0;
+		if (isGround(i + 1, j + 1)) {
+			ret++;
+		}
+		if (isGround(i - 1, j - 1)) {
+			ret++;
+		}
+		if (isGround(i + 1, j - 1)) {
+			ret++;
+		}
+		if (isGround(i - 1, j + 1)) {
+			ret++;
+		}
+		return ret;
+	}
+
+	private int countAdjacentWallTiles(int i, int j) {
+		int ret = 0;
+		if (isWall(i + 1, j)) {
+			ret++;
+		}
+		if (isWall(i, j + 1)) {
+			ret++;
+		}
+		if (isWall(i - 1, j)) {
+			ret++;
+		}
+		if (isWall(i, j - 1)) {
+			ret++;
+		}
+		return ret;
+	}
+
+	private int countDiagonalAdjacentWallTiles(int i, int j) {
+		int ret = 0;
+		if (isWall(i + 1, j + 1)) {
+			ret++;
+		}
+		if (isWall(i - 1, j - 1)) {
+			ret++;
+		}
+		if (isWall(i + 1, j - 1)) {
+			ret++;
+		}
+		if (isWall(i - 1, j + 1)) {
+			ret++;
+		}
+		return ret;
+	}
+
 }
