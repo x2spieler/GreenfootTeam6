@@ -3,6 +3,7 @@ package player;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 
+import core.FrameType;
 import AI.IDamageable;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
@@ -244,6 +245,9 @@ public class Player extends DeltaMover implements IDamageable {
 		else
 			lmbClicked=false;
 		wasLmbClicked=(info!=null ? info.getButton()==1 : false);
+		
+		if(Greenfoot.isKeyDown("escape"))
+			dungeonMap.changeToFrame(FrameType.MAIN_MENU);
 	}
 
 	private void faceMouse() {

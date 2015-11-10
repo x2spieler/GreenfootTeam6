@@ -12,6 +12,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
+import core.FrameType;
 import core.GodFrame;
 import player.DungeonMover;
 import player.Player;
@@ -75,6 +76,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void addMouseListenerToContentPane(MouseWheelListener listener)
 	{
 		godFrame.addScrollListener(listener);
+	}
+	
+	public void changeToFrame(FrameType type)
+	{
+		godFrame.changeToFrame(type);
 	}
 
 	private final void initTiles() {
