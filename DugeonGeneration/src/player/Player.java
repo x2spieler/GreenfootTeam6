@@ -247,7 +247,7 @@ public class Player extends DeltaMover implements IDamageable {
 		wasLmbClicked=(info!=null ? info.getButton()==1 : false);
 		
 		if(Greenfoot.isKeyDown("escape"))
-			dungeonMap.changeToFrame(FrameType.MAIN_MENU);
+			dungeonMap.changeToFrame(FrameType.PAUSE_MENU);
 	}
 
 	private void faceMouse() {

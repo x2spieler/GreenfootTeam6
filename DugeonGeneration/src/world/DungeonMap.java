@@ -70,7 +70,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	
 	public void createGodFrame(JFrame frame)
 	{
-		godFrame=new GodFrame(frame);
+		godFrame=new GodFrame(frame, this);
+		changeToFrame(FrameType.MAIN_MENU);
 	}
 	
 	public void addMouseListenerToContentPane(MouseWheelListener listener)
