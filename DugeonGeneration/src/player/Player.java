@@ -65,8 +65,8 @@ public class Player extends DeltaMover implements IDamageable {
 		queuedBuffs=new ArrayList<QueuedBuff>();
 	}
 	
-	//TODO: Prevent damage through walls
 	//TODO: Use mouse scroll and modulo for changing wepaons
+	//TODO: Implement methods for chaning weapon attributes at runtime
 
 	@Override
 	protected void addedToWorld(World world)
