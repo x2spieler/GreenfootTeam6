@@ -1,9 +1,13 @@
 package objects;
 
+import java.awt.Point;
+
 import core.Mathf;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
 import AI.IDamageable;
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.FieldType;
 import scrollWorld.ScrollActor;
 
 public class Crate extends ScrollActor implements IDamageable{
@@ -16,12 +20,18 @@ public class Crate extends ScrollActor implements IDamageable{
 	
 	public enum State {alive, dead};
 	public State state = State.alive;
+	
+	public Point mapCoords = new Point(0,0); 
+	
+	private DungeonGenerator dgen;
 		
-	public Crate (int maxHealth) {
+	public Crate (int maxHealth, Point mapCoords, DungeonGenerator dgen) {
 		
 		health = maxHealth;
 		this.maxHealth = maxHealth;
+		this.mapCoords = mapCoords;
 		
+		this.dgen = dgen;
 	}	
 	
 	@Override
@@ -62,11 +72,16 @@ public class Crate extends ScrollActor implements IDamageable{
 		
 	}
 	
+	public Point getMapCoords () {
+		return mapCoords;
+	}
+	
 	public void destroy() {
 		
 		setImage(imgBroken);
 		state = State.dead;
 		
+		dgen.setMapFieldsType(mapCoords.x, mapCoords.y, FieldType.GROUND);
 	}
 	
 }
