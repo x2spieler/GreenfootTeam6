@@ -37,6 +37,7 @@ public class GodFrame
 	private JLabel healthLabel;
 	private JLabel ammoLabel;
 	private JLabel weaponLabel;
+	private JLabel scoreLabel;
 
 	public GodFrame(JFrame frame, DungeonMap world)
 	{
@@ -141,23 +142,29 @@ public class GodFrame
 		JPanel vpPanel=(JPanel)((JPanel)((JViewport)viewPortPane.getComponent(0)).getComponent(0)).getComponent(1);
 		vpPanel.setLayout(null);
 
-		healthLabel=new JLabel("Health:");
+		healthLabel=new JLabel("Health: -1");
 		healthLabel.setForeground(new Color(255,0,0));
 		healthLabel.setFont(new Font("Serif", Font.BOLD, 20));
 		healthLabel.setBounds(25, 80, 250, 35);
 		vpPanel.add(healthLabel);
 
-		ammoLabel=new JLabel("Ammo:");
+		ammoLabel=new JLabel("Ammo: -1");
 		ammoLabel.setForeground(new Color(255,0,0));
 		ammoLabel.setFont(new Font("Serif", Font.BOLD, 20));
 		ammoLabel.setBounds(25, 115, 250, 35);
 		vpPanel.add(ammoLabel);
 
-		weaponLabel=new JLabel("Weapon:");
+		weaponLabel=new JLabel("Weapon: -1");
 		weaponLabel.setForeground(new Color(255,0,0));
 		weaponLabel.setFont(new Font("Serif", Font.BOLD, 20));
 		weaponLabel.setBounds(25, 150, 250, 35);
 		vpPanel.add(weaponLabel);
+		
+		scoreLabel=new JLabel("Score: -1");
+		scoreLabel.setForeground(new Color(255,0,0));
+		scoreLabel.setFont(new Font("Serif", Font.BOLD, 20));
+		scoreLabel.setBounds(25, 185, 250, 35);
+		vpPanel.add(scoreLabel);
 	}
 
 	//Basically copied from WorldCanvas - thanks WorldCanvas!
@@ -177,6 +184,11 @@ public class GodFrame
 	public void updateHealthLabel(int health)
 	{
 		healthLabel.setText("Health: "+health);
+	}
+	
+	public void updateScoreLabel(int score)
+	{
+		scoreLabel.setText("Score: "+score);
 	}
 
 	public void updateAmmoLabel(Weapon w)

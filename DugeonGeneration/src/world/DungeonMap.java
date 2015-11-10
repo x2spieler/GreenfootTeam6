@@ -89,6 +89,12 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	{
 		godFrame.updateHealthLabel(health);
 	}
+	
+	public void updateScoreLabel(int score)
+	{
+		godFrame.updateScoreLabel(score);
+	}
+
 
 	public void updateAmmoLabel(Weapon w)
 	{
@@ -219,6 +225,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	@Override
 	public void addPlayerScore(int score) {
 		player.addScore(score);
+		updateScoreLabel(player.getScore());
 	}
 
 	@Override

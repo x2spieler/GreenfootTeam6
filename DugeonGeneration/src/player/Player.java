@@ -150,6 +150,7 @@ public class Player extends DeltaMover implements IDamageable {
 			dungeonMap.updateHealthLabel(getHP());
 			dungeonMap.updateAmmoLabel(currWeapon);
 			dungeonMap.updateWeaponName(currWeapon);
+			dungeonMap.updateScoreLabel(getScore());
 		}
 
 		getKeysDown();
