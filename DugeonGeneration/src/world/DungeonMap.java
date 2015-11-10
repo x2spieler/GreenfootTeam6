@@ -2,7 +2,6 @@ package world;
 
 import enemies.Werewolf;
 import greenfoot.Actor;
-import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 
 import java.awt.Color;
@@ -10,11 +9,10 @@ import java.awt.Point;
 import java.io.IOException;
 import java.util.Random;
 
-import menu.BasicWorldWithMenu;
-import menu.Menu;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
+import scrollWorld.ScrollWorld;
 import weapons.abstracts.Bullet;
 import AI.IDamageable;
 import AI.IWorldInterfaceForAI;
@@ -22,7 +20,7 @@ import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
 
-public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceForAI {
+public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	public static final int VIEWPORT_WIDTH = 1024;
 	public static final int VIEWPORT_HEIGHT = 768;
@@ -40,9 +38,9 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 
 	FPS fps;
 
-	public DungeonMap(Menu menu) throws IOException {
+	public DungeonMap() throws IOException {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
-				DungeonGenerator.MAP_HEIGHT * TILE_SIZE, menu);
+				DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
 		initDungeonMap();
 
 		back = getBackground();
@@ -205,11 +203,6 @@ public class DungeonMap extends BasicWorldWithMenu implements IWorldInterfaceFor
 	@Override
 	public int getTileSize() {
 		return TILE_SIZE;
-	}
-
-	@Override
-	public void switchTo() {
-		Greenfoot.setWorld(this);
 	}
 
 	public boolean isInAccessibleTile(int x, int y) {
