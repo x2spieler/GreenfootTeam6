@@ -314,19 +314,29 @@ public class Player extends DeltaMover implements IDamageable {
 		weapons.add(weapon);
 	}
 	
-	public void addBuff(Buff buff, double param, int durationInMs)
+	public void addBuff(Buff buff, double[] param, int durationInMs)
 	{
 		switch(buff)
 		{
 		case SPEED_MULTIPLIER:
-			setSpeed((int)(getSpeed()*param));
+			if(param.length<1)
+				throw new IllegalArgumentException("SpeedMultiplier needs 1 argument to be passed to");
+			setSpeed((int)(getSpeed()*param[0]));
 			if(durationInMs!=-1)
-				queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, 1.d/param));
+			{
+				param[0]=1.d/param[0];
+				queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, param));
+			}
 			break;
 		case MAX_HP:
-			maxHP+=(int)param;
+			if(param.length<1)
+				throw new IllegalArgumentException("SpeedMultiplier needs 1 argument to be passed to");
+			maxHP+=(int)param[0];
 			if(durationInMs!=-1)
-				queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, -param));
+			{
+				param[0]*=-1;
+				queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, param));
+			}
 			break;
 		}
 	}
@@ -351,9 +361,9 @@ public class Player extends DeltaMover implements IDamageable {
 	{
 		long timeStamp=-1;
 		Buff buff;
-		double param;
+		double param[];
 
-		public QueuedBuff(long timeStamp, Buff buff, double param)
+		public QueuedBuff(long timeStamp, Buff buff, double param[])
 		{
 			this.timeStamp=timeStamp;
 			this.buff=buff;
