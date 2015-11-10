@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelListener;
@@ -14,9 +15,13 @@ import java.awt.event.MouseWheelListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 
+import weapons.abstracts.LongRangeWeapon;
+import weapons.abstracts.Weapon;
 import world.DungeonMap;
 
 
@@ -28,6 +33,10 @@ public class GodFrame
 	JScrollPane pauseMenuPane=null;
 	JScrollPane mainMenuPane=null;
 	DungeonMap world;
+
+	private JLabel healthLabel;
+	private JLabel ammoLabel;
+	private JLabel weaponLabel;
 
 	public GodFrame(JFrame frame, DungeonMap world)
 	{
@@ -43,6 +52,7 @@ public class GodFrame
 		}
 		buildMainMenuGui();
 		buildMenuGui();	
+		buildHUD();
 	}
 
 	public void addScrollListener(MouseWheelListener listener)
@@ -125,6 +135,31 @@ public class GodFrame
 		mainMenuPane=outer;
 	}
 
+	public void buildHUD()
+	{
+		//First 0 is the View of the scrollPane and the second 0 is the JPanel
+		JPanel vpPanel=(JPanel)((JPanel)((JViewport)viewPortPane.getComponent(0)).getComponent(0)).getComponent(1);
+		vpPanel.setLayout(null);
+
+		healthLabel=new JLabel("Health:");
+		healthLabel.setForeground(new Color(255,0,0));
+		healthLabel.setFont(new Font("Serif", Font.BOLD, 20));
+		healthLabel.setBounds(25, 80, 250, 35);
+		vpPanel.add(healthLabel);
+
+		ammoLabel=new JLabel("Ammo:");
+		ammoLabel.setForeground(new Color(255,0,0));
+		ammoLabel.setFont(new Font("Serif", Font.BOLD, 20));
+		ammoLabel.setBounds(25, 115, 250, 35);
+		vpPanel.add(ammoLabel);
+
+		weaponLabel=new JLabel("Weapon:");
+		weaponLabel.setForeground(new Color(255,0,0));
+		weaponLabel.setFont(new Font("Serif", Font.BOLD, 20));
+		weaponLabel.setBounds(25, 150, 250, 35);
+		vpPanel.add(weaponLabel);
+	}
+
 	//Basically copied from WorldCanvas - thanks WorldCanvas!
 	private Dimension getPrefSize(JPanel panel)
 	{
@@ -137,6 +172,29 @@ public class GodFrame
 			size.height += insets.top + insets.bottom;
 		}
 		return size;
+	}
+
+	public void updateHealthLabel(int health)
+	{
+		healthLabel.setText("Health: "+health);
+	}
+
+	public void updateAmmoLabel(Weapon w)
+	{
+		if(w==null)
+			ammoLabel.setText("Error");
+		else if(w instanceof LongRangeWeapon)
+			ammoLabel.setText("Ammo: "+((LongRangeWeapon)w).getAmmo());
+		else
+			ammoLabel.setText("Ammo: -");
+	}
+
+	public void updateWeaponName(Weapon w)
+	{
+		if(w==null)
+			weaponLabel.setText("Error");
+		else
+			weaponLabel.setText("Weapon: "+w.getDisplayName());
 	}
 
 }

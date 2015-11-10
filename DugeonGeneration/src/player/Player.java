@@ -93,8 +93,12 @@ public class Player extends DeltaMover implements IDamageable {
 		if(currWeapon!=null)
 			currWeapon.deactivateWeapon();
 		wpnIndx%=weapons.size();
+		if(wpnIndx<0)
+			wpnIndx=weapons.size()-1;
 		currWeapon=weapons.get(wpnIndx);
 		currWeapon.activateWeapon();
+		dungeonMap.updateWeaponName(currWeapon);
+		dungeonMap.updateAmmoLabel(currWeapon);
 		return true;
 	}
 
@@ -103,6 +107,7 @@ public class Player extends DeltaMover implements IDamageable {
 	{
 		System.out.println("Ouch! " + dmg + " damage taken.");
 		currHP-=dmg;
+		dungeonMap.updateHealthLabel(getHP());
 		if(currHP<=0)
 		{
 			System.out.println("Player died");
@@ -141,6 +146,10 @@ public class Player extends DeltaMover implements IDamageable {
 				setWeapon(currWeaponIndx);
 			});
 			mouseWheelListenerRegistered=true;
+			
+			dungeonMap.updateHealthLabel(getHP());
+			dungeonMap.updateAmmoLabel(currWeapon);
+			dungeonMap.updateWeaponName(currWeapon);
 		}
 
 		getKeysDown();
@@ -154,7 +163,8 @@ public class Player extends DeltaMover implements IDamageable {
 		centerCamera();
 
 		if(lmbClicked)
-			currWeapon.use();
+			if(currWeapon.use())
+				dungeonMap.updateAmmoLabel(currWeapon);
 	}
 
 	private void moveInOneOf8Directions() {
@@ -270,6 +280,7 @@ public class Player extends DeltaMover implements IDamageable {
 		currHP+=hp;
 		if(currHP>maxHP)
 			currHP=maxHP;
+		dungeonMap.updateHealthLabel(getHP());
 	}
 
 	/**

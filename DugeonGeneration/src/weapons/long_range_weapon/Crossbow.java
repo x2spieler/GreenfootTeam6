@@ -12,6 +12,7 @@ public class Crossbow extends LongRangeWeapon{
 		super(ammo);
 		damage=20;
 		weaponName="crossbow";
+		displayName="Crossbow";
 		this.owner=owner;
 		reloadTimeInMS=1200;
 		additionalValue=1;

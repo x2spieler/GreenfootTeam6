@@ -26,6 +26,7 @@ public abstract class Weapon extends ScrollActor
 	protected boolean isLongRangeWeapon;
 	protected boolean isPlayerWeapon;
 	protected boolean launchLongRangeWeapon=false;
+	protected String displayName="Unknown name";
 	
 	private int showWeaponWhileChanging=0;
 	private final int SHOW_WEAPON_ON_CHANGE_DUR=30;
@@ -51,6 +52,11 @@ public abstract class Weapon extends ScrollActor
 		active=false;
 		setImage(emptyImage);
 		showWeaponWhileChanging=0;
+	}
+	
+	public String getDisplayName()
+	{
+		return displayName;
 	}
 	
 	public String getWeaponName()

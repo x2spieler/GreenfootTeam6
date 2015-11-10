@@ -12,18 +12,19 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-import core.FrameType;
-import core.GodFrame;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
 import scrollWorld.ScrollWorld;
 import weapons.abstracts.Bullet;
+import weapons.abstracts.Weapon;
 import AI.IDamageable;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
+import core.FrameType;
+import core.GodFrame;
 
 public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
@@ -40,7 +41,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private GreenfootImage ground, wall, back, empty, pickup, destructible;
 
 	private Player player;
-	
+
 	private GodFrame godFrame=null;
 
 	FPS fps;
@@ -67,21 +68,38 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		spawnWerewolfs(10);
 
 	}
-	
+
 	public void createGodFrame(JFrame frame)
 	{
 		godFrame=new GodFrame(frame, this);
 		changeToFrame(FrameType.MAIN_MENU);
 	}
-	
+
 	public void addMouseListenerToContentPane(MouseWheelListener listener)
 	{
 		godFrame.addScrollListener(listener);
 	}
-	
+
 	public void changeToFrame(FrameType type)
 	{
 		godFrame.changeToFrame(type);
+	}
+
+	public void updateHealthLabel(int health)
+	{
+		godFrame.updateHealthLabel(health);
+	}
+
+	public void updateAmmoLabel(Weapon w)
+	{
+		if(godFrame!=null)
+			godFrame.updateAmmoLabel(w);
+	}
+
+	public void updateWeaponName(Weapon w)
+	{
+		if(godFrame!=null)
+			godFrame.updateWeaponName(w);
 	}
 
 	private final void initTiles() {

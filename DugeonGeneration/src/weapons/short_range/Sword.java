@@ -9,6 +9,7 @@ public class Sword extends ShortRangeWeapon
 	{
 		damage=20;
 		weaponName="sword";
+		displayName="Sword";
 		this.owner=owner;
 		reloadTimeInMS=750;
 		additionalValue=1;
