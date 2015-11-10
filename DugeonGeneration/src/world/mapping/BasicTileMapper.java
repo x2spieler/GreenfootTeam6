@@ -1,7 +1,5 @@
 package world.mapping;
 
-import greenfoot.GreenfootImage;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -10,22 +8,21 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import greenfoot.GreenfootImage;
 import world.mapping.BasicTileMapper.ITileset;
 
 public abstract class BasicTileMapper<E extends Enum<E> & ITileset> {
 
-	private GreenfootImage[][] map;
+	protected final GreenfootImage[][] map;
 	protected final GreenfootImage unknown;
 
-	public BasicTileMapper(DungeonTile[][] dungeon, String resource, Class<E> enumClass)
-			throws IOException {
+	public BasicTileMapper(DungeonTile[][] dungeon, String resource, Class<E> enumClass) throws IOException {
 		super();
 		map = mapTiles(dungeon, new TilesetParser(resource, enumClass).getTiles());
 		unknown = new GreenfootImage("tileset/UnknownTile.png");
 	}
 
-	protected abstract GreenfootImage[][] mapTiles(DungeonTile[][] dungeon,
-			Map<E, GreenfootImage> map);
+	protected abstract GreenfootImage[][] mapTiles(DungeonTile[][] dungeon, Map<E, GreenfootImage> map);
 
 	public GreenfootImage[][] getMappedTiles() {
 		return map;
@@ -57,8 +54,7 @@ public abstract class BasicTileMapper<E extends Enum<E> & ITileset> {
 		private void parseTiles(BufferedImage tileset) {
 			int tilesize = enumClass.getEnumConstants()[0].getTileSize();
 			for (E tile : enumClass.getEnumConstants()) {
-				BufferedImage img = tileset.getSubimage(tile.x() * tilesize, tile.y() * tilesize,
-						tilesize, tilesize);
+				BufferedImage img = tileset.getSubimage(tile.x() * tilesize, tile.y() * tilesize, tilesize, tilesize);
 				GreenfootImage image = new GreenfootImage(tilesize, tilesize);
 				image.getAwtImage().getGraphics().drawImage(img, 0, 0, tilesize, tilesize, null);
 				tiles.put(tile, image);

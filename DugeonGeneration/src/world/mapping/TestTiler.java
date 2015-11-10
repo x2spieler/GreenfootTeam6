@@ -1,38 +1,21 @@
 package world.mapping;
 
 import java.util.EnumSet;
-import java.util.function.BiFunction;
 
-import world.mapping.DungeonTile.TileAttribute;
-import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
+import world.mapping.DungeonTile.TileAttribute;
 
-public class DungeonTiler {
+/**
+ * @author opitzju, oertelt
+ *
+ */
+public class TestTiler extends BasicDungeonTiler {
 
-	private MapField[][] map;
-
-	public DungeonTiler(MapField[][] map) {
-		super();
-		this.map = map;
-		int l = map[0].length;
-		for (int i = 0; i < map.length; i++) {
-			if (map[i].length != l) {
-				throw new IllegalArgumentException("cannot work with jagged array");
-			}
-		}
+	public TestTiler(MapField[][] map) {
+		super(map);
 	}
 
-	public DungeonTile[][] getTilesForMap() {
-		DungeonTile[][] ret = new DungeonTile[map.length][map[0].length];
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map.length; j++) {
-				ret[i][j] = getDungeonTileForTile(i, j);
-			}
-		}
-		return ret;
-	}
-
-	private DungeonTile getDungeonTileForTile(int i, int j) {
+	protected DungeonTile getDungeonTileForTile(int i, int j) {
 		EnumSet<TileAttribute> attributes = EnumSet.noneOf(TileAttribute.class);
 		if (isGround(i, j)) {
 			attributes.add(TileAttribute.ground);
@@ -83,7 +66,7 @@ public class DungeonTiler {
 		if (!isInMap(i, j))
 			return false;
 		if (isWall(i, j)) {
-			if (isGround(i, j + 0) || isCorner(i, j + 1) || (isCorner(i, j) && isWall(i, j + 1))) {
+			if (isGround(i, j + 1) || isCorner(i, j + 1) || (isCorner(i, j) && isWall(i, j + 1))) {
 				return true;
 			}
 		} else if (isGround(i, j)) {
@@ -103,8 +86,7 @@ public class DungeonTiler {
 				return true;
 			}
 		} else if (isGround(i, j)) {
-			if (isWall(i, j - 1)
-					|| (isCorner(i, j) && isWall(i + 1, j - 1) || isWall(i - 1, j - 1))) {
+			if (isWall(i, j - 1) || (isCorner(i, j) && isWall(i + 1, j - 1) || isWall(i - 1, j - 1))) {
 				return true;
 			}
 		}
@@ -115,14 +97,12 @@ public class DungeonTiler {
 		if (!isInMap(i, j))
 			return false;
 		if (isWall(i, j)) {
-			if (isGround(i + 1, j)
-					|| (isCorner(i + 1, j) && countAdjacentGroundTiles(i + 1, j) == 0)
+			if (isGround(i + 1, j) || (isCorner(i + 1, j) && countAdjacentGroundTiles(i + 1, j) == 0)
 					|| (isCorner(i, j) && isWall(i + 1, j) && countAdjacentGroundTiles(i, j) == 0)) {
 				return true;
 			}
 		} else if (isGround(i, j)) {
-			if (isWall(i + 1, j)
-					|| (isCorner(i, j) && (isWall(i + 1, j + 1) || isWall(i + 1, j - 1)))) {
+			if (isWall(i + 1, j) || (isCorner(i, j) && (isWall(i + 1, j + 1) || isWall(i + 1, j - 1)))) {
 				return true;
 			}
 		}
@@ -133,30 +113,16 @@ public class DungeonTiler {
 		if (!isInMap(i, j))
 			return false;
 		if (isWall(i, j)) {
-			if (isGround(i - 1, j)
-					|| (isCorner(i - 1, j) && countAdjacentGroundTiles(i - 1, j) == 0)
+			if (isGround(i - 1, j) || (isCorner(i - 1, j) && countAdjacentGroundTiles(i - 1, j) == 0)
 					|| (isCorner(i, j) && isWall(i - 1, j) && countAdjacentGroundTiles(i, j) == 0)) {
 				return true;
 			}
 		} else if (isGround(i, j)) {
-			if (isWall(i - 1, j)
-					|| (isCorner(i, j) && (isWall(i - 1, j + 1) || isWall(i - 1, j - 1)))) {
+			if (isWall(i - 1, j) || (isCorner(i, j) && (isWall(i - 1, j + 1) || isWall(i - 1, j - 1)))) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	private boolean isWall(int i, int j) {
-		if (!isInMap(i, j))
-			return false;
-		return map[i][j].getFieldType().equals(FieldType.WALL);
-	}
-
-	private boolean isGround(int i, int j) {
-		if (!isInMap(i, j))
-			return false;
-		return map[i][j].getFieldType().equals(FieldType.GROUND);
 	}
 
 	private boolean isFacingDown(int i, int j) {
@@ -223,20 +189,16 @@ public class DungeonTiler {
 	private boolean isEdge(int i, int j) {
 		if (!isInMap(i, j))
 			return false;
-		if (isGround(i, j) && isGround(i, j + 1) && isGround(i, j - 1)
-				&& (isWall(i + 1, j) || isWall(i - 1, j))) {
+		if (isGround(i, j) && isGround(i, j + 1) && isGround(i, j - 1) && (isWall(i + 1, j) || isWall(i - 1, j))) {
 			return true;
 		}
-		if (isGround(i, j) && isGround(i + 1, j) && isGround(i - 1, j)
-				&& (isWall(i, j + 1) || isWall(i, j - 1))) {
+		if (isGround(i, j) && isGround(i + 1, j) && isGround(i - 1, j) && (isWall(i, j + 1) || isWall(i, j - 1))) {
 			return true;
 		}
-		if (isWall(i, j) && isWall(i, j + 1) && isWall(i, j - 1)
-				&& (isGround(i + 1, j) || isGround(i - 1, j))) {
+		if (isWall(i, j) && isWall(i, j + 1) && isWall(i, j - 1) && (isGround(i + 1, j) || isGround(i - 1, j))) {
 			return true;
 		}
-		if (isWall(i, j) && isWall(i + 1, j) && isWall(i - 1, j)
-				&& (isGround(i, j + 1) || isGround(i, j - 1))) {
+		if (isWall(i, j) && isWall(i + 1, j) && isWall(i - 1, j) && (isGround(i, j + 1) || isGround(i, j - 1))) {
 			return true;
 		}
 		return false;
@@ -263,92 +225,4 @@ public class DungeonTiler {
 		return false;
 	}
 
-	private boolean isInMap(int i, int j) {
-		if (i >= 0 && i < map.length && j >= 0 && j < map[0].length) {
-			return true;
-		}
-		return false;
-	}
-
-	private boolean forAllAdjacent(int i, int j, BiFunction<Integer, Integer, Boolean> func) {
-		return func.apply(i + 1, j) && func.apply(i, j + 1) && func.apply(i - 1, j)
-				&& func.apply(i, j - 1);
-	}
-
-	private boolean forAllSurrounding(int i, int j, BiFunction<Integer, Integer, Boolean> func) {
-		return forAllDiagonalAdjacent(i, j, func) && forAllAdjacent(i, j, func);
-	}
-
-	private boolean forAllDiagonalAdjacent(int i, int j, BiFunction<Integer, Integer, Boolean> func) {
-		return func.apply(i + 1, j + 1) && func.apply(i - 1, j - 1) && func.apply(i + 1, j - 1)
-				&& func.apply(i - 1, j + 1);
-	}
-
-	private int countAdjacentGroundTiles(int i, int j) {
-		int ret = 0;
-		if (isGround(i + 1, j)) {
-			ret++;
-		}
-		if (isGround(i, j + 1)) {
-			ret++;
-		}
-		if (isGround(i - 1, j)) {
-			ret++;
-		}
-		if (isGround(i, j - 1)) {
-			ret++;
-		}
-		return ret;
-	}
-
-	private int countDiagonalAdjacentGroundTiles(int i, int j) {
-		int ret = 0;
-		if (isGround(i + 1, j + 1)) {
-			ret++;
-		}
-		if (isGround(i - 1, j - 1)) {
-			ret++;
-		}
-		if (isGround(i + 1, j - 1)) {
-			ret++;
-		}
-		if (isGround(i - 1, j + 1)) {
-			ret++;
-		}
-		return ret;
-	}
-
-	private int countAdjacentWallTiles(int i, int j) {
-		int ret = 0;
-		if (isWall(i + 1, j)) {
-			ret++;
-		}
-		if (isWall(i, j + 1)) {
-			ret++;
-		}
-		if (isWall(i - 1, j)) {
-			ret++;
-		}
-		if (isWall(i, j - 1)) {
-			ret++;
-		}
-		return ret;
-	}
-
-	private int countDiagonalAdjacentWallTiles(int i, int j) {
-		int ret = 0;
-		if (isWall(i + 1, j + 1)) {
-			ret++;
-		}
-		if (isWall(i - 1, j - 1)) {
-			ret++;
-		}
-		if (isWall(i + 1, j - 1)) {
-			ret++;
-		}
-		if (isWall(i - 1, j + 1)) {
-			ret++;
-		}
-		return ret;
-	}
 }

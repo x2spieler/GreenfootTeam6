@@ -43,6 +43,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import world.DungeonMap;
 import menu.Menu;
 import bluej.Config;
 
@@ -105,8 +106,9 @@ public class DungeonMain {
 
 			// Apparently an applet's init() method is *not* called on the EDT.
 			gsv[0].init();
-			if (gsv[0].getWorld() instanceof Menu) {
-				System.out.println("yay!");
+			if (gsv[0].getWorld() instanceof DungeonMap) {
+				//Give THE FORCE - actually the JFrame object - to the world
+				((DungeonMap)gsv[0].getWorld()).createGodFrame(frame[0]);
 			}
 
 			EventQueue.invokeAndWait(new Runnable() {

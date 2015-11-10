@@ -9,6 +9,7 @@ public class ClubWithSpikes extends ShortRangeWeapon
 	{
 		damage=20;
 		weaponName="club_spikes";
+		displayName="Spike club";
 		this.owner=owner;
 		reloadTimeInMS=850;
 		additionalValue=1;

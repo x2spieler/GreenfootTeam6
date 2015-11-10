@@ -53,6 +53,10 @@ public class DungeonGenerator {
 		
 	}
 	
+	public void setMapFieldsType(int x, int y, FieldType fieldType) {
+		mapBlocks[x][y].setFieldType(fieldType);
+	}
+	
 	
 	//Clears the map by setting every single field to fieldType wall
 	public void clearMap() {
@@ -108,8 +112,8 @@ public class DungeonGenerator {
 					int randomOffsetX = rand.randomInt(0, rooms[i].getSizeX()-1);
 					int randomOffsetY = rand.randomInt(0, rooms[i].getSizeY()-1);
 					mapBlocks[rooms[i].getPosition().x + randomOffsetX][rooms[i].getPosition().y + randomOffsetY].setFieldType(FieldType.DESTRUCTABLE);
-					Crate crate = new Crate(100);
-					dm.addObject(crate, (rooms[i].getPosition().x + randomOffsetX) * 32 + 32/2, (rooms[i].getPosition().y + randomOffsetY) * 32 + 32/2);
+					Crate crate = new Crate(100, new Point(rooms[i].getPosition().x + randomOffsetX, rooms[i].getPosition().y + randomOffsetY), this);
+					dm.addObject(crate, (rooms[i].getPosition().x + randomOffsetX) * 32 + DungeonMap.TILE_SIZE/2, (rooms[i].getPosition().y + randomOffsetY) * 32 + DungeonMap.TILE_SIZE/2);
 			}			
 		}					
 	}
