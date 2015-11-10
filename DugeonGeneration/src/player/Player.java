@@ -1,5 +1,6 @@
 package player;
 
+import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 
 import AI.IDamageable;
@@ -13,6 +14,7 @@ import weapons.long_range_weapon.Crossbow;
 import weapons.long_range_weapon.NinjaStar;
 import weapons.short_range.ClubWithSpikes;
 import weapons.short_range.Sword;
+import world.DungeonMap;
 
 public class Player extends DeltaMover implements IDamageable {
 
@@ -30,9 +32,7 @@ public class Player extends DeltaMover implements IDamageable {
 	private final int CHANGE_WALK_ANIMATION_FRAMES=20;
 
 	private final int MAX_WEAPON_ROTATION=70;
-
 	private ArrayList<Weapon> weapons;
-
 	Weapon currWeapon=null;
 	int currWeaponIndx=0;
 
@@ -42,6 +42,10 @@ public class Player extends DeltaMover implements IDamageable {
 	private int score=0;
 
 	private ArrayList<QueuedBuff> queuedBuffs;
+	
+	private DungeonMap dungeonMap=null;
+	
+	boolean mouseWheelListenerRegistered=false;
 
 	public Player(int hp) {
 		super(400); 
@@ -64,14 +68,17 @@ public class Player extends DeltaMover implements IDamageable {
 
 		queuedBuffs=new ArrayList<QueuedBuff>();
 	}
-	
-	//TODO: Use mouse scroll and modulo for changing wepaons
 
 	@Override
 	protected void addedToWorld(World world)
 	{
 		super.addedToWorld(world);
 
+		if(!(getWorld() instanceof DungeonMap))
+			throw new IllegalStateException("Player must only be added to a DungeonMap");
+		
+		dungeonMap=(DungeonMap) getWorld();
+		
 		for(Weapon w:weapons)
 		{
 			getWorld().addObject(w, getGlobalX(), getGlobalY());
@@ -82,13 +89,9 @@ public class Player extends DeltaMover implements IDamageable {
 
 	private boolean setWeapon(int wpnIndx)
 	{
-		if(wpnIndx>=weapons.size())
-		{
-			System.out.println("Invalid weapon index");
-			return false;
-		}
 		if(currWeapon!=null)
 			currWeapon.deactivateWeapon();
+		wpnIndx%=weapons.size();
 		currWeapon=weapons.get(wpnIndx);
 		currWeapon.activateWeapon();
 		return true;
@@ -128,12 +131,20 @@ public class Player extends DeltaMover implements IDamageable {
 	@Override
 	public void act() {
 		super.act();
+		
+		if(!mouseWheelListenerRegistered)
+		{
+			//Can't use addedToWorld for this
+			dungeonMap.addMouseListenerToContentPane((MouseWheelEvent e)->{
+				currWeaponIndx+=e.getWheelRotation();
+				setWeapon(currWeaponIndx);
+			});
+			mouseWheelListenerRegistered=true;
+		}
 
 		getKeysDown();
 
 		moveInOneOf8Directions();
-
-		updateCurrentWeapon();
 
 		animatePlayer();
 
@@ -233,18 +244,6 @@ public class Player extends DeltaMover implements IDamageable {
 		else
 			lmbClicked=false;
 		wasLmbClicked=(info!=null ? info.getButton()==1 : false);
-	}
-
-	private void updateCurrentWeapon()
-	{
-		for(int i=1;i<10;i++)
-		{
-			if(Greenfoot.isKeyDown(i+"")&&(i-1)!=currWeaponIndx)
-			{
-				if(setWeapon(i-1))
-					currWeaponIndx=i-1;
-			}
-		}
 	}
 
 	private void faceMouse() {

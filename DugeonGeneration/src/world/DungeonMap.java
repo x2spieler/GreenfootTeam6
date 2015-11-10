@@ -6,9 +6,13 @@ import greenfoot.GreenfootImage;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 import java.util.Random;
 
+import javax.swing.JFrame;
+
+import core.GodFrame;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
@@ -35,6 +39,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private GreenfootImage ground, wall, back, empty, pickup, destructible;
 
 	private Player player;
+	
+	private GodFrame godFrame=null;
 
 	FPS fps;
 
@@ -59,6 +65,16 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 		spawnWerewolfs(10);
 
+	}
+	
+	public void createGodFrame(JFrame frame)
+	{
+		godFrame=new GodFrame(frame);
+	}
+	
+	public void addMouseListenerToContentPane(MouseWheelListener listener)
+	{
+		godFrame.addScrollListener(listener);
 	}
 
 	private final void initTiles() {
