@@ -14,7 +14,7 @@ public class NinjaStar extends LongRangeWeapon
 		damage=20;
 		weaponName="ninja_star";
 		this.owner=owner;
-		reloadTimeInMS=2000;
+		reloadTimeInMS=500;
 		additionalValue=1;
 	}
 	
@@ -25,7 +25,7 @@ public class NinjaStar extends LongRangeWeapon
 
 	@Override
 	protected int getTicksPerAnimImg() {
-		return 10;
+		return 3;
 	}
 
 	@Override

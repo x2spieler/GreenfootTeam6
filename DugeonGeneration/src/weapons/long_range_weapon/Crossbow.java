@@ -13,7 +13,7 @@ public class Crossbow extends LongRangeWeapon{
 		damage=20;
 		weaponName="crossbow";
 		this.owner=owner;
-		reloadTimeInMS=2000;
+		reloadTimeInMS=1200;
 		additionalValue=1;
 	}
 
@@ -24,7 +24,7 @@ public class Crossbow extends LongRangeWeapon{
 
 	@Override
 	protected int getTicksPerAnimImg() {
-		return 30;
+		return 9;
 	}
 
 	@Override
