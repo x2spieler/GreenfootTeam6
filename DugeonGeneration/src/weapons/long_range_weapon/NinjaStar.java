@@ -13,6 +13,7 @@ public class NinjaStar extends LongRangeWeapon
 		super(ammo);
 		damage=20;
 		weaponName="ninja_star";
+		displayName="Ninja star";
 		this.owner=owner;
 		reloadTimeInMS=500;
 		additionalValue=1;

@@ -1,18 +1,11 @@
 package menu;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import greenfoot.Greenfoot;
 import greenfoot.World;
-import world.DungeonMap;
 
 public class Menu extends World implements IWorldWithMenu {
 
-	private List<IWorldWithMenu> worlds = new ArrayList<IWorldWithMenu>();
+	/*private List<IWorldWithMenu> worlds = new ArrayList<IWorldWithMenu>();
 
 	public Menu() throws IOException {
 		this(DungeonMap.VIEWPORT_WIDTH, DungeonMap.VIEWPORT_HEIGHT);
@@ -29,13 +22,15 @@ public class Menu extends World implements IWorldWithMenu {
 		});
 	}
 
-	public Menu(int menuWidth, int menuHeight) {
-		super(menuWidth, menuHeight, 1, true);
-	}
+	
 
+	*/
 	@Override
 	public void switchTo() {
 		Greenfoot.setWorld(this);
 	}
-
+	
+	public Menu(int menuWidth, int menuHeight) {
+		super(menuWidth, menuHeight, 1, true);
+	}
 }
