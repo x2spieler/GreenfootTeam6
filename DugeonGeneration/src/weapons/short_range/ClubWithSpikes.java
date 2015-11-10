@@ -10,12 +10,8 @@ public class ClubWithSpikes extends ShortRangeWeapon
 		damage=20;
 		weaponName="club_spikes";
 		this.owner=owner;
-		reloadTimeInMS=3000;
+		reloadTimeInMS=850;
 		additionalValue=1;
-	}
-
-	@Override
-	protected int getTicksPerAnimImg() {
-		return 10;
+		ticksPerAnimImg=8;
 	}
 }

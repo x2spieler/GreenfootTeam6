@@ -1,6 +1,5 @@
 package AI;
 import greenfoot.GreenfootImage;
-import greenfoot.GreenfootSound;
 import greenfoot.World;
 
 import java.awt.Point;
@@ -42,7 +41,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private final int REACHED_PLAYER_DISTANCE_SQUARED=1024;
 	private final int RPD_MULTIPLICATOR_LRW=30;			//REACHED_PLAYER_DISTANCE_MULTIPLICATOR_LONG_RANGE_WEAPONS
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
-	private static GreenfootSound encounterSound=new GreenfootSound("encounterPlayer.wav");
 	private short walkCounter=0;
 	boolean isPendingKill=false;
 
@@ -222,8 +220,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 				//We can see the player now - CHASE HIM!
 				currTargetNode=findPath(currTile, currPlayerTile, true);
 				lastPlayerTile=currPlayerTile;
-				//TODO: Maybe add this back in
-				//encounterSound.play();
 			}
 			else if(seesPlayer)
 			{

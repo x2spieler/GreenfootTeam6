@@ -36,6 +36,11 @@ public abstract class ShortRangeWeapon extends Weapon
 	 */
 	public void dealDamage()
 	{
+		if(!wi.getMap()[getGlobalX()/wi.getTileSize()][getGlobalY()/wi.getTileSize()].walkable())
+		{
+			//Should prevent damaging enemies through wall
+			return;
+		}
 		List<?> intersectingObjects = getObjectsInRange(DungeonMap.TILE_SIZE+DungeonMap.TILE_SIZE/2, null);
 		if (intersectingObjects.size() != 0)
 		{
@@ -47,10 +52,11 @@ public abstract class ShortRangeWeapon extends Weapon
 				if((typeToIgnore==EntityType.ENEMY&&(o instanceof Enemy))
 						||(typeToIgnore==EntityType.PLAYER&&(o instanceof Player)))
 					continue;
-
+				
 				IDamageable id=(IDamageable) o;
 				if(hitEntities.contains(id))
 					continue;
+				
 				id.damage(damage);
 				hitEntities.add(id);
 				return;

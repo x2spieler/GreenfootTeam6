@@ -18,7 +18,7 @@ public abstract class Weapon extends ScrollActor
 	protected GreenfootImage[] animImages;
 	protected String weaponName;
 	protected Point2D weaponOffsetToPlayer=null;
-	protected final int TICKS_PER_ANIM_IMG;
+	protected int ticksPerAnimImg=-1;
 	protected IWorldInterfaceForAI wi = null;
 	protected boolean playAnimation=false;
 	protected EntityType typeToIgnore=null;
@@ -26,7 +26,9 @@ public abstract class Weapon extends ScrollActor
 	protected boolean isLongRangeWeapon;
 	protected boolean isPlayerWeapon;
 	protected boolean launchLongRangeWeapon=false;
-
+	
+	private int showWeaponWhileChanging=0;
+	private final int SHOW_WEAPON_ON_CHANGE_DUR=30;
 	private int currRotation=0;
 	private int animTicks=0;
 	private boolean active=false;
@@ -34,17 +36,13 @@ public abstract class Weapon extends ScrollActor
 	public Weapon()
 	{
 		animImages=new GreenfootImage[4];
-		TICKS_PER_ANIM_IMG=getTicksPerAnimImg();
-	}
-
-	public boolean isLongRangeWeapon() {
-		return isLongRangeWeapon;
 	}
 	
 	public void activateWeapon()
 	{
 		active=true;
 		setImage(animImages[0]);
+		showWeaponWhileChanging=SHOW_WEAPON_ON_CHANGE_DUR;
 	}
 	
 	public void deactivateWeapon()
@@ -52,6 +50,7 @@ public abstract class Weapon extends ScrollActor
 		playAnimation=false;
 		active=false;
 		setImage(emptyImage);
+		showWeaponWhileChanging=0;
 	}
 	
 	public String getWeaponName()
@@ -79,8 +78,6 @@ public abstract class Weapon extends ScrollActor
 		loadImages();
 	}
 
-	protected abstract int getTicksPerAnimImg();
-
 	@Override
 	public void act()
 	{
@@ -93,10 +90,10 @@ public abstract class Weapon extends ScrollActor
 		}
 		if(playAnimation)
 		{
-			if(animTicks%TICKS_PER_ANIM_IMG==0)
-				setImage(animImages[animTicks/TICKS_PER_ANIM_IMG]);
+			if(animTicks%ticksPerAnimImg==0)
+				setImage(animImages[animTicks/ticksPerAnimImg]);
 			animTicks++;
-			if(animTicks==4*TICKS_PER_ANIM_IMG)
+			if(animTicks==4*ticksPerAnimImg)
 			{
 				animTicks=0;
 				playAnimation=false;
@@ -110,6 +107,13 @@ public abstract class Weapon extends ScrollActor
 
 				launchLongRangeWeapon=true;
 			}
+		}
+		else
+		{
+			if(getImage()!=emptyImage&&showWeaponWhileChanging==0)
+				setImage(emptyImage);
+			if(showWeaponWhileChanging>0)
+				showWeaponWhileChanging--;
 		}
 	}
 
@@ -126,6 +130,7 @@ public abstract class Weapon extends ScrollActor
 				lastUsage = millisNow;
 				playAnimation=true;
 				animTicks=0;
+				showWeaponWhileChanging=0;
 				return true;
 			}	
 		}
@@ -166,4 +171,45 @@ public abstract class Weapon extends ScrollActor
 		point.setLocation(xNew, yNew);
 	}
 
+	
+	//GETTER / SETTER
+	
+	public int getDamage()
+	{
+		return damage;
+	}
+	
+	public void setDamage(int dmg)
+	{
+		damage=dmg;
+	}
+	
+	public int getReloadTimeInMs()
+	{
+		return reloadTimeInMS;
+	}
+	
+	public void setReloadtimeInMs(int ms)
+	{
+		reloadTimeInMS=ms;
+	}
+	
+	public void setAdditionalValue(int val)
+	{
+		additionalValue=val;
+	}
+
+	public boolean isLongRangeWeapon() {
+		return isLongRangeWeapon;
+	}
+	
+	public void setTicksPerAnimImg(int ticks)
+	{
+		ticksPerAnimImg=ticks;
+	}
+	
+	public int geTicksPerAnimImg()
+	{
+		return ticksPerAnimImg;
+	}
 }

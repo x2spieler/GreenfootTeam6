@@ -13,18 +13,14 @@ public class Crossbow extends LongRangeWeapon{
 		damage=20;
 		weaponName="crossbow";
 		this.owner=owner;
-		reloadTimeInMS=2000;
+		reloadTimeInMS=1200;
 		additionalValue=1;
+		ticksPerAnimImg=9;
 	}
 
 	@Override
 	protected Bullet instantiateBullet() {
 		return new CrossbowArrow(typeToIgnore);
-	}
-
-	@Override
-	protected int getTicksPerAnimImg() {
-		return 30;
 	}
 
 	@Override
