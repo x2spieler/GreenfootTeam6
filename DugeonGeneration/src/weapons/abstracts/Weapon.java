@@ -18,7 +18,7 @@ public abstract class Weapon extends ScrollActor
 	protected GreenfootImage[] animImages;
 	protected String weaponName;
 	protected Point2D weaponOffsetToPlayer=null;
-	protected final int TICKS_PER_ANIM_IMG;
+	protected int ticksPerAnimImg=-1;
 	protected IWorldInterfaceForAI wi = null;
 	protected boolean playAnimation=false;
 	protected EntityType typeToIgnore=null;
@@ -36,11 +36,6 @@ public abstract class Weapon extends ScrollActor
 	public Weapon()
 	{
 		animImages=new GreenfootImage[4];
-		TICKS_PER_ANIM_IMG=getTicksPerAnimImg();
-	}
-
-	public boolean isLongRangeWeapon() {
-		return isLongRangeWeapon;
 	}
 	
 	public void activateWeapon()
@@ -83,8 +78,6 @@ public abstract class Weapon extends ScrollActor
 		loadImages();
 	}
 
-	protected abstract int getTicksPerAnimImg();
-
 	@Override
 	public void act()
 	{
@@ -97,10 +90,10 @@ public abstract class Weapon extends ScrollActor
 		}
 		if(playAnimation)
 		{
-			if(animTicks%TICKS_PER_ANIM_IMG==0)
-				setImage(animImages[animTicks/TICKS_PER_ANIM_IMG]);
+			if(animTicks%ticksPerAnimImg==0)
+				setImage(animImages[animTicks/ticksPerAnimImg]);
 			animTicks++;
-			if(animTicks==4*TICKS_PER_ANIM_IMG)
+			if(animTicks==4*ticksPerAnimImg)
 			{
 				animTicks=0;
 				playAnimation=false;
@@ -178,4 +171,45 @@ public abstract class Weapon extends ScrollActor
 		point.setLocation(xNew, yNew);
 	}
 
+	
+	//GETTER / SETTER
+	
+	public int getDamage()
+	{
+		return damage;
+	}
+	
+	public void setDamage(int dmg)
+	{
+		damage=dmg;
+	}
+	
+	public int getReloadTimeInMs()
+	{
+		return reloadTimeInMS;
+	}
+	
+	public void setReloadtimeInMs(int ms)
+	{
+		reloadTimeInMS=ms;
+	}
+	
+	public void setAdditionalValue(int val)
+	{
+		additionalValue=val;
+	}
+
+	public boolean isLongRangeWeapon() {
+		return isLongRangeWeapon;
+	}
+	
+	public void setTicksPerAnimImg(int ticks)
+	{
+		ticksPerAnimImg=ticks;
+	}
+	
+	public int geTicksPerAnimImg()
+	{
+		return ticksPerAnimImg;
+	}
 }

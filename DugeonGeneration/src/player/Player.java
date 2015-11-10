@@ -66,7 +66,6 @@ public class Player extends DeltaMover implements IDamageable {
 	}
 	
 	//TODO: Use mouse scroll and modulo for changing wepaons
-	//TODO: Implement methods for chaning weapon attributes at runtime
 
 	@Override
 	protected void addedToWorld(World world)

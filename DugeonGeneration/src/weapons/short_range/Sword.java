@@ -12,10 +12,6 @@ public class Sword extends ShortRangeWeapon
 		this.owner=owner;
 		reloadTimeInMS=750;
 		additionalValue=1;
-	}
-
-	@Override
-	protected int getTicksPerAnimImg() {
-		return 5;
+		ticksPerAnimImg=5;
 	}
 }

@@ -12,10 +12,6 @@ public class ClubWithSpikes extends ShortRangeWeapon
 		this.owner=owner;
 		reloadTimeInMS=850;
 		additionalValue=1;
-	}
-
-	@Override
-	protected int getTicksPerAnimImg() {
-		return 8;
+		ticksPerAnimImg=8;
 	}
 }
