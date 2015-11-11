@@ -40,6 +40,7 @@ public class GodFrame
 	private JLabel ammoLabel;
 	private JLabel weaponLabel;
 	private JLabel scoreLabel;
+	private JLabel seedLabel;
 
 	public GodFrame(JFrame frame, DungeonMap world)
 	{
@@ -164,6 +165,12 @@ public class GodFrame
 		scoreLabel.setFont(new Font("Serif", Font.BOLD, 20));
 		scoreLabel.setBounds(25, 185, 250, 35);
 		vpPanel.add(scoreLabel);
+		
+		seedLabel=new JLabel("Seed: -1");
+		seedLabel.setForeground(new Color(255,0,0));
+		seedLabel.setFont(new Font("Serif", Font.BOLD, 20));
+		seedLabel.setBounds(25, 220, 250, 35);
+		vpPanel.add(seedLabel);
 	}
 
 	//Basically copied from WorldCanvas - thanks WorldCanvas!
@@ -183,6 +190,11 @@ public class GodFrame
 	public void updateHealthLabel(int health)
 	{
 		healthLabel.setText("Health: "+health);
+	}
+	
+	public void updateSeedLabel(int seed)
+	{
+		seedLabel.setText("Seed: "+seed);
 	}
 	
 	public void updateScoreLabel(int score)

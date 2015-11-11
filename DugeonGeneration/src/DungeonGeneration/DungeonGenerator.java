@@ -53,6 +53,11 @@ public class DungeonGenerator {
 		
 	}
 	
+	public int getSeed()
+	{
+		return mapSeed;
+	}
+	
 	public void setMapFieldsType(int x, int y, FieldType fieldType) {
 		mapBlocks[x][y].setFieldType(fieldType);
 	}
