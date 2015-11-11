@@ -26,8 +26,6 @@ import world.DungeonMap;
 
 public class GodFrame 
 {
-
-	//TODO: Scrollen bei Viewport rausnehmen
 	//TODO: HUD für Buffs
 	
 	private JFrame frame;

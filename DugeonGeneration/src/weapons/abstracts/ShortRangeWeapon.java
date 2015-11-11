@@ -5,6 +5,8 @@ import java.util.List;
 
 import AI.Enemy;
 import AI.IDamageable;
+import DungeonGeneration.FieldType;
+import DungeonGeneration.MapField;
 import player.Player;
 import weapons.EntityType;
 import world.DungeonMap;
@@ -36,9 +38,11 @@ public abstract class ShortRangeWeapon extends Weapon
 	 */
 	public void dealDamage()
 	{
-		if(!wi.getMap()[getGlobalX()/wi.getTileSize()][getGlobalY()/wi.getTileSize()].walkable())
+		MapField mf=wi.getMap()[getGlobalX()/wi.getTileSize()][getGlobalY()/wi.getTileSize()];
+		if(!mf.walkable()&&mf.getFieldType()==FieldType.WALL)
 		{
 			//Should prevent damaging enemies through wall
+			//Allows damaging crates 
 			return;
 		}
 		List<?> intersectingObjects = getObjectsInRange(DungeonMap.TILE_SIZE+DungeonMap.TILE_SIZE/2, null);
