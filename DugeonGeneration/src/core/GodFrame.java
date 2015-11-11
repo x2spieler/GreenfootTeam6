@@ -255,7 +255,7 @@ public class GodFrame
 			labels.get(LabelType.WEAPON_LABEL.getValue()).setText("Weapon: "+w.getDisplayName());
 	}
 
-	public void addOrUpdate(BuffType b, double param)
+	public void addOrUpdateBuffLabel(BuffType b, double param)
 	{
 		String key=LabelType.BUFF_LABEL.getValue()+b.getValue();
 		JLabel label=labels.get(key);
@@ -266,7 +266,7 @@ public class GodFrame
 			recalculateLabelPositions(labels.size()-1);
 		}
 		
-		label.setText(b.getValue()+param);
+		label.setText(b.getValue()+(param*100)+" %");
 	}
 
 	public void removeBuffLabel(BuffType b)

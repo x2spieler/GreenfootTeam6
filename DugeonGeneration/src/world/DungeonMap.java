@@ -324,9 +324,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			godFrame.updateWeaponName(w);
 	}
 	
-	public void addOrUpdate(BuffType b, double param)
+	public void addOrUpdateBuffLabel(BuffType b, double param)
 	{
-		godFrame.addOrUpdate(b, param);
+		godFrame.addOrUpdateBuffLabel(b, param);
 	}
 
 	public void removeBuffLabel(BuffType b)

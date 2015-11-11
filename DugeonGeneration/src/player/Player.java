@@ -354,7 +354,7 @@ public class Player extends DeltaMover implements IDamageable {
 	public void addBuff(BuffType buff, double param, int durationInMs)
 	{
 		if(durationInMs>=-1)
-			dungeonMap.addOrUpdate(buff, param);
+			dungeonMap.addOrUpdateBuffLabel(buff, param);
 		else
 			dungeonMap.removeBuffLabel(buff);
 
@@ -444,7 +444,7 @@ public class Player extends DeltaMover implements IDamageable {
 		appliedWeaponBuffs.put(b, realMult);
 		if(addToActive)
 			activeWeaponBuffs.put(b, multiplier);
-		dungeonMap.addOrUpdate(b, multiplier);
+		dungeonMap.addOrUpdateBuffLabel(b, multiplier);
 	}
 
 	@SuppressWarnings("incomplete-switch")
