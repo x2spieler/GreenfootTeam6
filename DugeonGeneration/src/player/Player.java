@@ -2,9 +2,10 @@ package player;
 
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import core.FrameType;
 import AI.IDamageable;
+import core.FrameType;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 import greenfoot.MouseInfo;
@@ -39,23 +40,25 @@ public class Player extends DeltaMover implements IDamageable {
 
 	private int maxHP=-1;
 	private int currHP=-1;
-	
+
 	private int score=0;
 
 	private ArrayList<QueuedBuff> queuedBuffs;
-	
+	private HashMap<BuffType, Double> activeWeaponBuffs;
+	private HashMap<BuffType, Double> appliedWeaponBuffs;
+
 	private DungeonMap dungeonMap=null;
-	
+
 	boolean mouseWheelListenerRegistered=false;
 
-	//TODO: Buffs bzgl. Waffen
-	
-	
 	public Player(int hp) {
 		super(400); 
 
 		this.maxHP=hp;
 		this.currHP=hp;
+
+		activeWeaponBuffs=new HashMap<BuffType, Double>();
+		appliedWeaponBuffs=new HashMap<BuffType, Double>();
 
 		weapons=new ArrayList<Weapon>();
 		addWeapon(new Sword(this));
@@ -80,9 +83,9 @@ public class Player extends DeltaMover implements IDamageable {
 
 		if(!(getWorld() instanceof DungeonMap))
 			throw new IllegalStateException("Player must only be added to a DungeonMap");
-		
+
 		dungeonMap=(DungeonMap) getWorld();
-		
+
 		for(Weapon w:weapons)
 		{
 			getWorld().addObject(w, getGlobalX(), getGlobalY());
@@ -94,12 +97,22 @@ public class Player extends DeltaMover implements IDamageable {
 	private boolean setWeapon(int wpnIndx)
 	{
 		if(currWeapon!=null)
+		{
 			currWeapon.deactivateWeapon();
+			for(BuffType bt:appliedWeaponBuffs.keySet())
+			{
+				removeWeaponBuff(bt, false);
+			}
+		}
 		wpnIndx%=weapons.size();
 		if(wpnIndx<0)
 			wpnIndx=weapons.size()-1;
 		currWeapon=weapons.get(wpnIndx);
 		currWeapon.activateWeapon();
+		for(BuffType bt:activeWeaponBuffs.keySet())
+		{
+			applyWeaponBuffs(bt, activeWeaponBuffs.get(bt), false);
+		}
 		dungeonMap.updateWeaponName(currWeapon);
 		dungeonMap.updateAmmoLabel(currWeapon);
 		return true;
@@ -127,11 +140,11 @@ public class Player extends DeltaMover implements IDamageable {
 	public int getMaxHP() {
 		return maxHP;
 	}
-	
+
 	public int getScore() {
 		return score;
 	}
-	
+
 	public void addScore(int s)
 	{
 		score+=s;
@@ -140,7 +153,7 @@ public class Player extends DeltaMover implements IDamageable {
 	@Override
 	public void act() {
 		super.act();
-		
+
 		if(!mouseWheelListenerRegistered)
 		{
 			//Can't use addedToWorld for this
@@ -149,7 +162,7 @@ public class Player extends DeltaMover implements IDamageable {
 				setWeapon(currWeaponIndx);
 			});
 			mouseWheelListenerRegistered=true;
-			
+
 			dungeonMap.updateHealthLabel(getHP());
 			dungeonMap.updateAmmoLabel(currWeapon);
 			dungeonMap.updateWeaponName(currWeapon);
@@ -259,7 +272,7 @@ public class Player extends DeltaMover implements IDamageable {
 		else
 			lmbClicked=false;
 		wasLmbClicked=(info!=null ? info.getButton()==1 : false);
-		
+
 		if(Greenfoot.isKeyDown("escape"))
 			dungeonMap.changeToFrame(FrameType.PAUSE_MENU);
 	}
@@ -278,7 +291,7 @@ public class Player extends DeltaMover implements IDamageable {
 	}
 
 	///////////////////////// BUFFS AND POWERUPS
-	
+
 	public void heal(int hp)
 	{
 		currHP+=hp;
@@ -309,7 +322,7 @@ public class Player extends DeltaMover implements IDamageable {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Adds the weapon to the players weapon list
 	 * If he already has the weapon and it is a LongRangeWeapon, only the ammo weapon
@@ -331,7 +344,7 @@ public class Player extends DeltaMover implements IDamageable {
 		}
 		weapons.add(weapon);
 	}
-	
+
 	/**
 	 * 
 	 * @param buff
@@ -344,7 +357,7 @@ public class Player extends DeltaMover implements IDamageable {
 			dungeonMap.addOrUpdate(buff, param);
 		else
 			dungeonMap.removeBuffLabel(buff);
-		
+
 		switch(buff)
 		{
 		case SPEED_MULTIPLIER:
@@ -361,6 +374,100 @@ public class Player extends DeltaMover implements IDamageable {
 				queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, -param));
 			}
 			break;
+		case MELEE_DAMAGE:
+		case RELOAD_TIME:
+		case WEAPON_SPEED:
+			if(durationInMs>=-1)
+			{
+				applyWeaponBuffs(buff, param, true);
+				if(durationInMs>=0)
+					queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, -1));
+			}
+			else {
+				removeWeaponBuff(buff, true);
+			}
+			break;
+
+		}
+	}
+
+	@SuppressWarnings("incomplete-switch")
+	private void applyWeaponBuffs(BuffType b, double param, boolean addToActive)
+	{
+		double multiplier=1;
+		if(addToActive)
+		{
+			Object o=activeWeaponBuffs.get(b);
+			if(o!=null)
+				multiplier=(double)o;
+		}
+		multiplier*=param;
+		double realMult=multiplier;
+		
+		switch(b)
+		{
+		case MELEE_DAMAGE:
+		{
+			int dmg=currWeapon.getDamage();
+			if((int)(realMult*dmg)==0)
+				realMult=1.d/dmg;
+			dmg*=realMult;
+			currWeapon.setDamage(dmg);
+			break;
+		}
+		case RELOAD_TIME:
+		{
+			final int TICK_DURATION=1000/60;	//1000ms / 60FPS
+			int reloadTime=currWeapon.getReloadTimeInMs();
+			if((int)(realMult*reloadTime)==0)
+				realMult=1.d/reloadTime;
+			if((int)(realMult*reloadTime)<(currWeapon.geTicksPerAnimImg()*4*TICK_DURATION))
+				realMult=(4.d*TICK_DURATION*currWeapon.geTicksPerAnimImg())/reloadTime;
+			reloadTime*=realMult;
+			currWeapon.setReloadtimeInMs(reloadTime);
+			break;
+		}
+		case WEAPON_SPEED:
+		{
+			final int TICK_DURATION=1000/60;	//1000ms / 60FPS
+			int ticksPerImg=currWeapon.geTicksPerAnimImg();
+			if((int)(realMult*ticksPerImg)==0)
+				realMult=1.d/ticksPerImg;
+			if((int)(realMult*ticksPerImg*TICK_DURATION*4)>currWeapon.getReloadTimeInMs())
+				realMult=currWeapon.getReloadTimeInMs()/(ticksPerImg*TICK_DURATION*4);
+			ticksPerImg*=realMult;
+			currWeapon.setTicksPerAnimImg(ticksPerImg);
+			break;
+		}
+		}
+		
+		appliedWeaponBuffs.put(b, realMult);
+		if(addToActive)
+			activeWeaponBuffs.put(b, multiplier);
+		dungeonMap.addOrUpdate(b, multiplier);
+	}
+
+	@SuppressWarnings("incomplete-switch")
+	private void removeWeaponBuff(BuffType buff, boolean removeFromList)
+	{
+		double mult=appliedWeaponBuffs.get(buff);
+		mult=1.d/mult;
+		switch(buff)
+		{
+		case MELEE_DAMAGE:
+			currWeapon.setDamage((int)(currWeapon.getDamage()*mult));
+			break;
+		case RELOAD_TIME:
+			currWeapon.setReloadtimeInMs((int)(currWeapon.getReloadTimeInMs()*mult));
+			break;
+		case WEAPON_SPEED:
+			currWeapon.setTicksPerAnimImg((int)(currWeapon.geTicksPerAnimImg()*mult));
+			break;
+		}
+		if(removeFromList)
+		{
+			appliedWeaponBuffs.remove(buff);
+			activeWeaponBuffs.remove(buff);
 		}
 	}
 
@@ -378,7 +485,7 @@ public class Player extends DeltaMover implements IDamageable {
 				i++;
 		}
 	}
-	
+
 
 	class QueuedBuff
 	{

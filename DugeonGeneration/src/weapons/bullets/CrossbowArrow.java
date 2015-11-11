@@ -1,7 +1,5 @@
 package weapons.bullets;
 
-import java.awt.geom.Point2D;
-
 import weapons.EntityType;
 import weapons.abstracts.Bullet;
 
