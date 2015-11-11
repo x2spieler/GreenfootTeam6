@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelListener;
 
@@ -26,7 +27,6 @@ import world.DungeonMap;
 public class GodFrame 
 {
 
-	//TODO: HUD für Seed
 	//TODO: Scrollen bei Viewport rausnehmen
 	//TODO: HUD für Buffs
 	
@@ -51,6 +51,9 @@ public class GodFrame
 		buildMainMenuGui();
 		buildMenuGui();	
 		buildHUD();
+		Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+		frame.pack();
+		frame.setLocation(screenSize.width/2-frame.getWidth()/2, screenSize.height/2-frame.getHeight()/2);
 	}
 
 	public void addScrollListener(MouseWheelListener listener)
@@ -76,8 +79,7 @@ public class GodFrame
 			Greenfoot.stop();
 			break;
 		}
-		frame.revalidate();
-		frame.repaint();
+		frame.pack();
 	}
 	
 	private void changeTo(Component t)
