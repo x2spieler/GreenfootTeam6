@@ -48,6 +48,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	FPS fps;
 
+	//TODO: Refactor so that we can easily start a new round
+	
 	public DungeonMap() throws IOException {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
 				DungeonGenerator.MAP_HEIGHT * TILE_SIZE);

@@ -2,7 +2,7 @@ package objects;
 
 import greenfoot.GreenfootImage;
 import greenfoot.World;
-import player.Buff;
+import player.BuffType;
 import world.DungeonMap;
 
 public class SpeedItem extends Item {
@@ -10,7 +10,7 @@ public class SpeedItem extends Item {
 	public static final double MULTIPLIER = 1.8;
 	public static final int DURATION_IN_MS = 5000;
 	
-	public static final Buff BUFF = Buff.SPEED_MULTIPLIER;
+	public static final BuffType BUFF = BuffType.SPEED_MULTIPLIER;
 	
 	protected GreenfootImage img = new GreenfootImage("item_speed1.png");
 	

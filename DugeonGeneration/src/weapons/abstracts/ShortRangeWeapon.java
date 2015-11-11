@@ -42,7 +42,7 @@ public abstract class ShortRangeWeapon extends Weapon
 		if(!mf.walkable()&&mf.getFieldType()==FieldType.WALL)
 		{
 			//Should prevent damaging enemies through wall
-			//Allows damaging crates 
+			//Second part allows damaging crates though 
 			return;
 		}
 		List<?> intersectingObjects = getObjectsInRange(DungeonMap.TILE_SIZE+DungeonMap.TILE_SIZE/2, null);

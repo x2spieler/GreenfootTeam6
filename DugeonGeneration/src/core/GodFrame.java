@@ -8,6 +8,7 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -16,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 
 import greenfoot.Greenfoot;
 import greenfoot.WorldVisitor;
@@ -39,18 +41,22 @@ public class GodFrame
 	private JLabel weaponLabel;
 	private JLabel scoreLabel;
 	private JLabel seedLabel;
+	private ArrayList<JLabel>buffLabels; 
 
 	public GodFrame(JFrame frame, DungeonMap world)
 	{
 		this.frame=frame;
 		this.world=world;
+		buffLabels=new ArrayList<JLabel>();
 		frame.getContentPane().remove(1);		//Removes the greenfoot buttons
 		viewPortPane=(JScrollPane)frame.getContentPane().getComponent(0);	//Component 0 is the JScrollPane containing the viewport
 		buildMainMenuGui();
 		buildMenuGui();	
 		buildHUD();
 		Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
-		frame.pack();
+		SwingUtilities.invokeLater(()->{
+			frame.pack();
+		});
 		frame.setLocation(screenSize.width/2-frame.getWidth()/2, screenSize.height/2-frame.getHeight()/2);
 	}
 
@@ -77,7 +83,9 @@ public class GodFrame
 			Greenfoot.stop();
 			break;
 		}
-		frame.pack();
+		SwingUtilities.invokeLater(()->{
+			frame.pack();
+		});
 	}
 	
 	private void changeTo(Component t)
@@ -220,4 +228,13 @@ public class GodFrame
 			weaponLabel.setText("Weapon: "+w.getDisplayName());
 	}
 
+	/*public void addBuff(BuffType b, double[] param)
+	{
+		
+	}
+	
+	public void addBuff(BuffType b, double[] param)
+	{
+		
+	}*/
 }

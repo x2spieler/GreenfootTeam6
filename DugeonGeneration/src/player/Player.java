@@ -332,7 +332,7 @@ public class Player extends DeltaMover implements IDamageable {
 		weapons.add(weapon);
 	}
 	
-	public void addBuff(Buff buff, double[] param, int durationInMs)
+	public void addBuff(BuffType buff, double[] param, int durationInMs)
 	{
 		switch(buff)
 		{
@@ -378,10 +378,10 @@ public class Player extends DeltaMover implements IDamageable {
 	class QueuedBuff
 	{
 		long timeStamp=-1;
-		Buff buff;
+		BuffType buff;
 		double param[];
 
-		public QueuedBuff(long timeStamp, Buff buff, double param[])
+		public QueuedBuff(long timeStamp, BuffType buff, double param[])
 		{
 			this.timeStamp=timeStamp;
 			this.buff=buff;

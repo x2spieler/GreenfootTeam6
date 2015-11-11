@@ -1,6 +1,6 @@
 package objects;
 
-import player.Buff;
+import player.BuffType;
 import world.DungeonMap;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
@@ -10,7 +10,7 @@ public class MaxHealthItem extends Item {
 	public static final int EXTRA_HEALTH_POINTS = 10;
 	public static final int PERMANENT = -1;
 	
-	public static final Buff BUFF = Buff.MAX_HP;
+	public static final BuffType BUFF = BuffType.MAX_HP;
 	
 	protected GreenfootImage img = new GreenfootImage("item_maxHp1.png");
 	

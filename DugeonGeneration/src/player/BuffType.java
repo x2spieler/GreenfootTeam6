@@ -1,6 +1,6 @@
 package player;
 
-public enum Buff 
+public enum BuffType 
 {
 	SPEED_MULTIPLIER,
 	MAX_HP
