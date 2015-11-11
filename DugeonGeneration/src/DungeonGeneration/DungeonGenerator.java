@@ -91,7 +91,7 @@ public class DungeonGenerator {
 		
 		for(int i = 0; i < ROOM_POOL; i++) {
 			
-			rooms[i].setPosition(rand.randomInt(1, MAP_WIDTH - 1 - rooms[i].getSizeX()), rand.randomInt(1, MAP_HEIGHT - 1 - rooms[i].getSizeY()));
+			rooms[i].setPosition(rand.randomInt(2, MAP_WIDTH - 2 - rooms[i].getSizeX()), rand.randomInt(2, MAP_HEIGHT - 2 - rooms[i].getSizeY()));
 			
 			for (int y=0; y<rooms[i].getSizeY(); y++ ){
 				
@@ -111,10 +111,18 @@ public class DungeonGenerator {
 				for (int j=0; j<numberOfCrates;j++){
 					int randomOffsetX = rand.randomInt(0, rooms[i].getSizeX()-1);
 					int randomOffsetY = rand.randomInt(0, rooms[i].getSizeY()-1);
-					mapBlocks[rooms[i].getPosition().x + randomOffsetX][rooms[i].getPosition().y + randomOffsetY].setFieldType(FieldType.DESTRUCTABLE);
-					Crate crate = new Crate(100, new Point(rooms[i].getPosition().x + randomOffsetX, rooms[i].getPosition().y + randomOffsetY), this);
-					dm.addObject(crate, (rooms[i].getPosition().x + randomOffsetX) * 32 + DungeonMap.TILE_SIZE/2, (rooms[i].getPosition().y + randomOffsetY) * 32 + DungeonMap.TILE_SIZE/2);
-			}			
+					
+					int posX = rooms[i].getPosition().x + randomOffsetX;
+					int posY = rooms[i].getPosition().y + randomOffsetY;
+										
+					//TODO: Check if tile is reachable
+					if (mapBlocks[posX][posY].getFieldType() == FieldType.GROUND){
+						mapBlocks[posX][posY].setFieldType(FieldType.DESTRUCTABLE);
+						Crate crate = new Crate(100, new Point(rooms[i].getPosition().x + randomOffsetX, rooms[i].getPosition().y + randomOffsetY), this);
+						dm.addObject(crate, (rooms[i].getPosition().x + randomOffsetX) * 32 + DungeonMap.TILE_SIZE/2, (rooms[i].getPosition().y + randomOffsetY) * 32 + DungeonMap.TILE_SIZE/2);
+					}
+				}
+				
 		}					
 	}
 			
@@ -207,7 +215,7 @@ public class DungeonGenerator {
 						}
 						
 						if (freeSides>=3){
-							System.out.println("removed tile at " + x + " " + y);
+							//System.out.println("removed tile at " + x + " " + y);
 							mapBlocks[x][y].setFieldType(FieldType.GROUND);
 						}
 						
@@ -228,23 +236,13 @@ public class DungeonGenerator {
 				//checks if wall has a ground tile above AND below, places wall tile to the left if true
 				if (mapBlocks[x][y].getFieldType() == FieldType.WALL && mapBlocks[x][y-1].getFieldType() == FieldType.GROUND && mapBlocks[x][y+1].getFieldType() == FieldType.GROUND){
 					mapBlocks[x][y-1].setFieldType(FieldType.WALL);
-					System.out.println("placed wall at  " + x + " " + y);
+					//System.out.println("placed wall at  " + x + " " + y);
 				}
 				if (mapBlocks[x][y].getFieldType() == FieldType.WALL && mapBlocks[x-1][y].getFieldType() == FieldType.GROUND && mapBlocks[x+1][y].getFieldType() == FieldType.GROUND){
 					mapBlocks[x-1][y].setFieldType(FieldType.WALL);
-					System.out.println("placed wall at  " + x + " " + y);
+					//System.out.println("placed wall at  " + x + " " + y);
 				}
-				/*
-				//TODO:NOT WORKING YET 
-				//checks if wall has a ground tile top right AND bottom left or top left AND bottom right, places wall tile to the top right if true
-				if (mapBlocks[x][y].getFieldType() == FieldType.WALL && mapBlocks[x+1][y-1].getFieldType() == FieldType.GROUND && mapBlocks[x-1][y+1].getFieldType() == FieldType.GROUND){
-						mapBlocks[x+1][y-1].setFieldType(FieldType.WALL);
-						System.out.println("placed wall at  " + x + " " + y);	
-				}
-				if (mapBlocks[x][y].getFieldType() == FieldType.WALL && mapBlocks[x-1][y-1].getFieldType() == FieldType.GROUND && mapBlocks[x+1][y+1].getFieldType() == FieldType.GROUND){
-					mapBlocks[x-1][y-1].setFieldType(FieldType.WALL);
-					System.out.println("placed wall at  " + x + " " + y);
-			}*/
+				
 			}
 	}
 	}
