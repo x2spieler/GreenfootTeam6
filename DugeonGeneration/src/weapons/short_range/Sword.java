@@ -7,7 +7,7 @@ public class Sword extends ShortRangeWeapon
 {
 	public Sword(ScrollActor owner)
 	{
-		damage=20;
+		damage=2000;
 		weaponName="sword";
 		displayName="Sword";
 		this.owner=owner;

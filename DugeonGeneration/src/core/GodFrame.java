@@ -1,11 +1,6 @@
 package core;
 
-import greenfoot.Greenfoot;
-import greenfoot.WorldVisitor;
-
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -20,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
+import greenfoot.Greenfoot;
+import greenfoot.WorldVisitor;
 import weapons.abstracts.LongRangeWeapon;
 import weapons.abstracts.Weapon;
 import world.DungeonMap;
@@ -43,14 +40,8 @@ public class GodFrame
 	{
 		this.frame=frame;
 		this.world=world;
-		for(Component c:frame.getContentPane().getComponents())
-		{
-			if(c instanceof JScrollPane)
-			{
-				viewPortPane=(JScrollPane)c;
-				break;
-			}
-		}
+		frame.getContentPane().remove(1);		//Removes the greenfoot buttons
+		viewPortPane=(JScrollPane)frame.getContentPane().getComponent(0);	//Component 0 is the JScrollPane containing the viewport
 		buildMainMenuGui();
 		buildMenuGui();	
 		buildHUD();
@@ -68,19 +59,19 @@ public class GodFrame
 		case VIEWPORT:
 			frame.getContentPane().remove(pauseMenuPane);
 			frame.getContentPane().remove(mainMenuPane);
-			frame.getContentPane().add(viewPortPane, BorderLayout.CENTER);
+			frame.getContentPane().add(viewPortPane);
 			Greenfoot.start();
 			break;
 		case MAIN_MENU:
 			frame.getContentPane().remove(viewPortPane);
 			frame.getContentPane().remove(pauseMenuPane);
-			frame.getContentPane().add(mainMenuPane, BorderLayout.CENTER);
+			frame.getContentPane().add(mainMenuPane);
 			Greenfoot.stop();
 			break;
 		case PAUSE_MENU:
 			frame.getContentPane().remove(viewPortPane);
 			frame.getContentPane().remove(mainMenuPane);
-			frame.getContentPane().add(pauseMenuPane, BorderLayout.CENTER);
+			frame.getContentPane().add(pauseMenuPane);
 			Greenfoot.stop();
 			break;
 		}

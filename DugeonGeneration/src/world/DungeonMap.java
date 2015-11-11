@@ -66,7 +66,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		addObject(fps, 100, 20);
 		 //player.setNoclip(true);
 
-		//spawnWerewolfs(10);
+		spawnWerewolfs(10);
 
 	}
 
