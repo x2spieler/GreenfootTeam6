@@ -48,6 +48,9 @@ public class Player extends DeltaMover implements IDamageable {
 	
 	boolean mouseWheelListenerRegistered=false;
 
+	//TODO: Buffs bzgl. Waffen
+	
+	
 	public Player(int hp) {
 		super(400); 
 

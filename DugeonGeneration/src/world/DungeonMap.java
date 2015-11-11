@@ -18,6 +18,7 @@ import core.GodFrame;
 import enemies.Werewolf;
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
+import player.DeltaMover;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
@@ -68,6 +69,17 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 		spawnWerewolfs(10);
 
+	}
+	
+	/**
+	 * Updates time of DeltaMovers, otherwise the delta time will be way too big due to the game having been paused
+	 */
+	public void restart()
+	{
+		for(Object dm:getObjects(DeltaMover.class))
+		{
+			((DeltaMover)dm).restart();
+		}
 	}
 
 	public void createGodFrame(JFrame frame) {

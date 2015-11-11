@@ -26,6 +26,14 @@ public class DeltaMover extends DungeonMover {
 		delta = ((double) (System.currentTimeMillis() - time)) / 1000;
 		time = System.currentTimeMillis();
 	}
+	
+	/**
+	 * Called when game is resumed, otherwise the delta time will be way too big due to the game having been paused
+	 */
+	public void restart()
+	{
+		time=System.currentTimeMillis();
+	}
 
 	/**
 	 * When overriding you will need to call super on this, or DeltaMover will

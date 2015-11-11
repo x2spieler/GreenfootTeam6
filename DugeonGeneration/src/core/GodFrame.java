@@ -1,6 +1,7 @@
 package core;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -25,6 +26,10 @@ import world.DungeonMap;
 public class GodFrame 
 {
 
+	//TODO: HUD für Seed
+	//TODO: Scrollen bei Viewport rausnehmen
+	//TODO: HUD für Buffs
+	
 	private JFrame frame;
 	JScrollPane viewPortPane;		//ViewportPane is the component the viewport is drawn on - who would have guessed that?
 	JScrollPane pauseMenuPane=null;
@@ -57,26 +62,29 @@ public class GodFrame
 		switch(type)
 		{
 		case VIEWPORT:
-			frame.getContentPane().remove(pauseMenuPane);
-			frame.getContentPane().remove(mainMenuPane);
-			frame.getContentPane().add(viewPortPane);
+			changeTo(viewPortPane);
+			world.restart();
 			Greenfoot.start();
 			break;
 		case MAIN_MENU:
-			frame.getContentPane().remove(viewPortPane);
-			frame.getContentPane().remove(pauseMenuPane);
-			frame.getContentPane().add(mainMenuPane);
+			changeTo(mainMenuPane);
 			Greenfoot.stop();
 			break;
 		case PAUSE_MENU:
-			frame.getContentPane().remove(viewPortPane);
-			frame.getContentPane().remove(mainMenuPane);
-			frame.getContentPane().add(pauseMenuPane);
+			changeTo(pauseMenuPane);
 			Greenfoot.stop();
 			break;
 		}
 		frame.revalidate();
 		frame.repaint();
+	}
+	
+	private void changeTo(Component t)
+	{
+		frame.getContentPane().remove(viewPortPane);
+		frame.getContentPane().remove(mainMenuPane);
+		frame.getContentPane().remove(pauseMenuPane);
+		frame.getContentPane().add(t);
 	}
 
 	public void buildMenuGui()
