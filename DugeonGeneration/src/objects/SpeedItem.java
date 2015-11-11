@@ -18,8 +18,7 @@ public class SpeedItem extends Item {
 	public SpeedItem (DungeonMap dm) {
 		
 		super(dm, BUFF, DURATION_IN_MS);
-		param = new double[1];
-		param[0] = MULTIPLIER;
+		param = MULTIPLIER;
 		
 	}
 	

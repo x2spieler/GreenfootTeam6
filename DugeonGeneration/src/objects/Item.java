@@ -11,7 +11,7 @@ public abstract class Item extends ScrollActor {
 
 	protected int durationInMS = 0;
 	protected BuffType buff = null;
-	protected double[] param;
+	protected double param;
 	protected GreenfootImage img = null;
 	protected Player player;
 	

@@ -18,8 +18,7 @@ public class MaxHealthItem extends Item {
 	public MaxHealthItem (DungeonMap dm) {
 		
 		super(dm, BUFF, PERMANENT);
-		param = new double[1];
-		param[0] = EXTRA_HEALTH_POINTS;
+		param = EXTRA_HEALTH_POINTS;
 		
 	}
 	

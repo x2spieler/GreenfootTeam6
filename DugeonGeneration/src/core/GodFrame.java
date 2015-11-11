@@ -8,7 +8,6 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import javax.swing.BorderFactory;
@@ -256,7 +255,7 @@ public class GodFrame
 			labels.get(LabelType.WEAPON_LABEL.getValue()).setText("Weapon: "+w.getDisplayName());
 	}
 
-	public void addOrUpdate(BuffType b, double[] param)
+	public void addOrUpdate(BuffType b, double param)
 	{
 		String key=LabelType.BUFF_LABEL.getValue()+b.getValue();
 		JLabel label=labels.get(key);
@@ -266,17 +265,8 @@ public class GodFrame
 			labels.put(key, label);
 			recalculateLabelPositions(labels.size()-1);
 		}
-
-		switch(b)
-		{
-		//Falling through all that have only one parameter
-		case SPEED_MULTIPLIER:
-		case MAX_HP:
-			label.setText(b.getValue()+param[0]);
-			break;
-		default:
-			throw new IllegalArgumentException("Seems like somebody forgot to alter this switch statement - Can't find Bufftype.");
-		}
+		
+		label.setText(b.getValue()+param);
 	}
 
 	public void removeBuffLabel(BuffType b)
