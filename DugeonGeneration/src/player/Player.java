@@ -332,15 +332,26 @@ public class Player extends DeltaMover implements IDamageable {
 		weapons.add(weapon);
 	}
 	
+	/**
+	 * 
+	 * @param buff
+	 * @param param
+	 * @param durationInMs	-1 for perma buffs, >0 for temp buffs,  -2 for reverting temp buffs (only used internally, do not use -2!)
+	 */
 	public void addBuff(BuffType buff, double[] param, int durationInMs)
 	{
+		if(durationInMs>=-1)
+			dungeonMap.addOrUpdate(buff, param);
+		else
+			dungeonMap.removeBuffLabel(buff);
+		
 		switch(buff)
 		{
 		case SPEED_MULTIPLIER:
 			if(param.length<1)
 				throw new IllegalArgumentException("SpeedMultiplier needs 1 argument to be passed to");
 			setSpeed((int)(getSpeed()*param[0]));
-			if(durationInMs!=-1)
+			if(durationInMs>=0)
 			{
 				param[0]=1.d/param[0];
 				queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, param));
@@ -350,7 +361,7 @@ public class Player extends DeltaMover implements IDamageable {
 			if(param.length<1)
 				throw new IllegalArgumentException("SpeedMultiplier needs 1 argument to be passed to");
 			maxHP+=(int)param[0];
-			if(durationInMs!=-1)
+			if(durationInMs>=0)
 			{
 				param[0]*=-1;
 				queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, param));
@@ -366,7 +377,7 @@ public class Player extends DeltaMover implements IDamageable {
 			QueuedBuff qb=queuedBuffs.get(i);
 			if(qb.timeStamp<System.currentTimeMillis())
 			{
-				addBuff(qb.buff, qb.param, -1);
+				addBuff(qb.buff, qb.param, -2);
 				queuedBuffs.remove(i);
 			}
 			else

@@ -18,6 +18,7 @@ import core.GodFrame;
 import enemies.Werewolf;
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
+import player.BuffType;
 import player.DeltaMover;
 import player.DungeonMover;
 import player.Player;
@@ -70,7 +71,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		 //player.setNoclip(true);
 
 		spawnWerewolfs(10);
-
 	}
 	
 	/**
@@ -89,33 +89,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		changeToFrame(FrameType.MAIN_MENU);
 		godFrame.updateSeedLabel(gen.getSeed());
 	}
-
-	public void addMouseListenerToContentPane(MouseWheelListener listener) {
-		godFrame.addScrollListener(listener);
-	}
-
-	public void changeToFrame(FrameType type) {
-		godFrame.changeToFrame(type);
-	}
-
-	public void updateHealthLabel(int health) {
-		godFrame.updateHealthLabel(health);
-	}
-
-	public void updateScoreLabel(int score) {
-		godFrame.updateScoreLabel(score);
-	}
-
-	public void updateAmmoLabel(Weapon w) {
-		if (godFrame != null)
-			godFrame.updateAmmoLabel(w);
-	}
-
-	public void updateWeaponName(Weapon w) {
-		if (godFrame != null)
-			godFrame.updateWeaponName(w);
-	}
-
+	
 	private final void initTiles() {
 		ground.scale(TILE_SIZE, TILE_SIZE);
 		wall.scale(TILE_SIZE, TILE_SIZE);
@@ -321,4 +295,43 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 	}
 
+	
+	//////////////JUST FORWARDING FUNCTIONS FOR GOD_FRAME
+	
+	public void addMouseListenerToContentPane(MouseWheelListener listener) {
+		godFrame.addScrollListener(listener);
+	}
+
+	public void changeToFrame(FrameType type) {
+		godFrame.changeToFrame(type);
+	}
+
+	public void updateHealthLabel(int health) {
+		godFrame.updateHealthLabel(health);
+	}
+
+	public void updateScoreLabel(int score) {
+		godFrame.updateScoreLabel(score);
+	}
+
+	public void updateAmmoLabel(Weapon w) {
+		if (godFrame != null)
+			godFrame.updateAmmoLabel(w);
+	}
+
+	public void updateWeaponName(Weapon w) {
+		if (godFrame != null)
+			godFrame.updateWeaponName(w);
+	}
+	
+	public void addOrUpdate(BuffType b, double[] param)
+	{
+		godFrame.addOrUpdate(b, param);
+	}
+
+	public void removeBuffLabel(BuffType b)
+	{
+		godFrame.removeBuffLabel(b);
+	}
+	
 }

@@ -8,7 +8,8 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -17,10 +18,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
 
 import greenfoot.Greenfoot;
 import greenfoot.WorldVisitor;
+import player.BuffType;
 import weapons.abstracts.LongRangeWeapon;
 import weapons.abstracts.Weapon;
 import world.DungeonMap;
@@ -28,35 +29,59 @@ import world.DungeonMap;
 
 public class GodFrame 
 {
-	//TODO: HUD für Buffs
-	
-	private JFrame frame;
-	JScrollPane viewPortPane;		//ViewportPane is the component the viewport is drawn on - who would have guessed that?
-	JScrollPane pauseMenuPane=null;
-	JScrollPane mainMenuPane=null;
-	DungeonMap world;
 
-	private JLabel healthLabel;
-	private JLabel ammoLabel;
-	private JLabel weaponLabel;
-	private JLabel scoreLabel;
-	private JLabel seedLabel;
-	private ArrayList<JLabel>buffLabels; 
+	private JFrame frame;
+	private JScrollPane viewPortPane;		//ViewportPane is the component the viewport is drawn on - who would have guessed that?
+	private JScrollPane pauseMenuPane=null;
+	private JScrollPane mainMenuPane=null;
+	private JPanel viewportPanel=null;
+	private DungeonMap world;
+
+	private LinkedHashMap<String, JLabel>labels; 
+	private final int LABEL_WIDTH=300;
+	private final int LABEL_HEIGHT=20;
+	private final int SPACE_BETWEEN_LABELS=20;
+	private final int LABEL_X_START=20;
+	private final int LABEL_Y_START=100;
+	private final Color LABEL_FONT_COLOR=Color.red;
+	private final Font LABEL_FONT;
+
+	enum LabelType
+	{
+		HEALTH_LABEL("health"),
+		AMMO_LABEL("ammo"),
+		WEAPON_LABEL("weapon"),
+		SCORE_LABEL("score"),
+		SEED_LABEL("seed"),
+		BUFF_LABEL("buff");
+
+		private String val;
+
+		private LabelType(String v)
+		{
+			this.val=v;
+		}
+
+		public String getValue()
+		{
+			return val;
+		}
+	}
 
 	public GodFrame(JFrame frame, DungeonMap world)
 	{
 		this.frame=frame;
 		this.world=world;
-		buffLabels=new ArrayList<JLabel>();
+		labels=new LinkedHashMap<String, JLabel>();
+		LABEL_FONT=new Font("Serif", Font.BOLD, 20);
+
 		frame.getContentPane().remove(1);		//Removes the greenfoot buttons
 		viewPortPane=(JScrollPane)frame.getContentPane().getComponent(0);	//Component 0 is the JScrollPane containing the viewport
 		buildMainMenuGui();
 		buildMenuGui();	
 		buildHUD();
 		Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
-		SwingUtilities.invokeLater(()->{
-			frame.pack();
-		});
+		frame.pack();
 		frame.setLocation(screenSize.width/2-frame.getWidth()/2, screenSize.height/2-frame.getHeight()/2);
 	}
 
@@ -83,11 +108,9 @@ public class GodFrame
 			Greenfoot.stop();
 			break;
 		}
-		SwingUtilities.invokeLater(()->{
-			frame.pack();
-		});
+		frame.pack();
 	}
-	
+
 	private void changeTo(Component t)
 	{
 		frame.getContentPane().remove(viewPortPane);
@@ -147,38 +170,43 @@ public class GodFrame
 	public void buildHUD()
 	{
 		//First 0 is the View of the scrollPane and the second 0 is the JPanel
-		JPanel vpPanel=(JPanel)((JPanel)((JViewport)viewPortPane.getComponent(0)).getComponent(0)).getComponent(1);
-		vpPanel.setLayout(null);
+		viewportPanel=(JPanel)((JPanel)((JViewport)viewPortPane.getComponent(0)).getComponent(0)).getComponent(1);
+		viewportPanel.setLayout(null);
 
-		healthLabel=new JLabel("Health: -1");
-		healthLabel.setForeground(new Color(255,0,0));
-		healthLabel.setFont(new Font("Serif", Font.BOLD, 20));
-		healthLabel.setBounds(25, 80, 250, 35);
-		vpPanel.add(healthLabel);
+		JLabel healthLabel=createHUDLabelAndAddToPanel("Health: -1");
+		labels.put(LabelType.HEALTH_LABEL.getValue(), healthLabel);
 
-		ammoLabel=new JLabel("Ammo: -1");
-		ammoLabel.setForeground(new Color(255,0,0));
-		ammoLabel.setFont(new Font("Serif", Font.BOLD, 20));
-		ammoLabel.setBounds(25, 115, 250, 35);
-		vpPanel.add(ammoLabel);
+		JLabel ammoLabel=createHUDLabelAndAddToPanel("Ammo: -1");
+		labels.put(LabelType.AMMO_LABEL.getValue(), ammoLabel);
 
-		weaponLabel=new JLabel("Weapon: -1");
-		weaponLabel.setForeground(new Color(255,0,0));
-		weaponLabel.setFont(new Font("Serif", Font.BOLD, 20));
-		weaponLabel.setBounds(25, 150, 250, 35);
-		vpPanel.add(weaponLabel);
-		
-		scoreLabel=new JLabel("Score: -1");
-		scoreLabel.setForeground(new Color(255,0,0));
-		scoreLabel.setFont(new Font("Serif", Font.BOLD, 20));
-		scoreLabel.setBounds(25, 185, 250, 35);
-		vpPanel.add(scoreLabel);
-		
-		seedLabel=new JLabel("Seed: -1");
-		seedLabel.setForeground(new Color(255,0,0));
-		seedLabel.setFont(new Font("Serif", Font.BOLD, 20));
-		seedLabel.setBounds(25, 220, 250, 35);
-		vpPanel.add(seedLabel);
+		JLabel weaponLabel=createHUDLabelAndAddToPanel("Weapon: -1");
+		labels.put(LabelType.WEAPON_LABEL.getValue(), weaponLabel);
+
+		JLabel scoreLabel=createHUDLabelAndAddToPanel("Score: -1");
+		labels.put(LabelType.SCORE_LABEL.getValue(), scoreLabel);
+
+		JLabel seedLabel=createHUDLabelAndAddToPanel("Seed: -1");
+		labels.put(LabelType.SEED_LABEL.getValue(), seedLabel);
+
+		recalculateLabelPositions(0);
+	}
+
+	private JLabel createHUDLabelAndAddToPanel(String text)
+	{
+		JLabel label=new JLabel(text);
+		label.setForeground(LABEL_FONT_COLOR);
+		label.setFont(LABEL_FONT);
+		viewportPanel.add(label);
+		return label;
+	}
+
+	private void recalculateLabelPositions(int startIndex)
+	{
+		Object[] jl=labels.values().toArray();
+		for(int i=startIndex;i<labels.size();i++)
+		{
+			((JLabel)jl[i]).setBounds(LABEL_X_START, LABEL_Y_START+i*(LABEL_HEIGHT+SPACE_BETWEEN_LABELS), LABEL_WIDTH, LABEL_HEIGHT);
+		}
 	}
 
 	//Basically copied from WorldCanvas - thanks WorldCanvas!
@@ -197,44 +225,66 @@ public class GodFrame
 
 	public void updateHealthLabel(int health)
 	{
-		healthLabel.setText("Health: "+health);
+		labels.get(LabelType.HEALTH_LABEL.getValue()).setText("Health: "+health);
 	}
-	
+
 	public void updateSeedLabel(int seed)
 	{
-		seedLabel.setText("Seed: "+seed);
+		labels.get(LabelType.SEED_LABEL.getValue()).setText("Seed: "+seed);
 	}
-	
+
 	public void updateScoreLabel(int score)
 	{
-		scoreLabel.setText("Score: "+score);
+		labels.get(LabelType.SCORE_LABEL.getValue()).setText("Score: "+score);
 	}
 
 	public void updateAmmoLabel(Weapon w)
 	{
 		if(w==null)
-			ammoLabel.setText("Error");
+			labels.get(LabelType.AMMO_LABEL.getValue()).setText("Error");
 		else if(w instanceof LongRangeWeapon)
-			ammoLabel.setText("Ammo: "+((LongRangeWeapon)w).getAmmo());
+			labels.get(LabelType.AMMO_LABEL.getValue()).setText("Ammo: "+((LongRangeWeapon)w).getAmmo());
 		else
-			ammoLabel.setText("Ammo: -");
+			labels.get(LabelType.AMMO_LABEL.getValue()).setText("Ammo: -");
 	}
 
 	public void updateWeaponName(Weapon w)
 	{
 		if(w==null)
-			weaponLabel.setText("Error");
+			labels.get(LabelType.WEAPON_LABEL.getValue()).setText("Error");
 		else
-			weaponLabel.setText("Weapon: "+w.getDisplayName());
+			labels.get(LabelType.WEAPON_LABEL.getValue()).setText("Weapon: "+w.getDisplayName());
 	}
 
-	/*public void addBuff(BuffType b, double[] param)
+	public void addOrUpdate(BuffType b, double[] param)
 	{
-		
+		String key=LabelType.BUFF_LABEL.getValue()+b.getValue();
+		JLabel label=labels.get(key);
+		if(label==null)
+		{
+			label=createHUDLabelAndAddToPanel("Lorem ipsum");
+			labels.put(key, label);
+			recalculateLabelPositions(labels.size()-1);
+		}
+
+		switch(b)
+		{
+		//Falling through all that have only one parameter
+		case SPEED_MULTIPLIER:
+		case MAX_HP:
+			label.setText(b.getValue()+param[0]);
+			break;
+		default:
+			throw new IllegalArgumentException("Seems like somebody forgot to alter this switch statement - Can't find Bufftype.");
+		}
 	}
-	
-	public void addBuff(BuffType b, double[] param)
+
+	public void removeBuffLabel(BuffType b)
 	{
-		
-	}*/
+		String key=LabelType.BUFF_LABEL.getValue()+b.getValue();
+		JLabel label=labels.get(key);
+		viewportPanel.remove(label);
+		labels.remove(key);
+		recalculateLabelPositions(0);
+	}
 }
