@@ -11,6 +11,7 @@ import java.awt.event.MouseWheelListener;
 import java.util.LinkedHashMap;
 
 import javax.swing.BorderFactory;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -36,6 +37,7 @@ public class GodFrame
 	private JPanel viewportPanel=null;
 	private DungeonMap world;
 
+	private JLabel timeLabel;
 	private LinkedHashMap<String, JLabel>labels; 
 	private final int LABEL_WIDTH=300;
 	private final int LABEL_HEIGHT=20;
@@ -188,6 +190,15 @@ public class GodFrame
 		labels.put(LabelType.SEED_LABEL.getValue(), seedLabel);
 
 		recalculateLabelPositions(0);
+		
+		timeLabel=new JLabel("00:00");
+		Dimension d=viewportPanel.getPreferredSize();
+		int tlWidth=200;
+		timeLabel.setHorizontalAlignment(JLabel.CENTER);
+		timeLabel.setBounds((int)(d.getWidth()/2-tlWidth/2), 20, tlWidth, 50);
+		timeLabel.setForeground(LABEL_FONT_COLOR);
+		timeLabel.setFont(new Font("Serif", Font.BOLD, 26));
+		viewportPanel.add(timeLabel);
 	}
 
 	private JLabel createHUDLabelAndAddToPanel(String text)
@@ -253,6 +264,16 @@ public class GodFrame
 			labels.get(LabelType.WEAPON_LABEL.getValue()).setText("Error");
 		else
 			labels.get(LabelType.WEAPON_LABEL.getValue()).setText("Weapon: "+w.getDisplayName());
+	}
+	
+	public void updateTimeLabel(int time)
+	{
+		time/=1000.d;
+		int seconds=time%60;
+		String sc=seconds<10?"0"+seconds:""+seconds;
+		int minutes=time/60;
+		String min=minutes<10?"0"+minutes:""+minutes;
+		timeLabel.setText(min+" : "+sc);
 	}
 
 	public void addOrUpdateBuffLabel(BuffType b, double param)

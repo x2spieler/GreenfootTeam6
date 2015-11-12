@@ -35,6 +35,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public static final int TILE_SIZE = 32;
 	private static final int viewportXTiles = (VIEWPORT_WIDTH / TILE_SIZE);
 	private static final int viewportYTiles = (VIEWPORT_HEIGHT / TILE_SIZE);
+	static private int greenfootTime=0;
+	private long lastTicks;
 
 	private DungeonGenerator gen;
 	private MapField[][] map;
@@ -69,8 +71,21 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		fps = new FPS();
 		addObject(fps, 100, 20);
 		 //player.setNoclip(true);
+		
+		lastTicks=System.currentTimeMillis();
 
 		spawnWerewolfs(10);
+	}
+	
+	@Override
+	public void act()
+	{
+		super.act();
+		
+		long currTicks=System.currentTimeMillis();
+		greenfootTime+=currTicks-lastTicks;
+		lastTicks=currTicks;
+		godFrame.updateTimeLabel(greenfootTime);
 	}
 	
 	/**
@@ -295,6 +310,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 	}
 
+	public static int getGreenfootTime()
+	{
+		return greenfootTime;
+	}
 	
 	//////////////JUST FORWARDING FUNCTIONS FOR GOD_FRAME
 	
