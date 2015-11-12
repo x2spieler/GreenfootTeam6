@@ -117,7 +117,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	
 	private void spawnEnemies()
 	{
-		spawnWerewolfs(1);
+		Random r = new Random(gen.getSeed());
+		spawnWerewolfs(1, r);
 		//Increase numAlivEenemies here , spawnWerefols does so
 	}
 	
@@ -249,8 +250,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		super.setCameraLocation(x, y);
 	}
 
-	private void spawnWerewolfs(int num) {
-		Random r = new Random();
+	private void spawnWerewolfs(int num, Random r) {
 		for (int k = 0; k < num; k++) {
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
