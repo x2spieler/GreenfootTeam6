@@ -8,6 +8,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
+import AI.Enemy;
 import AI.IDamageable;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
@@ -36,13 +37,15 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private static final int viewportYTiles = (VIEWPORT_HEIGHT / TILE_SIZE);
 	private static int greenfootTime=0;
 	private long lastTicks;
+	
+	private int numAliveEnemies=0;
 
 	private DungeonGenerator gen;
 	private MapField[][] map;
 	// private final boolean[][] fastMap;
 
 	private GreenfootImage ground, wall, back, empty, pickup, destructible;
-	private final GreenfootImage[][] tileMap;
+	private GreenfootImage[][] tileMap;
 
 	private Player player;
 
@@ -51,12 +54,12 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	FPS fps;
 
 	//TODO: Refactor so that we can easily start a new round
+	//TODO: Make spawning of enemies based on seed
 	
-	public DungeonMap() throws IOException {
+	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
 				DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
-		initDungeonMap();
-		tileMap = new DungeonMapper(map).getImageForTilesetHouse();
+		gen = new DungeonGenerator(this);
 		back = getBackground();
 		ground = new GreenfootImage("grass.png");
 		wall = new GreenfootImage("wood.png");
@@ -64,16 +67,58 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		pickup = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		destructible = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		initTiles();
-		player = new Player(10);
-		// player.setMode(Player.MOVE_MODE_8_DIRECTIONS);
-		addObject(player, 0, 0);
 		fps = new FPS();
-		addObject(fps, 100, 20);
-		 //player.setNoclip(true);
-		
+	}
+	
+	public void playerDied()
+	{
+		endGame();
+		godFrame.changeToFrame(FrameType.GAME_OVER);
+	}
+	
+	public void startNewGame()
+	{
+		generateNewMap();
+		try
+		{
+			tileMap = new DungeonMapper(map).getImageForTilesetHouse();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		player = new Player(10);
+		addObject(player, 0, 0);
 		lastTicks=System.currentTimeMillis();
-
-		spawnWerewolfs(10);
+		greenfootTime=0;
+		addObject(fps, 100, 20);
+		spawnEnemies();
+	}
+	
+	public void startNewRound()
+	{
+		lastTicks=System.currentTimeMillis();
+		greenfootTime=0;
+		addObject(player, 0, 0);
+		spawnEnemies();
+	}
+	
+	public void endRound()
+	{
+		removeObjects(getObjects(null));
+		changeToFrame(FrameType.NEXT_ROUND);
+	}
+	
+	public void endGame()
+	{
+		removeObjects(getObjects(null));
+		player=null;
+		numAliveEnemies=0;
+	}
+	
+	private void spawnEnemies()
+	{
+		spawnWerewolfs(1);
+		//Increase numAlivEenemies here , spawnWerefols does so
 	}
 	
 	@Override
@@ -113,8 +158,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	}
 
-	private final void initDungeonMap() {
-		gen = new DungeonGenerator(this);
+	private final void generateNewMap() {
 		gen.clearMap();
 		gen.generateRooms();
 		gen.placeRooms();
@@ -210,14 +254,27 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		for (int k = 0; k < num; k++) {
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
+			x=1;
+			y=1;
 			Werewolf z = new Werewolf();
 			addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
+			numAliveEnemies++;
 		}
 
 	}
-
+	
 	@Override
-	public void addPlayerScore(int score) {
+	public void enemyDied(Enemy e)
+	{
+		numAliveEnemies--;
+		addPlayerScore(e.getScore());
+		if(numAliveEnemies==0)
+		{
+			endRound();
+		}
+	}
+
+	private void addPlayerScore(int score) {
 		player.addScore(score);
 		updateScoreLabel(player.getScore());
 	}

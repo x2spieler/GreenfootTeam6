@@ -81,7 +81,7 @@ public class Player extends DeltaMover implements IDamageable {
 	{
 		super.addedToWorld(world);
 
-		if(!(getWorld() instanceof DungeonMap))
+		if(!(getWorld()!=null&&getWorld() instanceof DungeonMap))
 			throw new IllegalStateException("Player must only be added to a DungeonMap");
 
 		dungeonMap=(DungeonMap) getWorld();
@@ -127,7 +127,7 @@ public class Player extends DeltaMover implements IDamageable {
 		if(currHP<=0)
 		{
 			System.out.println("Player died");
-			Greenfoot.stop();
+			dungeonMap.playerDied();
 		}
 	}
 

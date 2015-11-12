@@ -11,7 +11,6 @@ import java.awt.event.MouseWheelListener;
 import java.util.LinkedHashMap;
 
 import javax.swing.BorderFactory;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,6 +33,8 @@ public class GodFrame
 	private JScrollPane viewPortPane;		//ViewportPane is the component the viewport is drawn on - who would have guessed that?
 	private JScrollPane pauseMenuPane=null;
 	private JScrollPane mainMenuPane=null;
+	private JScrollPane gameOverPane=null;
+	private JScrollPane nextRoundPane=null;
 	private JPanel viewportPanel=null;
 	private DungeonMap world;
 
@@ -81,6 +82,8 @@ public class GodFrame
 		buildMainMenuGui();
 		buildMenuGui();	
 		buildHUD();
+		buildGameOverGui();
+		buildNextRoundGui();
 		Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
 		frame.pack();
 		frame.setLocation(screenSize.width/2-frame.getWidth()/2, screenSize.height/2-frame.getHeight()/2);
@@ -97,7 +100,6 @@ public class GodFrame
 		{
 		case VIEWPORT:
 			changeTo(viewPortPane);
-			world.resume();
 			Greenfoot.start();
 			break;
 		case MAIN_MENU:
@@ -108,8 +110,18 @@ public class GodFrame
 			changeTo(pauseMenuPane);
 			Greenfoot.stop();
 			break;
+		case GAME_OVER:
+			changeTo(gameOverPane);
+			Greenfoot.stop();
+			break;
+		case NEXT_ROUND:
+			changeTo(nextRoundPane);
+			Greenfoot.start();
+			break;
 		}
 		frame.pack();
+		frame.revalidate();
+		frame.repaint();
 	}
 
 	private void changeTo(Component t)
@@ -117,6 +129,8 @@ public class GodFrame
 		frame.getContentPane().remove(viewPortPane);
 		frame.getContentPane().remove(mainMenuPane);
 		frame.getContentPane().remove(pauseMenuPane);
+		frame.getContentPane().remove(gameOverPane);
+		frame.getContentPane().remove(nextRoundPane);
 		frame.getContentPane().add(t);
 	}
 
@@ -134,6 +148,7 @@ public class GodFrame
 		resume.setText("Resume");
 		resume.addActionListener((ActionEvent e)->{
 			changeToFrame(FrameType.VIEWPORT);
+			world.resume();
 		});
 		panel.add(resume);
 		///////
@@ -143,6 +158,32 @@ public class GodFrame
 
 		pauseMenuPane=outer;
 	}
+	
+	public void buildNextRoundGui()
+	{
+		JPanel panel=new JPanel();
+		panel.setLayout(null);
+		panel.setPreferredSize(getPrefSize(panel));
+		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+		///////CODE FOR MENU GOES HERE
+
+		JButton resume=new JButton();
+		resume.setBounds(400,200,100,30);
+		resume.setText("Next round");
+		resume.addActionListener((ActionEvent e)->{
+			changeToFrame(FrameType.VIEWPORT);
+			world.startNewRound();
+		});
+		panel.add(resume);
+		///////
+
+		JScrollPane outer = new JScrollPane(panel);
+		outer.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+
+		nextRoundPane=outer;
+	}
+
 
 	public void buildMainMenuGui()
 	{
@@ -158,6 +199,7 @@ public class GodFrame
 		start.setText("Start");
 		start.addActionListener((ActionEvent e)->{
 			changeToFrame(FrameType.VIEWPORT);
+			world.startNewGame();
 		});
 		panel.add(start);
 		///////
@@ -166,6 +208,30 @@ public class GodFrame
 		outer.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
 		mainMenuPane=outer;
+	}
+	
+	public void buildGameOverGui()
+	{
+		JPanel panel=new JPanel();
+		panel.setLayout(null);
+		panel.setPreferredSize(getPrefSize(panel));
+		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+		///////CODE FOR GAME OVER MENU GOES HERE
+
+		JButton start=new JButton();
+		start.setBounds(400,200,200,30);
+		start.setText("Back to main menu");
+		start.addActionListener((ActionEvent e)->{
+			changeToFrame(FrameType.MAIN_MENU);
+		});
+		panel.add(start);
+		///////
+
+		JScrollPane outer = new JScrollPane(panel);
+		outer.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+
+		gameOverPane=outer;
 	}
 
 	public void buildHUD()

@@ -7,7 +7,7 @@ import weapons.abstracts.Bullet;
 
 public interface IWorldInterfaceForAI
 {
-	public void addPlayerScore(int score);
+	public void enemyDied(Enemy e);
 	
 	public void addBulletToWorld(Bullet bullet);
 	
