@@ -106,10 +106,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		List<Object> l=new ArrayList<Object>();
 		for(Object o:getObjects(null).toArray())
 		{
-			if(!(o instanceof Player||o instanceof Crate||o instanceof Weapon))
+			if(!(o instanceof Player||o instanceof Crate||o instanceof Weapon||o instanceof ScrollWorld))
 				l.add(o);
 		}
-		//TODO: check this
 		removeObjects(l);
 		changeToFrame(FrameType.NEXT_ROUND);
 	}

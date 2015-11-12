@@ -130,9 +130,9 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		if (hp <= 0)
 		{
 			setImage("tombstone.png");
-			wi.enemyDied(this);
 			getWorld().removeObject(weapon);
 			isPendingKill=true;
+			wi.enemyDied(this);
 		}
 	}
 	

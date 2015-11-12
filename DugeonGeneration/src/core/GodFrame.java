@@ -100,6 +100,7 @@ public class GodFrame
 		{
 		case VIEWPORT:
 			changeTo(viewPortPane);
+			viewPortPane.requestFocus();
 			Greenfoot.start();
 			break;
 		case MAIN_MENU:
