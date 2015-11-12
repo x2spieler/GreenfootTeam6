@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.JFrame;
@@ -19,6 +21,7 @@ import core.GodFrame;
 import enemies.Werewolf;
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
+import objects.Crate;
 import player.BuffType;
 import player.DungeonMover;
 import player.Player;
@@ -52,9 +55,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private GodFrame godFrame = null;
 
 	FPS fps;
-
-	//TODO: Refactor so that we can easily start a new round
-	//TODO: Make spawning of enemies based on seed
 	
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
@@ -86,7 +86,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		{
 			e.printStackTrace();
 		}
-		player = new Player(10);
+		player = new Player(100);
 		addObject(player, 0, 0);
 		lastTicks=System.currentTimeMillis();
 		greenfootTime=0;
@@ -98,13 +98,19 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	{
 		lastTicks=System.currentTimeMillis();
 		greenfootTime=0;
-		addObject(player, 0, 0);
 		spawnEnemies();
 	}
 	
 	public void endRound()
 	{
-		removeObjects(getObjects(null));
+		List<Object> l=new ArrayList<Object>();
+		for(Object o:getObjects(null).toArray())
+		{
+			if(!(o instanceof Player||o instanceof Crate||o instanceof Weapon))
+				l.add(o);
+		}
+		//TODO: check this
+		removeObjects(l);
 		changeToFrame(FrameType.NEXT_ROUND);
 	}
 	
