@@ -364,14 +364,14 @@ public class Player extends DeltaMover implements IDamageable {
 			setSpeed((int)(getSpeed()*param));
 			if(durationInMs>=0)
 			{
-				queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, 1.d/param));
+				queuedBuffs.add(new QueuedBuff(DungeonMap.getGreenfootTime()+durationInMs, buff, 1.d/param));
 			}
 			break;
 		case MAX_HP:
 			maxHP+=(int)param;
 			if(durationInMs>=0)
 			{
-				queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, -param));
+				queuedBuffs.add(new QueuedBuff(DungeonMap.getGreenfootTime()+durationInMs, buff, -param));
 			}
 			break;
 		case MELEE_DAMAGE:
@@ -381,7 +381,7 @@ public class Player extends DeltaMover implements IDamageable {
 			{
 				applyWeaponBuffs(buff, param, true);
 				if(durationInMs>=0)
-					queuedBuffs.add(new QueuedBuff(System.currentTimeMillis()+durationInMs, buff, -1));
+					queuedBuffs.add(new QueuedBuff(DungeonMap.getGreenfootTime()+durationInMs, buff, -1));
 			}
 			else {
 				removeWeaponBuff(buff, true);
@@ -476,7 +476,7 @@ public class Player extends DeltaMover implements IDamageable {
 		for(int i=0;i<queuedBuffs.size();)
 		{
 			QueuedBuff qb=queuedBuffs.get(i);
-			if(qb.timeStamp<System.currentTimeMillis())
+			if(qb.timeStamp<DungeonMap.getGreenfootTime())
 			{
 				addBuff(qb.buff, qb.param, -2);
 				queuedBuffs.remove(i);

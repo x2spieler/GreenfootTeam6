@@ -97,7 +97,7 @@ public class GodFrame
 		{
 		case VIEWPORT:
 			changeTo(viewPortPane);
-			world.restart();
+			world.resume();
 			Greenfoot.start();
 			break;
 		case MAIN_MENU:

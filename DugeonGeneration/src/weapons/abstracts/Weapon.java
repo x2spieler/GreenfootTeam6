@@ -3,10 +3,12 @@ import java.awt.geom.Point2D;
 
 import AI.Enemy;
 import AI.IWorldInterfaceForAI;
+import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
 import scrollWorld.ScrollActor;
 import weapons.EntityType;
+import world.DungeonMap;
 
 public abstract class Weapon extends ScrollActor
 {
@@ -128,7 +130,7 @@ public abstract class Weapon extends ScrollActor
 	 */
 	public boolean use()
 	{
-		long millisNow = System.currentTimeMillis();
+		long millisNow = DungeonMap.getGreenfootTime();
 		if (lastUsage + reloadTimeInMS < millisNow)
 		{
 			if(triggerUse())

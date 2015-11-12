@@ -8,6 +8,7 @@ import greenfoot.World;
 import player.DeltaMover;
 import player.Player;
 import weapons.EntityType;
+import world.DungeonMap;
 
 public abstract class Bullet extends DeltaMover
 {
@@ -21,7 +22,7 @@ public abstract class Bullet extends DeltaMover
 	public Bullet(EntityType typeToIgnore) 
 	{
 		super(0);
-		timeStampCreated=System.currentTimeMillis();
+		timeStampCreated=DungeonMap.getGreenfootTime();
 		this.typeToIgnore=typeToIgnore;
 		bulletOffsetFromPlayer=new Point2D.Double(32,0);;
 	}
@@ -38,7 +39,7 @@ public abstract class Bullet extends DeltaMover
 	{
 		super.act();
 		move();
-		if (isTouchingWall()||handleCollision() || timeStampCreated+lifetimeInMs<System.currentTimeMillis())
+		if (isTouchingWall()||handleCollision() || timeStampCreated+lifetimeInMs<DungeonMap.getGreenfootTime())
 		{
 			//Didn't move although move was called -> tried to move into wall. If we are at a rotation of x*90�, we will just stay in front of the wall until our lifetime is over || hit player/enemy || our time has come :(
 			getWorld().removeObject(this);

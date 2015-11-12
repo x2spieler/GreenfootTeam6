@@ -19,7 +19,6 @@ import enemies.Werewolf;
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
 import player.BuffType;
-import player.DeltaMover;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
@@ -35,7 +34,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public static final int TILE_SIZE = 32;
 	private static final int viewportXTiles = (VIEWPORT_WIDTH / TILE_SIZE);
 	private static final int viewportYTiles = (VIEWPORT_HEIGHT / TILE_SIZE);
-	static private int greenfootTime=0;
+	private static int greenfootTime=0;
 	private long lastTicks;
 
 	private DungeonGenerator gen;
@@ -91,12 +90,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	/**
 	 * Updates time of DeltaMovers, otherwise the delta time will be way too big due to the game having been paused
 	 */
-	public void restart()
+	public void resume()
 	{
-		for(Object dm:getObjects(DeltaMover.class))
-		{
-			((DeltaMover)dm).restart();
-		}
+		lastTicks=System.currentTimeMillis();
 	}
 
 	public void createGodFrame(JFrame frame) {
@@ -310,6 +306,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 	}
 
+	/**
+	 * @return The elapsed time in milliseconds - takes pauses into account, only counts really played time
+	 */
 	public static int getGreenfootTime()
 	{
 		return greenfootTime;
