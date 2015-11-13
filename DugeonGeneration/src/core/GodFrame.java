@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.LinkedHashMap;
+import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -16,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.JViewport;
 
 import greenfoot.Greenfoot;
@@ -47,6 +49,7 @@ public class GodFrame
 	private final int LABEL_Y_START=100;
 	private final Color LABEL_FONT_COLOR=Color.red;
 	private final Font LABEL_FONT;
+	private JTextField seedTF;
 	
 	enum LabelType
 	{
@@ -222,9 +225,23 @@ public class GodFrame
 		start.setText("Start");
 		start.addActionListener((ActionEvent e)->{
 			changeToFrame(FrameType.VIEWPORT);
-			world.startNewGame();
+			world.startNewGame(Integer.valueOf(seedTF.getText()));
 		});
 		panel.add(start);
+		
+		JLabel seedLabel=new JLabel("Seed:");
+		int lWidth=100;
+		int lHeight=50;
+		int space=20;
+		seedLabel.setBounds(panelSize.width/2-lWidth-space,panelSize.height/2+150-lHeight/2,lWidth,lHeight);
+		seedLabel.setHorizontalAlignment(JLabel.RIGHT);
+		panel.add(seedLabel);
+		
+		seedTF=new JTextField(""+new Random().nextInt());
+		int tfWidth=100;
+		int tfHeight=24;
+		seedTF.setBounds(panelSize.width/2+space,panelSize.height/2+150-tfHeight/2,tfWidth,tfHeight);
+		panel.add(seedTF);
 		///////
 
 		JScrollPane outer = new JScrollPane(panel);

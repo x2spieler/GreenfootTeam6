@@ -57,7 +57,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
 				DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
-		gen = new DungeonGenerator(this);
 		back = getBackground();
 		ground = new GreenfootImage("grass.png");
 		wall = new GreenfootImage("wood.png");
@@ -74,9 +73,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		godFrame.changeToFrame(FrameType.GAME_OVER);
 	}
 	
-	public void startNewGame()
+	public void startNewGame(int seed)
 	{
-		generateNewMap();
+		generateNewMap(seed);
+		godFrame.updateSeedLabel(gen.getSeed());
 		/*try
 		{
 			tileMap = new DungeonMapper(map).getImageForTilesetHouse();
@@ -139,7 +139,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void createGodFrame(JFrame frame) {
 		godFrame = new GodFrame(frame, this);
 		changeToFrame(FrameType.MAIN_MENU);
-		godFrame.updateSeedLabel(gen.getSeed());
 	}
 	
 	private final void initTiles() {
@@ -154,7 +153,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	}
 
-	private final void generateNewMap() {
+	private final void generateNewMap(int seed) {
+		gen = new DungeonGenerator(this, seed);
 		gen.clearMap();
 		gen.generateRooms();
 		gen.placeRooms();
