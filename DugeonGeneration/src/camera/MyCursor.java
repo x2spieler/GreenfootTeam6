@@ -1,15 +1,14 @@
 package camera;
 
-import greenfoot.Greenfoot;
-import greenfoot.MouseInfo;
-import greenfoot.core.WorldHandler;
-
 import java.awt.AWTException;
 import java.awt.Point;
 import java.awt.Robot;
 
 import javax.swing.SwingUtilities;
 
+import greenfoot.Greenfoot;
+import greenfoot.MouseInfo;
+import greenfoot.core.WorldHandler;
 import scrollWorld.ScrollActor;
 
 public class MyCursor extends ScrollActor {

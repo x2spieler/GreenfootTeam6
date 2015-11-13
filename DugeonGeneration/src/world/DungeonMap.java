@@ -3,7 +3,6 @@ package world;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -29,7 +28,6 @@ import scrollWorld.FPS;
 import scrollWorld.ScrollWorld;
 import weapons.abstracts.Bullet;
 import weapons.abstracts.Weapon;
-import world.mapping.DungeonMapper;
 
 public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
@@ -48,7 +46,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	// private final boolean[][] fastMap;
 
 	private GreenfootImage ground, wall, back, empty, pickup, destructible;
-	private GreenfootImage[][] tileMap;
+	//private GreenfootImage[][] tileMap;
 
 	private Player player;
 
@@ -79,13 +77,13 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void startNewGame()
 	{
 		generateNewMap();
-		try
+		/*try
 		{
 			tileMap = new DungeonMapper(map).getImageForTilesetHouse();
 		} catch (IOException e)
 		{
 			e.printStackTrace();
-		}
+		}*/
 		player = new Player(100);
 		addObject(player, 0, 0);
 		lastTicks=System.currentTimeMillis();

@@ -57,5 +57,6 @@ public abstract class LongRangeWeapon extends Weapon
 
 	protected abstract Bullet instantiateBullet();
 	
+	@SuppressWarnings("rawtypes")
 	public abstract boolean areBulletsClassOf(Class c);
 }

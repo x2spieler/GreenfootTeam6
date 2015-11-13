@@ -47,7 +47,6 @@ public class FPS extends Actor {
 	public FPS() {
 		countAct = 0;
 		setImage(new GreenfootImage(200, 32));
-		GreenfootImage image = getImage();
 		updateImage("-");
 	}
 

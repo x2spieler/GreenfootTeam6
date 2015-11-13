@@ -3,7 +3,6 @@ package scrollWorld;
 import java.util.ArrayList;
 
 import greenfoot.Actor;
-import greenfoot.GreenfootImage;
 import greenfoot.World;
 
 /**
@@ -32,7 +31,7 @@ import greenfoot.World;
  * @version 2.1.2
  */
 public abstract class ScrollWorld extends World {
-	private final int width, height, cellSize;
+	//private final int width, height, cellSize;
 	private final ArrayList<ScrollActor> objects;
 	private final ArrayList<ScrollActor> camFollowers;
 	private final int fullWidth, fullHeight;
@@ -40,8 +39,8 @@ public abstract class ScrollWorld extends World {
 	private int camX, camY, camDir;
 
 	// private final GreenfootImage bigBackground, back;
-	private final GreenfootImage back;
-	private int scrollPosX, scrollPosY;
+	//private final GreenfootImage back;
+	//private int scrollPosX, scrollPosY;
 
 	/**
 	 * Create a new ScrollWorld.
@@ -63,10 +62,6 @@ public abstract class ScrollWorld extends World {
 	 */
 	public ScrollWorld(int width, int height, int cellSize, int fullWidth, int fullHeight) {
 		super(width, height, cellSize, false);
-		this.back = getBackground();
-		this.width = back.getWidth();
-		this.height = back.getHeight();
-		this.cellSize = cellSize;
 		this.fullWidth = fullWidth;
 		this.fullHeight = fullHeight;
 		if (fullWidth <= 0)
@@ -83,8 +78,15 @@ public abstract class ScrollWorld extends World {
 		camY = getHeight() / 2;
 		camDir = 0;
 
+
+		/*Never used anywhere
 		scrollPosX = 0;
 		scrollPosY = 0;
+		this.width = back.getWidth();
+		this.height = back.getHeight();
+		this.cellSize = cellSize;
+		this.back = getBackground();
+		*/
 
 		// bigBackground = new GreenfootImage(fullWidth, fullHeight);
 		// setNewBackground(back);

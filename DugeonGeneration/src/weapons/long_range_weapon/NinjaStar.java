@@ -3,7 +3,6 @@ package weapons.long_range_weapon;
 import scrollWorld.ScrollActor;
 import weapons.abstracts.Bullet;
 import weapons.abstracts.LongRangeWeapon;
-import weapons.bullets.CrossbowArrow;
 
 public class NinjaStar extends LongRangeWeapon
 {
@@ -25,6 +24,7 @@ public class NinjaStar extends LongRangeWeapon
 		return new weapons.bullets.NinjaStar(typeToIgnore);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean areBulletsClassOf(Class c) {
 		return c==weapons.bullets.NinjaStar.class;

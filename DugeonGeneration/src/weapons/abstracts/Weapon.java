@@ -3,7 +3,6 @@ import java.awt.geom.Point2D;
 
 import AI.Enemy;
 import AI.IWorldInterfaceForAI;
-import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
 import scrollWorld.ScrollActor;

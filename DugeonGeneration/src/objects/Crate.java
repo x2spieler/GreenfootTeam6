@@ -1,17 +1,14 @@
 package objects;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.Random;
 
+import AI.IDamageable;
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.FieldType;
 import core.Mathf;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
-import greenfoot.core.WorldInvokeListener;
-import AI.IDamageable;
-import AI.IWorldInterfaceForAI;
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.FieldType;
 import scrollWorld.ScrollActor;
 import world.DungeonMap;
 

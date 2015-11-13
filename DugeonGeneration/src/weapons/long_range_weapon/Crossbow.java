@@ -24,6 +24,7 @@ public class Crossbow extends LongRangeWeapon{
 		return new CrossbowArrow(typeToIgnore);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean areBulletsClassOf(Class c) {
 		return c==CrossbowArrow.class;

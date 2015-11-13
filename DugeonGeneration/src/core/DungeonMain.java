@@ -21,10 +21,6 @@ LICENSE.txt file that accompanied this code.
  */
 package core;
 
-import greenfoot.export.GreenfootScenarioMain;
-import greenfoot.export.GreenfootScenarioViewer;
-import greenfoot.util.StandalonePropStringManager;
-
 import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.Point;
@@ -43,9 +39,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import world.DungeonMap;
-import menu.Menu;
 import bluej.Config;
+import greenfoot.export.GreenfootScenarioMain;
+import greenfoot.export.GreenfootScenarioViewer;
+import greenfoot.util.StandalonePropStringManager;
+import world.DungeonMap;
 
 /**
  * The main class for Greenfoot scenarios when they are exported as standalone
