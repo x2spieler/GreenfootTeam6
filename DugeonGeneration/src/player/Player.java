@@ -121,12 +121,10 @@ public class Player extends DeltaMover implements IDamageable {
 	@Override
 	public void damage(int dmg)
 	{
-		System.out.println("Ouch! " + dmg + " damage taken.");
 		currHP-=dmg;
 		dungeonMap.updateHealthLabel(getHP());
 		if(currHP<=0)
 		{
-			System.out.println("Player died");
 			dungeonMap.playerDied();
 		}
 	}

@@ -140,11 +140,19 @@ public class GodFrame
 		panel.setLayout(null);
 		panel.setPreferredSize(getPrefSize(panel));
 		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		Dimension panelSize=panel.getPreferredSize();
+		///////CODE FOR GAME OVER MENU GOES HERE
 
-		///////CODE FOR MENU GOES HERE
+		JLabel pauseLabel=new JLabel("Game paused");
+		pauseLabel.setBounds(0,100,panelSize.width,50);
+		pauseLabel.setFont(new Font("", Font.PLAIN, 26));
+		pauseLabel.setHorizontalAlignment(JLabel.CENTER);
+		panel.add(pauseLabel);
 
 		JButton resume=new JButton();
-		resume.setBounds(400,200,100,30);
+		int buttonWidth=150;
+		int buttonHeight=35;
+		resume.setBounds(panelSize.width/2-buttonWidth/2,panelSize.height/2,buttonWidth,buttonHeight);
 		resume.setText("Resume");
 		resume.addActionListener((ActionEvent e)->{
 			changeToFrame(FrameType.VIEWPORT);
@@ -164,11 +172,19 @@ public class GodFrame
 		panel.setLayout(null);
 		panel.setPreferredSize(getPrefSize(panel));
 		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
+		Dimension panelSize=panel.getPreferredSize();
 		///////CODE FOR MENU GOES HERE
+		
+		JLabel wonLabel=new JLabel("You won the round!");
+		wonLabel.setBounds(0,100,panelSize.width,50);
+		wonLabel.setFont(new Font("", Font.ITALIC, 24));
+		wonLabel.setHorizontalAlignment(JLabel.CENTER);
+		panel.add(wonLabel);
 
 		JButton resume=new JButton();
-		resume.setBounds(400,200,100,30);
+		int buttonWidth=150;
+		int buttonHeight=40;
+		resume.setBounds(panelSize.width/2-buttonWidth/2,panelSize.height/2-100,buttonWidth,buttonHeight);
 		resume.setText("Next round");
 		resume.addActionListener((ActionEvent e)->{
 			world.startNewRound();
@@ -190,11 +206,19 @@ public class GodFrame
 		panel.setLayout(null);
 		panel.setPreferredSize(getPrefSize(panel));
 		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
+		Dimension panelSize=panel.getPreferredSize();
 		///////CODE FOR MAIN MENU GOES HERE
 
+		JLabel startLabel=new JLabel("Start a new game");
+		startLabel.setBounds(0,100,panelSize.width,50);
+		startLabel.setFont(new Font("", Font.BOLD, 24));
+		startLabel.setHorizontalAlignment(JLabel.CENTER);
+		panel.add(startLabel);
+
 		JButton start=new JButton();
-		start.setBounds(400,200,100,30);
+		int buttonWidth=150;
+		int buttonHeight=40;
+		start.setBounds(panelSize.width/2-buttonWidth/2,panelSize.height/2-60,buttonWidth,buttonHeight);
 		start.setText("Start");
 		start.addActionListener((ActionEvent e)->{
 			changeToFrame(FrameType.VIEWPORT);
@@ -215,16 +239,24 @@ public class GodFrame
 		panel.setLayout(null);
 		panel.setPreferredSize(getPrefSize(panel));
 		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
+		Dimension panelSize=panel.getPreferredSize();
 		///////CODE FOR GAME OVER MENU GOES HERE
 
-		JButton start=new JButton();
-		start.setBounds(400,200,200,30);
-		start.setText("Back to main menu");
-		start.addActionListener((ActionEvent e)->{
+		JLabel loseLabel=new JLabel("You lost!");
+		loseLabel.setBounds(0,100,panelSize.width,50);
+		loseLabel.setFont(new Font("", Font.ITALIC, 24));
+		loseLabel.setHorizontalAlignment(JLabel.CENTER);
+		panel.add(loseLabel);
+
+		JButton mmenu=new JButton();
+		int buttonWidth=200;
+		int buttonHeight=30;
+		mmenu.setBounds(panelSize.width/2-buttonWidth/2,panelSize.height/2,buttonWidth,buttonHeight);
+		mmenu.setText("Back to main menu");
+		mmenu.addActionListener((ActionEvent e)->{
 			changeToFrame(FrameType.MAIN_MENU);
 		});
-		panel.add(start);
+		panel.add(mmenu);
 		///////
 
 		JScrollPane outer = new JScrollPane(panel);

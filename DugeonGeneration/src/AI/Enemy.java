@@ -125,7 +125,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	{
 		if(isPendingKill)
 			return;
-		System.out.println("Graaaaar, ouuuuhhh: "+dmg);
 		hp -= dmg;
 		if (hp <= 0)
 		{
