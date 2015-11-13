@@ -100,7 +100,6 @@ public class GodFrame
 		{
 		case VIEWPORT:
 			changeTo(viewPortPane);
-			viewPortPane.requestFocus();
 			Greenfoot.start();
 			break;
 		case MAIN_MENU:
@@ -117,7 +116,7 @@ public class GodFrame
 			break;
 		case NEXT_ROUND:
 			changeTo(nextRoundPane);
-			Greenfoot.start();
+			Greenfoot.stop();
 			break;
 		}
 		frame.pack();
@@ -149,7 +148,6 @@ public class GodFrame
 		resume.setText("Resume");
 		resume.addActionListener((ActionEvent e)->{
 			changeToFrame(FrameType.VIEWPORT);
-			world.resume();
 		});
 		panel.add(resume);
 		///////
@@ -173,8 +171,8 @@ public class GodFrame
 		resume.setBounds(400,200,100,30);
 		resume.setText("Next round");
 		resume.addActionListener((ActionEvent e)->{
-			changeToFrame(FrameType.VIEWPORT);
 			world.startNewRound();
+			changeToFrame(FrameType.VIEWPORT);
 		});
 		panel.add(resume);
 		///////

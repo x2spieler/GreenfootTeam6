@@ -3,7 +3,6 @@ package world;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -20,7 +19,6 @@ import core.GodFrame;
 import enemies.Werewolf;
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
-import objects.Crate;
 import player.BuffType;
 import player.DungeonMover;
 import player.Player;
@@ -38,6 +36,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private static final int viewportYTiles = (VIEWPORT_HEIGHT / TILE_SIZE);
 	private static int greenfootTime=0;
 	private long lastTicks;
+	private static int ticksAtEndOfLastRound=0;
 	
 	private int numAliveEnemies=0;
 
@@ -53,6 +52,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private GodFrame godFrame = null;
 
 	FPS fps;
+	
 	
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
@@ -95,20 +95,20 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void startNewRound()
 	{
 		lastTicks=System.currentTimeMillis();
-		greenfootTime=0;
 		spawnEnemies();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void endRound()
 	{
-		List<Object> l=new ArrayList<Object>();
-		for(Object o:getObjects(null).toArray())
+		List<Object> l=getObjects(null);
+		for(Object o:l.toArray())
 		{
-			if(!(o instanceof Player||o instanceof Crate||o instanceof Weapon||o instanceof ScrollWorld))
-				l.add(o);
+			if(o instanceof Enemy||o instanceof Bullet)
+				removeObject((Actor)o);
 		}
-		removeObjects(l);
 		changeToFrame(FrameType.NEXT_ROUND);
+		ticksAtEndOfLastRound=getGreenfootTime();
 	}
 	
 	public void endGame()
@@ -129,19 +129,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void act()
 	{
 		super.act();
-		
 		long currTicks=System.currentTimeMillis();
 		greenfootTime+=currTicks-lastTicks;
 		lastTicks=currTicks;
-		godFrame.updateTimeLabel(greenfootTime);
-	}
-	
-	/**
-	 * Updates time of DeltaMovers, otherwise the delta time will be way too big due to the game having been paused
-	 */
-	public void resume()
-	{
-		lastTicks=System.currentTimeMillis();
+		godFrame.updateTimeLabel(getRoundTime());
+		
 	}
 
 	public void createGodFrame(JFrame frame) {
@@ -367,11 +359,19 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	/**
-	 * @return The elapsed time in milliseconds - takes pauses into account, only counts really played time
+	 * @return The elapsed time in milliseconds since this game was started - takes pauses into account, only counts really played time
 	 */
 	public static int getGreenfootTime()
 	{
 		return greenfootTime;
+	}
+	
+	/**
+	 * @return The elapsed time in milliseconds this round ist running - takes pauses into account, only counts really played time
+	 */
+	public static int getRoundTime()
+	{
+		return greenfootTime-ticksAtEndOfLastRound;
 	}
 	
 	//////////////JUST FORWARDING FUNCTIONS FOR GOD_FRAME
