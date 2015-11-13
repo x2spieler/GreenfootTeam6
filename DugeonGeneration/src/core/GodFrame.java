@@ -345,7 +345,6 @@ public class GodFrame
 
 	public void addOrUpdateBuffLabel(BuffType b, double param, int remainingTime)
 	{
-		System.out.println(remainingTime);
 		String key=LabelType.BUFF_LABEL.getValue()+b.getValue();
 		JLabel label=labels.get(key);
 		if(label==null)

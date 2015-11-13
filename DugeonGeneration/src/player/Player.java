@@ -43,7 +43,7 @@ public class Player extends DeltaMover implements IDamageable {
 
 	private int score=0;
 
-	private ArrayList<QueuedBuff> queuedBuffs;
+	private ArrayList<Buff> activeBuffs;
 	private HashMap<BuffType, Double> activeWeaponBuffs;
 	private HashMap<BuffType, Double> appliedWeaponBuffs;
 
@@ -73,7 +73,7 @@ public class Player extends DeltaMover implements IDamageable {
 
 		animTicks=0;
 
-		queuedBuffs=new ArrayList<QueuedBuff>();
+		activeBuffs=new ArrayList<Buff>();
 	}
 
 	@Override
@@ -167,8 +167,6 @@ public class Player extends DeltaMover implements IDamageable {
 			dungeonMap.updateAmmoLabel(currWeapon);
 			dungeonMap.updateWeaponName(currWeapon);
 			dungeonMap.updateScoreLabel(getScore());
-			
-			addBuff(BuffType.SPEED_MULTIPLIER, 2.0, -1);
 		}
 
 		getKeysDown();
@@ -366,19 +364,15 @@ public class Player extends DeltaMover implements IDamageable {
 			if(durationInMs==-2)
 				param=1.d/param;
 			setSpeed((int)(getSpeed()*param));
-			if(durationInMs>=0)
-			{
-				queuedBuffs.add(new QueuedBuff(DungeonMap.getGreenfootTime()+durationInMs, buff,param));
-			}
+			if(durationInMs>=-1)
+				activeBuffs.add(new Buff(durationInMs!=-1?DungeonMap.getGreenfootTime()+durationInMs:-1, buff,param));
 			break;
 		case MAX_HP:
 			if(durationInMs==-2)
 				param=-param;
 			maxHP+=(int)param;
-			if(durationInMs>=0)
-			{
-				queuedBuffs.add(new QueuedBuff(DungeonMap.getGreenfootTime()+durationInMs, buff, param));
-			}
+			if(durationInMs>=-1)
+				activeBuffs.add(new Buff(durationInMs!=-1?DungeonMap.getGreenfootTime()+durationInMs:-1, buff,param));
 			break;
 		case MELEE_DAMAGE:
 		case RELOAD_TIME:
@@ -386,8 +380,8 @@ public class Player extends DeltaMover implements IDamageable {
 			if(durationInMs>=-1)
 			{
 				applyWeaponBuffs(buff, param, true);
-				if(durationInMs>=0)
-					queuedBuffs.add(new QueuedBuff(DungeonMap.getGreenfootTime()+durationInMs, buff, -1));
+				if(durationInMs>=-1)
+					activeBuffs.add(new Buff(durationInMs!=-1?DungeonMap.getGreenfootTime()+durationInMs:-1, buff,param));
 			}
 			else {
 				removeWeaponBuff(buff, true);
@@ -409,7 +403,7 @@ public class Player extends DeltaMover implements IDamageable {
 		}
 		multiplier*=param;
 		double realMult=multiplier;
-		
+
 		switch(b)
 		{
 		case MELEE_DAMAGE:
@@ -446,7 +440,7 @@ public class Player extends DeltaMover implements IDamageable {
 			break;
 		}
 		}
-		
+
 		appliedWeaponBuffs.put(b, realMult);
 		if(addToActive)
 			activeWeaponBuffs.put(b, multiplier);
@@ -478,46 +472,40 @@ public class Player extends DeltaMover implements IDamageable {
 
 	private void processQueuedBuffs()
 	{
-		for(int i=0;i<queuedBuffs.size();)
+		for(int i=0;i<activeBuffs.size();)
 		{
-			QueuedBuff qb=queuedBuffs.get(i);
-			if(qb.timeStamp<DungeonMap.getGreenfootTime())
+			Buff buff=activeBuffs.get(i);
+			if(buff.timeStampEnd==-1)
 			{
-				addBuff(qb.buff, qb.param, -2);
-				queuedBuffs.remove(i);
+				i++;
+				continue;
+			}
+			
+			if(buff.timeStampEnd<DungeonMap.getGreenfootTime())
+			{
+				addBuff(buff.buff, buff.param, -2);
+				activeBuffs.remove(i);
 			}
 			else
 			{
 				i++;
-				int timeRemain = (int)(qb.timeStamp-DungeonMap.getGreenfootTime())/100;
-				switch(qb.buff)
-				{
-				case SPEED_MULTIPLIER:
-				case MAX_HP:
-					dungeonMap.addOrUpdateBuffLabel(qb.buff, qb.param, timeRemain);
-					break;
-				case WEAPON_SPEED:
-				case MELEE_DAMAGE:
-				case RELOAD_TIME:
-					double mult=activeWeaponBuffs.get(qb.buff);
-					dungeonMap.addOrUpdateBuffLabel(qb.buff, mult, timeRemain);
-					break;
-				}
+				int timeRemain = (int)(buff.timeStampEnd-DungeonMap.getGreenfootTime())/100;
+				dungeonMap.addOrUpdateBuffLabel(buff.buff, buff.param, timeRemain);
 			}
-				
+
 		}
 	}
 
 
-	class QueuedBuff
+	class Buff
 	{
-		long timeStamp=-1;
+		long timeStampEnd=-1;
 		BuffType buff;
 		double param;
 
-		public QueuedBuff(long timeStamp, BuffType buff, double param)
+		public Buff(long timeStampEnd, BuffType buff, double param)
 		{
-			this.timeStamp=timeStamp;
+			this.timeStampEnd=timeStampEnd;
 			this.buff=buff;
 			this.param=param;
 		}
