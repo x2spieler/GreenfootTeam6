@@ -167,6 +167,8 @@ public class Player extends DeltaMover implements IDamageable {
 			dungeonMap.updateAmmoLabel(currWeapon);
 			dungeonMap.updateWeaponName(currWeapon);
 			dungeonMap.updateScoreLabel(getScore());
+			
+			addBuff(BuffType.SPEED_MULTIPLIER, 2.0, -1);
 		}
 
 		getKeysDown();
@@ -350,9 +352,15 @@ public class Player extends DeltaMover implements IDamageable {
 	 * @param buff
 	 * @param param
 	 * @param durationInMs	-1 for perma buffs, >0 for temp buffs,  -2 for reverting temp buffs (only used internally, do not use -2!)
+	 * @return If the buff was applied
 	 */
-	public void addBuff(BuffType buff, double param, int durationInMs)
+	public boolean addBuff(BuffType buff, double param, int durationInMs)
 	{
+		//Check if we already have an active buff of that type
+		for(Buff b:activeBuffs)
+			if(b.buff==buff)
+				return false;
+		
 		if(durationInMs>=-1)
 			dungeonMap.addOrUpdateBuffLabel(buff, param, durationInMs>0?durationInMs/100:durationInMs);
 		else
@@ -389,6 +397,7 @@ public class Player extends DeltaMover implements IDamageable {
 			break;
 
 		}
+		return true;
 	}
 
 	@SuppressWarnings("incomplete-switch")
