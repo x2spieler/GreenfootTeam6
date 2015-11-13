@@ -226,6 +226,7 @@ public class GodFrame
 		start.addActionListener((ActionEvent e)->{
 			changeToFrame(FrameType.VIEWPORT);
 			world.startNewGame(Integer.valueOf(seedTF.getText()));
+			seedTF.setText(""+new Random().nextInt());	//Already set seed for the next game
 		});
 		panel.add(start);
 		
