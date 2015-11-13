@@ -47,7 +47,7 @@ public class GodFrame
 	private final int LABEL_Y_START=100;
 	private final Color LABEL_FONT_COLOR=Color.red;
 	private final Font LABEL_FONT;
-
+	
 	enum LabelType
 	{
 		HEALTH_LABEL("health"),
@@ -343,8 +343,9 @@ public class GodFrame
 		timeLabel.setText(min+" : "+sc);
 	}
 
-	public void addOrUpdateBuffLabel(BuffType b, double param)
+	public void addOrUpdateBuffLabel(BuffType b, double param, int remainingTime)
 	{
+		System.out.println(remainingTime);
 		String key=LabelType.BUFF_LABEL.getValue()+b.getValue();
 		JLabel label=labels.get(key);
 		if(label==null)
@@ -353,8 +354,10 @@ public class GodFrame
 			labels.put(key, label);
 			recalculateLabelPositions(labels.size()-1);
 		}
-		
-		label.setText(b.getValue()+(param*100)+" %");
+		String txt=b.getValue()+(param*100)+" %";
+		if(remainingTime!=-1)
+			txt+=" , "+remainingTime/10+"."+remainingTime%10+"s";
+		label.setText(txt);
 	}
 
 	public void removeBuffLabel(BuffType b)

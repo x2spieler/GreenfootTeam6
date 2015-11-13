@@ -167,6 +167,8 @@ public class Player extends DeltaMover implements IDamageable {
 			dungeonMap.updateAmmoLabel(currWeapon);
 			dungeonMap.updateWeaponName(currWeapon);
 			dungeonMap.updateScoreLabel(getScore());
+			
+			addBuff(BuffType.SPEED_MULTIPLIER, 2.0, -1);
 		}
 
 		getKeysDown();
@@ -354,24 +356,28 @@ public class Player extends DeltaMover implements IDamageable {
 	public void addBuff(BuffType buff, double param, int durationInMs)
 	{
 		if(durationInMs>=-1)
-			dungeonMap.addOrUpdateBuffLabel(buff, param);
+			dungeonMap.addOrUpdateBuffLabel(buff, param, durationInMs>0?durationInMs/100:durationInMs);
 		else
 			dungeonMap.removeBuffLabel(buff);
 
 		switch(buff)
 		{
 		case SPEED_MULTIPLIER:
+			if(durationInMs==-2)
+				param=1.d/param;
 			setSpeed((int)(getSpeed()*param));
 			if(durationInMs>=0)
 			{
-				queuedBuffs.add(new QueuedBuff(DungeonMap.getGreenfootTime()+durationInMs, buff, 1.d/param));
+				queuedBuffs.add(new QueuedBuff(DungeonMap.getGreenfootTime()+durationInMs, buff,param));
 			}
 			break;
 		case MAX_HP:
+			if(durationInMs==-2)
+				param=-param;
 			maxHP+=(int)param;
 			if(durationInMs>=0)
 			{
-				queuedBuffs.add(new QueuedBuff(DungeonMap.getGreenfootTime()+durationInMs, buff, -param));
+				queuedBuffs.add(new QueuedBuff(DungeonMap.getGreenfootTime()+durationInMs, buff, param));
 			}
 			break;
 		case MELEE_DAMAGE:
@@ -444,7 +450,6 @@ public class Player extends DeltaMover implements IDamageable {
 		appliedWeaponBuffs.put(b, realMult);
 		if(addToActive)
 			activeWeaponBuffs.put(b, multiplier);
-		dungeonMap.addOrUpdateBuffLabel(b, multiplier);
 	}
 
 	@SuppressWarnings("incomplete-switch")
@@ -482,7 +487,24 @@ public class Player extends DeltaMover implements IDamageable {
 				queuedBuffs.remove(i);
 			}
 			else
+			{
 				i++;
+				int timeRemain = (int)(qb.timeStamp-DungeonMap.getGreenfootTime())/100;
+				switch(qb.buff)
+				{
+				case SPEED_MULTIPLIER:
+				case MAX_HP:
+					dungeonMap.addOrUpdateBuffLabel(qb.buff, qb.param, timeRemain);
+					break;
+				case WEAPON_SPEED:
+				case MELEE_DAMAGE:
+				case RELOAD_TIME:
+					double mult=activeWeaponBuffs.get(qb.buff);
+					dungeonMap.addOrUpdateBuffLabel(qb.buff, mult, timeRemain);
+					break;
+				}
+			}
+				
 		}
 	}
 
