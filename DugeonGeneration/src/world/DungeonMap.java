@@ -59,6 +59,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	FPS fps;
 	
+	//TODO: Change animation system to not top down
+	//TODO: Change enemies and player images accordingly
+	//TODO: Fancy up the HUD
+	//TODO: Implement medi pack
 	
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
