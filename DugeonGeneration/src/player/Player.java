@@ -165,8 +165,6 @@ public class Player extends DeltaMover implements IDamageable {
 			dungeonMap.updateAmmoLabel(currWeapon);
 			dungeonMap.updateWeaponName(currWeapon);
 			dungeonMap.updateScoreLabel(getScore());
-			
-			addBuff(BuffType.SPEED_MULTIPLIER, 2.0, -1);
 		}
 
 		getKeysDown();
