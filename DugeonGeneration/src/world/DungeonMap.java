@@ -1,5 +1,9 @@
 package world;
 
+import enemies.Werewolf;
+import greenfoot.Actor;
+import greenfoot.GreenfootImage;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
@@ -7,7 +11,15 @@ import java.util.List;
 import java.util.Random;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
+import player.BuffType;
+import player.DungeonMover;
+import player.Player;
+import scrollWorld.FPS;
+import scrollWorld.ScrollWorld;
+import weapons.abstracts.Bullet;
+import weapons.abstracts.Weapon;
 import AI.Enemy;
 import AI.IDamageable;
 import AI.IWorldInterfaceForAI;
@@ -16,16 +28,6 @@ import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
 import core.FrameType;
 import core.GodFrame;
-import enemies.Werewolf;
-import greenfoot.Actor;
-import greenfoot.GreenfootImage;
-import player.BuffType;
-import player.DungeonMover;
-import player.Player;
-import scrollWorld.FPS;
-import scrollWorld.ScrollWorld;
-import weapons.abstracts.Bullet;
-import weapons.abstracts.Weapon;
 
 public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
@@ -122,7 +124,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	{
 		Random r = new Random(gen.getSeed());
 		spawnWerewolfs(10, r);
-		//Increase numAlivEenemies here , spawnWerefols does so
+		//Increase numAlivEenemies here , spawnWerewolfs does so
 	}
 	
 	@Override
@@ -133,7 +135,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		greenfootTime+=currTicks-lastTicks;
 		lastTicks=currTicks;
 		godFrame.updateTimeLabel(getRoundTime());
-		
+		System.out.println(SwingUtilities.isEventDispatchThread());
 	}
 
 	public void createGodFrame(JFrame frame) {
