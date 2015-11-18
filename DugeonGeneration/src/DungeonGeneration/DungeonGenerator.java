@@ -9,7 +9,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 10;
+	public static final int ROOM_POOL = 20;
 	public static final int MAP_WIDTH = 150;
 	public static final int MAP_HEIGHT = 150;
 	
@@ -63,6 +63,8 @@ public class DungeonGenerator {
 	}
 	
 	
+	
+	
 	//Clears the map by setting every single field to fieldType wall
 	public void clearMap() {
 		
@@ -95,17 +97,43 @@ public class DungeonGenerator {
 	public void placeRooms() {
 		
 		for(int i = 0; i < ROOM_POOL; i++) {
+		
+			boolean roomFree = true;
+			int posX = rand.randomInt(2, MAP_WIDTH - 2 - rooms[i].getSizeX());
+			int posY = rand.randomInt(2, MAP_HEIGHT - 2 - rooms[i].getSizeY());
 			
-			rooms[i].setPosition(rand.randomInt(2, MAP_WIDTH - 2 - rooms[i].getSizeX()), rand.randomInt(2, MAP_HEIGHT - 2 - rooms[i].getSizeY()));
+			rooms[i].setPosition(posX, posY);
 			
-			for (int y=0; y<rooms[i].getSizeY(); y++ ){
+			//Check horizontally if desired place is free
+			for (int y=-2; y<rooms[i].getSizeY()+3&& roomFree; y++ ){
 				
-				for (int x=0; x<rooms[i].getSizeX(); x++ ) {
-					mapBlocks[rooms[i].getPosition().x + x][rooms[i].getPosition().y + y].setFieldType(FieldType.GROUND);
+				for (int x=-2; x<rooms[i].getSizeX()+3 && roomFree; x++ ) {
+					
+					if (mapBlocks[rooms[i].getPosition().x + x ][rooms[i].getPosition().y + y].getFieldType() == FieldType.GROUND){
+						roomFree = false;
+						System.out.println(roomFree);
+					}	
 				}
-			}			
+			}
+			
+		
+				for (int y=0; y<rooms[i].getSizeY(); y++ ){
+					
+					for (int x=0; x<rooms[i].getSizeX() && roomFree; x++ ) {
+						mapBlocks[rooms[i].getPosition().x + x ][rooms[i].getPosition().y + y].setFieldType(FieldType.GROUND);
+					}
+				}
+				
+			if (!roomFree){
+				i--;
+			}
 		}
+			
 	}
+	
+	
+	
+	
 	
 	public void placeDestructable(){
 		
@@ -120,7 +148,7 @@ public class DungeonGenerator {
 					int posX = rooms[i].getPosition().x + randomOffsetX;
 					int posY = rooms[i].getPosition().y + randomOffsetY;
 										
-					//TODO: Check if tile is reachable
+					
 					if (mapBlocks[posX][posY].getFieldType() == FieldType.GROUND){
 						mapBlocks[posX][posY].setFieldType(FieldType.DESTRUCTABLE);
 						Crate crate = new Crate(100, new Point(rooms[i].getPosition().x + randomOffsetX, rooms[i].getPosition().y + randomOffsetY), this);
@@ -130,11 +158,10 @@ public class DungeonGenerator {
 				
 		}					
 	}
-			
 				
 		
 	//Connects all rooms by building paths from room1 to room 2, from room2 to room3, from room3 to room4 and so on to make sure every room can be reached.
-	public void buildPaths() {
+	/*public void buildPaths() {
 		
 		for(int r1 = 0; r1 < ROOM_POOL -1; r1++) {
 			
@@ -195,44 +222,49 @@ public class DungeonGenerator {
 				
 				buildStep++;
 				
-				//Added random Int for modulo devision, makes paths looks more random and neater imho
+				//Added random Int for modulo devision, makes paths looks more random and neater 
 				if(buildStep % (rand.randomInt(3, 5)) == 0) {
 					randomPathWidth = rand.randomInt(MIN_PATH_WIDTH, MAX_PATH_WIDTH);
 
 				}
+			}
 				
-				//Clean up single wall tiles
-				for (int y= 1; y < MAP_HEIGHT-1; y++){
-					
-					for (int x= 1; x < MAP_WIDTH-1; x++) {
-					
-						int freeSides =0;
-						
-						if ((mapBlocks[x][y].getFieldType() == FieldType.WALL)){
-							if (mapBlocks[x-1][y].getFieldType() == FieldType.GROUND)
-								freeSides += 1;
-							if (mapBlocks[x+1][y].getFieldType() == FieldType.GROUND)
-								freeSides += 1;
-							if (mapBlocks[x][y-1].getFieldType() == FieldType.GROUND)
-								freeSides += 1;
-							if (mapBlocks[x][y+1].getFieldType() == FieldType.GROUND)
-								freeSides += 1;
-						}
-						
-						if (freeSides>=3){
-							//System.out.println("removed tile at " + x + " " + y);
-							mapBlocks[x][y].setFieldType(FieldType.GROUND);
-						}
-						
-					}
 					
 				}
+				
+			}*/
+			
+	public void cleanUp() {
+		
+		//Clean up single wall tiles
+		for (int y= 1; y < MAP_HEIGHT-1; y++){
+			
+			for (int x= 1; x < MAP_WIDTH-1; x++) {
+			
+				int freeSides =0;
+				
+				if ((mapBlocks[x][y].getFieldType() == FieldType.WALL)){
+					if (mapBlocks[x-1][y].getFieldType() == FieldType.GROUND)
+						freeSides += 1;
+					if (mapBlocks[x+1][y].getFieldType() == FieldType.GROUND)
+						freeSides += 1;
+					if (mapBlocks[x][y-1].getFieldType() == FieldType.GROUND)
+						freeSides += 1;
+					if (mapBlocks[x][y+1].getFieldType() == FieldType.GROUND)
+						freeSides += 1;
+				}
+				
+				if (freeSides>=3){
+					//System.out.println("removed tile at " + x + " " + y);
+					mapBlocks[x][y].setFieldType(FieldType.GROUND);
+				}
+				
 			}
-			
-			
 		}
 		
 	}
+	
+	// Old system
 	
 	public void thickenWalls(){
 		for (int y= 1; y < MAP_HEIGHT-1; y++){
@@ -251,6 +283,52 @@ public class DungeonGenerator {
 			}
 	}
 	}
+	
+	/*public void thickenWalls(){
+		for (int y= 1; y < MAP_HEIGHT-1; y++){
+			
+			for (int x= 1; x < MAP_WIDTH-1;) {
+				if (mapBlocks[x][y].getFieldType() == FieldType.WALL){
+					
+					for (int i=x; i<x+2; i++){
+						mapBlocks[i][y].setFieldType(FieldType.WALL);
+						System.out.println("wall@ " + i + " " + y);
+					}
+					x+=3;
+				
+				} else if (mapBlocks[x][y].getFieldType() == FieldType.GROUND){
+					
+					for (int i=x; i<x+2; i++){
+						mapBlocks[i][y].setFieldType(FieldType.GROUND);
+						System.out.println("wall@ " + i + " " + y);
+					}
+					x+=3;
+				}	
+			}
+		}*/
+		//reverse direction
+		/*
+		for (int y= MAP_HEIGHT-1; y > 1; y--){
+					
+					for (int x= MAP_WIDTH-1; x > 1 ;) {
+						if (mapBlocks[x][y].getFieldType() == FieldType.WALL){
+							
+							for (int i=x; i<x-2; i--){
+								mapBlocks[i][y].setFieldType(FieldType.WALL);
+							}
+							x-=2;
+						
+						} else if (mapBlocks[x][y].getFieldType() == FieldType.GROUND){
+							
+							for (int i=x; i<x-2; i--){
+								mapBlocks[i][y].setFieldType(FieldType.GROUND);
+							}
+							x-=2;
+						}	
+					}
+				}
+	}*/
+	
 	//Displays the world map in the console for debugging purposes.
 	public void showMap() {
 			
