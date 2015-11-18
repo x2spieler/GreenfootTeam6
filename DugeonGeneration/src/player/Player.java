@@ -489,8 +489,8 @@ public class Player extends DeltaMover implements IDamageable {
 			
 			if(buff.timeStampEnd<DungeonMap.getGreenfootTime())
 			{
-				addBuff(buff.buff, buff.param, -2);
 				activeBuffs.remove(i);
+				addBuff(buff.buff, buff.param, -2);
 			}
 			else
 			{
