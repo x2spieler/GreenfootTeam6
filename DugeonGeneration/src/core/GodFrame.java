@@ -1,9 +1,5 @@
 package core;
 
-import greenfoot.Greenfoot;
-import greenfoot.GreenfootImage;
-import greenfoot.WorldVisitor;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -28,6 +24,9 @@ import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
+import greenfoot.Greenfoot;
+import greenfoot.GreenfootImage;
+import greenfoot.WorldVisitor;
 import menu.BuyItem;
 import menu.ShopEntry;
 import player.BuffType;
@@ -48,9 +47,10 @@ public class GodFrame
 	private JPanel viewportPanel=null;
 	private JLabel coinLabel=null;
 	private JLabel buyFeedbackLabel=null;
+	private JLabel timeLabel=null;
+	private JLabel mediPackLabel=null;
 	private DungeonMap world;
 
-	private JLabel timeLabel;
 	private LinkedHashMap<String, JLabel>labels; 
 	private final int LABEL_WIDTH=300;
 	private final int LABEL_HEIGHT=20;
@@ -359,6 +359,9 @@ public class GodFrame
 
 		JLabel seedLabel=createHUDLabelAndAddToPanel("Seed: -1");
 		labels.put(LabelType.SEED_LABEL.getValue(), seedLabel);
+		
+		mediPackLabel=createHUDLabelAndAddToPanel("Medipacks: -1");
+		mediPackLabel.setBounds(850,100,150,50);
 
 		recalculateLabelPositions(0);
 		
@@ -370,6 +373,11 @@ public class GodFrame
 		timeLabel.setForeground(LABEL_FONT_COLOR);
 		timeLabel.setFont(new Font("Serif", Font.BOLD, 26));
 		viewportPanel.add(timeLabel);
+	}
+	
+	public void updateMediPackLabel(int mediPacks)
+	{
+		mediPackLabel.setText("Medipacks: "+mediPacks);
 	}
 
 	private JLabel createHUDLabelAndAddToPanel(String text)

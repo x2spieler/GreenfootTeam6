@@ -25,6 +25,8 @@ public class Player extends DeltaMover implements IDamageable {
 
 	private boolean lmbClicked=false;
 	private boolean wasLmbClicked=false;
+	private boolean hClicked=false;
+	private boolean wasHClicked=false;
 
 	GreenfootImage idleImage;
 	GreenfootImage walkImgs[];
@@ -38,6 +40,7 @@ public class Player extends DeltaMover implements IDamageable {
 
 	private int maxHP=-1;
 	private int currHP=-1;
+	private int mediPacks=0;
 
 	private int score=1000000;
 
@@ -145,6 +148,20 @@ public class Player extends DeltaMover implements IDamageable {
 	{
 		score+=s;
 	}
+	
+	public void setMediPacks(int mediPacks) {
+		this.mediPacks = mediPacks;
+		dungeonMap.updateMediPackLabel(mediPacks);
+	}
+	
+	public int getMediPacks() {
+		return mediPacks;
+	}
+	
+	public void addMediPacks(int packs)
+	{
+		setMediPacks(getMediPacks()+packs);
+	}
 
 	@Override
 	public void act() {
@@ -163,6 +180,8 @@ public class Player extends DeltaMover implements IDamageable {
 			dungeonMap.updateAmmoLabel(currWeapon);
 			dungeonMap.updateWeaponName(currWeapon);
 			dungeonMap.updateScoreLabel(getScore());
+			
+			setMediPacks(0);
 		}
 
 		getKeysDown();
@@ -170,6 +189,8 @@ public class Player extends DeltaMover implements IDamageable {
 		moveInOneOf8Directions();
 
 		animatePlayer();
+		
+		checkUseMediPack();
 
 		processQueuedBuffs();
 
@@ -178,6 +199,18 @@ public class Player extends DeltaMover implements IDamageable {
 		if(lmbClicked)
 			if(currWeapon.use())
 				dungeonMap.updateAmmoLabel(currWeapon);
+	}
+	
+	private void checkUseMediPack()
+	{
+		if(hClicked)
+		{
+			if(mediPacks>0&&currHP<maxHP)
+			{
+				heal(maxHP-currHP);
+				setMediPacks(getMediPacks()-1);
+			}
+		}
 	}
 
 	private void moveInOneOf8Directions() {
@@ -268,6 +301,15 @@ public class Player extends DeltaMover implements IDamageable {
 		else
 			lmbClicked=false;
 		wasLmbClicked=(info!=null ? info.getButton()==1 : false);
+		
+		if(Greenfoot.isKeyDown("h"))
+		{
+			if(!wasHClicked)
+				hClicked=true;
+			else
+				hClicked=false;
+		}
+		wasHClicked=Greenfoot.isKeyDown("h");
 
 		if(Greenfoot.isKeyDown("escape"))
 			dungeonMap.changeToFrame(FrameType.PAUSE_MENU);
@@ -376,6 +418,8 @@ public class Player extends DeltaMover implements IDamageable {
 			if(durationInMs==-2)
 				param=-param;
 			maxHP+=(int)param;
+			if(getHP()>getMaxHP())
+				currHP=maxHP;
 			if(durationInMs>=-1)
 				activeBuffs.add(new Buff(durationInMs!=-1?DungeonMap.getGreenfootTime()+durationInMs:-1, buff,param));
 			break;
