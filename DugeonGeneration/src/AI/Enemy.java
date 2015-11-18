@@ -43,7 +43,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private short walkCounter=0;
 	boolean isPendingKill=false;
-
+	
 	public Enemy()
 	{
 		super(0);
@@ -393,6 +393,8 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			Node currNode=new Node(manhattanDistance(start, x,y)+closest.movementCost+1,closest.movementCost+1, x,y, closest);
 			if(map[x][y].walkable()&&!closedList.contains(currNode))
 			{
+				if(!(map[x+1][y].walkable()&&map[x-1][y].walkable()&&map[x][y+1].walkable()&&map[x][y-1].walkable()))
+					currNode.movementCost+=1;
 				int indx=openList.indexOf(currNode);
 				if(indx==-1)
 				{

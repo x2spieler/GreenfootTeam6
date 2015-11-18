@@ -298,8 +298,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		for (int k = 0; k < num; k++) {
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
-			x=0;
-			y=0;
 			Werewolf z = new Werewolf();
 			addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 			numAliveEnemies++;
