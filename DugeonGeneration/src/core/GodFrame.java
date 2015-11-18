@@ -1,10 +1,16 @@
 package core;
 
+import greenfoot.Greenfoot;
+import greenfoot.GreenfootImage;
+import greenfoot.WorldVisitor;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelListener;
@@ -19,9 +25,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 
-import greenfoot.Greenfoot;
-import greenfoot.WorldVisitor;
+import menu.BuyItem;
+import menu.ShopEntry;
 import player.BuffType;
 import weapons.abstracts.LongRangeWeapon;
 import weapons.abstracts.Weapon;
@@ -38,6 +46,8 @@ public class GodFrame
 	private JScrollPane gameOverPane=null;
 	private JScrollPane nextRoundPane=null;
 	private JPanel viewportPanel=null;
+	private JLabel coinLabel=null;
+	private JLabel buyFeedbackLabel=null;
 	private DungeonMap world;
 
 	private JLabel timeLabel;
@@ -119,6 +129,7 @@ public class GodFrame
 			break;
 		case NEXT_ROUND:
 			changeTo(nextRoundPane);
+			buyFeedbackLabel.setText("");
 			Greenfoot.stop();
 			break;
 		}
@@ -167,6 +178,7 @@ public class GodFrame
 		outer.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
 		pauseMenuPane=outer;
+		
 	}
 	
 	public void buildNextRoundGui()
@@ -179,21 +191,51 @@ public class GodFrame
 		///////CODE FOR MENU GOES HERE
 		
 		JLabel wonLabel=new JLabel("You won the round!");
-		wonLabel.setBounds(0,100,panelSize.width,50);
+		wonLabel.setBounds(0,25,panelSize.width,50);
 		wonLabel.setFont(new Font("", Font.ITALIC, 24));
 		wonLabel.setHorizontalAlignment(JLabel.CENTER);
 		panel.add(wonLabel);
-
+		
+		JPanel entryPanel=new JPanel();
+		entryPanel.setLayout(new GridLayout(0,1));
+		int horizontalSpace=20;
+		
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CROSSBOW, new GreenfootImage("enemies/weapons/crossbow/crossbow0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SWORD, new GreenfootImage("enemies/weapons/sword/sword0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CLUB_WITH_SPIKES, new GreenfootImage("enemies/weapons/club_spikes/club_spikes0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_NINJA_STAR, new GreenfootImage("enemies/weapons/ninja_star/ninja_star0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.BULLET_CROSSBOW_ARROW, new GreenfootImage("enemies/bullets/crossbow_arrow.png"), 30, 100, world));
+		entryPanel.add(new ShopEntry(BuyItem.BULLET_NINJA_STAR, new GreenfootImage("enemies/bullets/ninja_star.png"), 30, 100, world));
+		entryPanel.add(new ShopEntry(BuyItem.MEDI_PACK, new GreenfootImage("medi_pack.png"), 30, 1, world));
+		
+		JScrollPane scrollPane=new JScrollPane(entryPanel);
+		int scrollY=100;
+		int scrollHeight=520;
+		scrollPane.setBounds(new Rectangle(horizontalSpace,scrollY,panelSize.width-2*horizontalSpace,scrollHeight));
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		panel.add(scrollPane);
+		
+		coinLabel=new JLabel();
+		updateCoinLabelInShop();
+		coinLabel.setBounds(horizontalSpace+10, scrollY+scrollHeight+10, 150, 40);
+		panel.add(coinLabel);
+		
+		buyFeedbackLabel=new JLabel();
+		buyFeedbackLabel.setBounds(0, scrollY+scrollHeight+10, panelSize.width, 40);
+		buyFeedbackLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		panel.add(buyFeedbackLabel);
+		
 		JButton resume=new JButton();
 		int buttonWidth=150;
 		int buttonHeight=40;
-		resume.setBounds(panelSize.width/2-buttonWidth/2,panelSize.height/2-100,buttonWidth,buttonHeight);
+		resume.setBounds(panelSize.width/2-buttonWidth/2,panelSize.height-buttonHeight-50,buttonWidth,buttonHeight);
 		resume.setText("Next round");
 		resume.addActionListener((ActionEvent e)->{
 			world.startNewRound();
 			changeToFrame(FrameType.VIEWPORT);
 		});
 		panel.add(resume);
+		
 		///////
 
 		JScrollPane outer = new JScrollPane(panel);
@@ -202,6 +244,20 @@ public class GodFrame
 		nextRoundPane=outer;
 	}
 
+	public void updateCoinLabelInShop()
+	{
+		if(world!=null&&world.getPlayer()!=null)
+		coinLabel.setText("Coins: "+world.getPlayer().getScore());
+	}
+	
+	public void updateFeedbackLabel(boolean success, String msg)
+	{
+		if(success)
+			buyFeedbackLabel.setForeground(new Color(0,150,0));
+		else
+			buyFeedbackLabel.setForeground(new Color(184,0,0));
+		buyFeedbackLabel.setText(msg);
+	}
 
 	public void buildMainMenuGui()
 	{

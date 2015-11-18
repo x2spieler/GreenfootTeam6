@@ -1,5 +1,9 @@
 package world;
 
+import enemies.Werewolf;
+import greenfoot.Actor;
+import greenfoot.GreenfootImage;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
@@ -8,17 +12,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-import AI.Enemy;
-import AI.IDamageable;
-import AI.IWorldInterfaceForAI;
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.FieldType;
-import DungeonGeneration.MapField;
-import core.FrameType;
-import core.GodFrame;
-import enemies.Werewolf;
-import greenfoot.Actor;
-import greenfoot.GreenfootImage;
+import menu.BuyItem;
 import player.BuffType;
 import player.DungeonMover;
 import player.Player;
@@ -26,6 +20,18 @@ import scrollWorld.FPS;
 import scrollWorld.ScrollWorld;
 import weapons.abstracts.Bullet;
 import weapons.abstracts.Weapon;
+import weapons.bullets.CrossbowArrow;
+import weapons.long_range_weapon.Crossbow;
+import weapons.long_range_weapon.NinjaStar;
+import weapons.short_range.ClubWithSpikes;
+import weapons.short_range.Sword;
+import AI.Enemy;
+import AI.IWorldInterfaceForAI;
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.FieldType;
+import DungeonGeneration.MapField;
+import core.FrameType;
+import core.GodFrame;
 
 public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
@@ -53,6 +59,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	FPS fps;
 	
+	//TODO: Change animation system to not top down
+	//TODO: Change enemies and player images accordingly
+	//TODO: Fancy up the HUD
+	//TODO: Implement medi pack
 	
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
@@ -122,7 +132,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	{
 		Random r = new Random(gen.getSeed());
 		spawnWerewolfs(10, r);
-		//Increase numAlivEenemies here , spawnWerefols does so
+		//Increase numAlivEenemies here , spawnWerewolfs does so
 	}
 	
 	@Override
@@ -133,12 +143,51 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		greenfootTime+=currTicks-lastTicks;
 		lastTicks=currTicks;
 		godFrame.updateTimeLabel(getRoundTime());
-		
 	}
 
 	public void createGodFrame(JFrame frame) {
 		godFrame = new GodFrame(frame, this);
 		changeToFrame(FrameType.MAIN_MENU);
+	}
+	
+	public boolean playerTriesToBuy(BuyItem item, int price, int amount)
+	{
+		if(price>player.getScore())
+			return false;
+		boolean ret=true;
+		switch(item)
+		{
+		case MEDI_PACK:
+			break;
+		case WEAPON_CLUB_WITH_SPIKES:
+			player.addWeapon(new ClubWithSpikes(player));
+			break;
+		case WEAPON_CROSSBOW:
+			player.addWeapon(new Crossbow(player, amount));
+			break;
+		case WEAPON_NINJA_STAR:
+			player.addWeapon(new NinjaStar(player, amount));
+			break;
+		case WEAPON_SWORD:
+			player.addWeapon(new Sword(player));
+			break;
+		case BULLET_CROSSBOW_ARROW:
+			ret = player.addAmmo(CrossbowArrow.class, amount);
+			break;
+		case BULLET_NINJA_STAR:
+			ret = player.addAmmo(weapons.bullets.NinjaStar.class, amount);
+			break;
+		}
+		if(ret)
+		{
+			alterPlayerScore(-price);
+		}
+		return ret;
+	}
+	
+	public void updateFeedbackLabel(boolean success, String msg)
+	{
+		godFrame.updateFeedbackLabel(success, msg);
 	}
 	
 	private final void initTiles() {
@@ -249,6 +298,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		for (int k = 0; k < num; k++) {
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
+			x=0;
+			y=0;
 			Werewolf z = new Werewolf();
 			addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 			numAliveEnemies++;
@@ -260,16 +311,17 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void enemyDied(Enemy e)
 	{
 		numAliveEnemies--;
-		addPlayerScore(e.getScore());
+		alterPlayerScore(e.getScore());
 		if(numAliveEnemies==0)
 		{
 			endRound();
 		}
 	}
 
-	private void addPlayerScore(int score) {
+	private void alterPlayerScore(int score) {
 		player.addScore(score);
 		updateScoreLabel(player.getScore());
+		godFrame.updateCoinLabelInShop();
 	}
 
 	@Override
@@ -278,7 +330,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	@Override
-	public IDamageable getPlayer() {
+	public Player getPlayer() {
 		return player;
 	}
 

@@ -1,22 +1,20 @@
 package player;
 
-import java.awt.event.MouseWheelEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import AI.IDamageable;
-import core.FrameType;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 import greenfoot.MouseInfo;
 import greenfoot.World;
+
+import java.awt.event.MouseWheelEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import weapons.abstracts.LongRangeWeapon;
 import weapons.abstracts.Weapon;
-import weapons.long_range_weapon.Crossbow;
-import weapons.long_range_weapon.NinjaStar;
-import weapons.short_range.ClubWithSpikes;
 import weapons.short_range.Sword;
 import world.DungeonMap;
+import AI.IDamageable;
+import core.FrameType;
 
 public class Player extends DeltaMover implements IDamageable {
 
@@ -41,7 +39,7 @@ public class Player extends DeltaMover implements IDamageable {
 	private int maxHP=-1;
 	private int currHP=-1;
 
-	private int score=0;
+	private int score=1000000;
 
 	private ArrayList<Buff> activeBuffs;
 	private HashMap<BuffType, Double> activeWeaponBuffs;
@@ -62,9 +60,9 @@ public class Player extends DeltaMover implements IDamageable {
 
 		weapons=new ArrayList<Weapon>();
 		addWeapon(new Sword(this));
-		addWeapon(new ClubWithSpikes(this));
-		addWeapon(new Crossbow(this, 30));
-		addWeapon(new NinjaStar(this, 30));
+		//addWeapon(new ClubWithSpikes(this));
+		//addWeapon(new Crossbow(this, 30));
+		//addWeapon(new NinjaStar(this, 30));
 
 		idleImage=new GreenfootImage("player/player_idle.png");
 		walkImgs=new GreenfootImage[2];
@@ -165,8 +163,6 @@ public class Player extends DeltaMover implements IDamageable {
 			dungeonMap.updateAmmoLabel(currWeapon);
 			dungeonMap.updateWeaponName(currWeapon);
 			dungeonMap.updateScoreLabel(getScore());
-			
-			addBuff(BuffType.SPEED_MULTIPLIER, 2.0, -1);
 		}
 
 		getKeysDown();
@@ -343,6 +339,9 @@ public class Player extends DeltaMover implements IDamageable {
 			}
 		}
 		weapons.add(weapon);
+		if(dungeonMap!=null)		//Only do this for at runtime added weapons
+			getWorld().addObject(weapon, getGlobalX(), getGlobalY());
+		weapon.deactivateWeapon();
 	}
 
 	/**
