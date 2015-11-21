@@ -2,15 +2,20 @@ package world;
 
 import enemies.Werewolf;
 import greenfoot.Actor;
+import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.Action;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import menu.BuyItem;
 import player.BuffType;
@@ -25,6 +30,7 @@ import weapons.long_range_weapon.Crossbow;
 import weapons.long_range_weapon.NinjaStar;
 import weapons.short_range.ClubWithSpikes;
 import weapons.short_range.Sword;
+import world.mapping.DungeonMapper;
 import AI.Enemy;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
@@ -40,108 +46,101 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public static final int TILE_SIZE = 32;
 	private static final int viewportXTiles = (VIEWPORT_WIDTH / TILE_SIZE);
 	private static final int viewportYTiles = (VIEWPORT_HEIGHT / TILE_SIZE);
-	private static int greenfootTime=0;
+	private static int greenfootTime = 0;
 	private long lastTicks;
-	private static int ticksAtEndOfLastRound=0;
-	
-	private int numAliveEnemies=0;
+	private static int ticksAtEndOfLastRound = 0;
+
+	private int numAliveEnemies = 0;
 
 	private DungeonGenerator gen;
 	private MapField[][] map;
-	// private final boolean[][] fastMap;
 
-	private GreenfootImage ground, wall, back, empty, pickup, destructible;
-	//private GreenfootImage[][] tileMap;
+	private final GreenfootImage back, empty, outOfMap;
+	private GreenfootImage[][] tileMap;
 
 	private Player player;
 
 	private GodFrame godFrame = null;
 
-	FPS fps;
-	
-	//TODO: Change animation system to not top down
-	//TODO: Change enemies and player images accordingly
-	//TODO: Fancy up the HUD
-	//TODO: Implement medi pack
-	
+	private FPS fps;
+
+	private boolean testing = false;
+
+	// TODO: Change animation system to not top down
+	// TODO: Change enemies and player images accordingly
+	// TODO: Fancy up the HUD
+	// TODO: Implement medi pack
+
 	public DungeonMap() {
-		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
-				DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
+		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE, DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
 		back = getBackground();
-		ground = new GreenfootImage("grass.png");
-		wall = new GreenfootImage("wood.png");
 		empty = new GreenfootImage(TILE_SIZE, TILE_SIZE);
-		pickup = new GreenfootImage(TILE_SIZE, TILE_SIZE);
-		destructible = new GreenfootImage(TILE_SIZE, TILE_SIZE);
-		initTiles();
+		outOfMap = new GreenfootImage(TILE_SIZE, TILE_SIZE);
+		outOfMap.setColor(Color.BLACK);
+		outOfMap.fill();
 		fps = new FPS();
 	}
-	
-	public void playerDied()
-	{
+
+	public void playerDied() {
 		endGame();
 		godFrame.changeToFrame(FrameType.GAME_OVER);
 	}
-	
-	public void startNewGame(int seed)
-	{
+
+	public void startNewGame(int seed) {
 		generateNewMap(seed);
+		new Thread(() -> {
+			try {
+				tileMap = new DungeonMapper(map).getImageForTilesetHouse();
+			} catch (IOException e) {
+				System.err.println("tileset not loaded");
+				e.printStackTrace();
+			}
+		}).start();
 		godFrame.updateSeedLabel(gen.getSeed());
-		/*try
-		{
-			tileMap = new DungeonMapper(map).getImageForTilesetHouse();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}*/
 		player = new Player(100);
 		addObject(player, 0, 0);
-		lastTicks=System.currentTimeMillis();
-		greenfootTime=0;
+		lastTicks = System.currentTimeMillis();
+		greenfootTime = 0;
 		addObject(fps, 100, 20);
 		spawnEnemies();
 	}
-	
-	public void startNewRound()
-	{
-		lastTicks=System.currentTimeMillis();
+
+	public void startNewRound() {
+		lastTicks = System.currentTimeMillis();
 		spawnEnemies();
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public void endRound()
-	{
-		List<Object> l=getObjects(null);
-		for(Object o:l.toArray())
-		{
-			if(o instanceof Enemy||o instanceof Bullet)
-				removeObject((Actor)o);
+	public void endRound() {
+		List<Object> l = getObjects(null);
+		for (Object o : l.toArray()) {
+			if (o instanceof Enemy || o instanceof Bullet)
+				removeObject((Actor) o);
 		}
 		changeToFrame(FrameType.NEXT_ROUND);
-		ticksAtEndOfLastRound=getGreenfootTime();
+		ticksAtEndOfLastRound = getGreenfootTime();
 	}
-	
-	public void endGame()
-	{
+
+	public void endGame() {
 		removeObjects(getObjects(null));
-		player=null;
-		numAliveEnemies=0;
+		player = null;
+		numAliveEnemies = 0;
 	}
-	
-	private void spawnEnemies()
-	{
+
+	private void spawnEnemies() {
+		if (testing)
+			return;
 		Random r = new Random(gen.getSeed());
 		spawnWerewolfs(10, r);
-		//Increase numAlivEenemies here , spawnWerewolfs does so
+		// Increase numAlivEenemies here , spawnWerewolfs does so
 	}
-	
+
 	@Override
-	public void act()
-	{
+	public void act() {
 		super.act();
-		long currTicks=System.currentTimeMillis();
-		greenfootTime+=currTicks-lastTicks;
-		lastTicks=currTicks;
+		long currTicks = System.currentTimeMillis();
+		greenfootTime += currTicks - lastTicks;
+		lastTicks = currTicks;
 		godFrame.updateTimeLabel(getRoundTime());
 	}
 
@@ -149,15 +148,15 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		godFrame = new GodFrame(frame, this);
 		changeToFrame(FrameType.MAIN_MENU);
 	}
-	
-	public boolean playerTriesToBuy(BuyItem item, int price, int amount)
-	{
-		if(price>player.getScore())
+
+	public boolean playerTriesToBuy(BuyItem item, int price, int amount) {
+		if (price > player.getScore())
 			return false;
-		boolean ret=true;
-		switch(item)
-		{
+		boolean ret = true;
+		switch (item) {
 		case MEDI_PACK:
+			player.addMediPacks(1);
+			ret = true;
 			break;
 		case WEAPON_CLUB_WITH_SPIKES:
 			player.addWeapon(new ClubWithSpikes(player));
@@ -178,28 +177,14 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			ret = player.addAmmo(weapons.bullets.NinjaStar.class, amount);
 			break;
 		}
-		if(ret)
-		{
+		if (ret) {
 			alterPlayerScore(-price);
 		}
 		return ret;
 	}
-	
-	public void updateFeedbackLabel(boolean success, String msg)
-	{
-		godFrame.updateFeedbackLabel(success, msg);
-	}
-	
-	private final void initTiles() {
-		ground.scale(TILE_SIZE, TILE_SIZE);
-		wall.scale(TILE_SIZE, TILE_SIZE);
-		empty.setColor(Color.BLACK);
-		empty.fill();
-		pickup.setColor(Color.YELLOW);
-		pickup.fill();
-		destructible.setColor(Color.RED);
-		destructible.fill();
 
+	public void updateFeedbackLabel(boolean success, String msg) {
+		godFrame.updateFeedbackLabel(success, msg);
 	}
 
 	private final void generateNewMap(int seed) {
@@ -214,6 +199,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	private void renderMap(int x, int y) {
+		if (tileMap == null)
+			return;
 		Point startingTile = getTileOfPixel(x, y);
 		Point startingPixel = getStartingPixel(x, y);
 
@@ -236,23 +223,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private GreenfootImage getImageForTile(int i, int j) {
 
-		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT)
-				? getTileForFieldType(map[i][j].getFieldType()) : empty;
-	}
-
-	private GreenfootImage getTileForFieldType(FieldType type) {
-		switch (type) {
-		case GROUND:
-			return ground;
-		case WALL:
-			return wall;
-		case DESTRUCTABLE:
-			return destructible;
-		case PICKUP:
-			return pickup;
-		default:
-			throw new IllegalArgumentException("missing tile");
-		}
+		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT) ? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
 	}
 
 	@Override
@@ -298,22 +269,20 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		for (int k = 0; k < num; k++) {
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
-			x=0;
-			y=0;
+			x = 0;
+			y = 0;
 			Werewolf z = new Werewolf();
 			addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 			numAliveEnemies++;
 		}
 
 	}
-	
+
 	@Override
-	public void enemyDied(Enemy e)
-	{
+	public void enemyDied(Enemy e) {
 		numAliveEnemies--;
 		alterPlayerScore(e.getScore());
-		if(numAliveEnemies==0)
-		{
+		if (numAliveEnemies == 0) {
 			endRound();
 		}
 	}
@@ -409,23 +378,27 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	/**
-	 * @return The elapsed time in milliseconds since this game was started - takes pauses into account, only counts really played time
+	 * @return The elapsed time in milliseconds since this game was started -
+	 *         takes pauses into account, only counts really played time
 	 */
-	public static int getGreenfootTime()
-	{
+	public static int getGreenfootTime() {
 		return greenfootTime;
 	}
-	
+
 	/**
-	 * @return The elapsed time in milliseconds this round ist running - takes pauses into account, only counts really played time
+	 * @return The elapsed time in milliseconds this round ist running - takes
+	 *         pauses into account, only counts really played time
 	 */
-	public static int getRoundTime()
-	{
-		return greenfootTime-ticksAtEndOfLastRound;
+	public static int getRoundTime() {
+		return greenfootTime - ticksAtEndOfLastRound;
 	}
-	
-	//////////////JUST FORWARDING FUNCTIONS FOR GOD_FRAME
-	
+
+	// ////////////JUST FORWARDING FUNCTIONS FOR GOD_FRAME
+
+	public void updateMediPackLabel(int mediPacks) {
+		godFrame.updateMediPackLabel(mediPacks);
+	}
+
 	public void addMouseListenerToContentPane(MouseWheelListener listener) {
 		godFrame.addScrollListener(listener);
 	}
@@ -451,15 +424,20 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		if (godFrame != null)
 			godFrame.updateWeaponName(w);
 	}
-	
-	public void addOrUpdateBuffLabel(BuffType b, double param, int remainingTime)
-	{
+
+	public void addOrUpdateBuffLabel(BuffType b, double param, int remainingTime) {
 		godFrame.addOrUpdateBuffLabel(b, param, remainingTime);
 	}
 
-	public void removeBuffLabel(BuffType b)
-	{
+	public void removeBuffLabel(BuffType b) {
 		godFrame.removeBuffLabel(b);
 	}
-	
+
+	public void setTestingMode(boolean testingMode) {
+		testing = testingMode;
+	}
+
+	public boolean isTestingMode() {
+		return testing;
+	}
 }
