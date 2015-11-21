@@ -9,7 +9,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 20;
+	public static final int ROOM_POOL = 10;
 	public static final int MAP_WIDTH = 150;
 	public static final int MAP_HEIGHT = 150;
 	
@@ -84,23 +84,14 @@ public class DungeonGenerator {
 				
 		for(int i = 0; i < ROOM_POOL; i++) {
 			
+
 			int randomWidth = rand.randomInt(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
 			int randomHeight = rand.randomInt(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
 			rooms[i] = new Room(randomWidth, randomHeight);
-			
-			//System.out.println("Raum " + i +" -> Width: " + rooms[i].getSizeX() + ", Height: " + rooms[i].getSizeY());
-		}
-		
-	}
-	
-	//Randomly places the rooms onto the map by setting the respective fields to fieldType GROUND
-	public void placeRooms() {
-		
-		for(int i = 0; i < ROOM_POOL; i++) {
 		
 			boolean roomFree = true;
-			int posX = rand.randomInt(2, MAP_WIDTH - 2 - rooms[i].getSizeX());
-			int posY = rand.randomInt(2, MAP_HEIGHT - 2 - rooms[i].getSizeY());
+			int posX = rand.randomInt(3, MAP_WIDTH - 3 - rooms[i].getSizeX());
+			int posY = rand.randomInt(3, MAP_HEIGHT - 3 - rooms[i].getSizeY());
 			
 			rooms[i].setPosition(posX, posY);
 			
@@ -109,6 +100,12 @@ public class DungeonGenerator {
 				
 				for (int x=-2; x<rooms[i].getSizeX()+3 && roomFree; x++ ) {
 					
+					//prevents going outOfBounds
+					if (rooms[i].getPosition().x + x > MAP_WIDTH || rooms[i].getPosition().y + y > MAP_HEIGHT)
+						roomFree = false;
+					if (rooms[i].getPosition().x + x < 2 || rooms[i].getPosition().y + y < 2)
+						roomFree = false;
+					//
 					if (mapBlocks[rooms[i].getPosition().x + x ][rooms[i].getPosition().y + y].getFieldType() == FieldType.GROUND){
 						roomFree = false;
 						System.out.println(roomFree);
@@ -161,15 +158,15 @@ public class DungeonGenerator {
 				
 		
 	//Connects all rooms by building paths from room1 to room 2, from room2 to room3, from room3 to room4 and so on to make sure every room can be reached.
-	/*public void buildPaths() {
+	public void buildPaths() {
 		
 		for(int r1 = 0; r1 < ROOM_POOL -1; r1++) {
 			
-			int buildStartOffsetX = rand.randomInt(0, (rooms[r1].getSizeX()-1));
-			int buildStartOffsetY = rand.randomInt(0, (rooms[r1].getSizeY()-1));
+			int buildStartOffsetX = rand.randomInt(4, (rooms[r1].getSizeX()-4));
+			int buildStartOffsetY = rand.randomInt(4, (rooms[r1].getSizeY()-4));
 			
-			int buildDestinationOffsetX = rand.randomInt(0, (rooms[r1 +1].getSizeX()-1));
-			int buildDestinationOffsetY = rand.randomInt(0, (rooms[r1 +1].getSizeY()-1));
+			int buildDestinationOffsetX = rand.randomInt(4, (rooms[r1 +1].getSizeX()-4));
+			int buildDestinationOffsetY = rand.randomInt(4, (rooms[r1 +1].getSizeY()-4));
 			
 			Point buildPosition = new Point(rooms[r1].getPosition().x + buildStartOffsetX,rooms[r1].getPosition().y + buildStartOffsetY);
 			Point buildDestination = new Point(rooms[r1 +1].getPosition().x + buildDestinationOffsetX,rooms[r1 +1].getPosition().y + buildDestinationOffsetY);
@@ -197,27 +194,30 @@ public class DungeonGenerator {
 								
 				if(randomChance == 1) {
 					
-					
-					for(int i=0; i < randomPathWidth; i++) {
-						int upperBound = buildPosition.y - randomPathWidth/2;
-						if((upperBound + i) > 1 && (upperBound + i) < MAP_HEIGHT -2 )
-							
-							mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][upperBound + i].setFieldType(FieldType.GROUND);
+					for(int b=0;b<4;b++){
+						for(int i=0; i < randomPathWidth; i++) {
+							int upperBound = buildPosition.y - randomPathWidth/2;
+							if((upperBound + i) > 1 && (upperBound + i) < MAP_HEIGHT -3 )
+								
+								mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][upperBound + i].setFieldType(FieldType.GROUND);
+						}
+						
+						buildPosition.translate((int)Math.signum(deltaX*-1), 0);
+						absDeltaX -= 1;
 					}
-					
-					buildPosition.translate((int)Math.signum(deltaX*-1), 0);
-					absDeltaX -= 1;
 				}
 				else
 				{
-					for(int i=0; i < randomPathWidth; i++) {
-						int leftBound = buildPosition.x - randomPathWidth/2;
-						if((leftBound + i) > 1 && (leftBound + i) < MAP_WIDTH -2)
-							mapBlocks[leftBound + i][buildPosition.y + (int)Math.signum(deltaY*-1)].setFieldType(FieldType.GROUND);
+					for(int b=0;b<4;b++){
+						for(int i=0; i < randomPathWidth; i++) {
+							int leftBound = buildPosition.x - randomPathWidth/2;
+							if((leftBound + i) > 1 && (leftBound + i) < MAP_WIDTH -3)
+								mapBlocks[leftBound + i][buildPosition.y + (int)Math.signum(deltaY*-1)].setFieldType(FieldType.GROUND);
+						}
+						
+						buildPosition.translate(0, (int)Math.signum(deltaY*-1));
+						absDeltaY -= 1;
 					}
-					
-					buildPosition.translate(0, (int)Math.signum(deltaY*-1));
-					absDeltaY -= 1;
 				}
 				
 				buildStep++;
@@ -228,60 +228,113 @@ public class DungeonGenerator {
 
 				}
 			}
+		}
 				
 					
-				}
+}
 				
-			}*/
-			
+
+	
 	public void cleanUp() {
 		
+		
 		//Clean up single wall tiles
-		for (int y= 1; y < MAP_HEIGHT-1; y++){
+		boolean found;
+		
+		do{
+			found = false;
 			
-			for (int x= 1; x < MAP_WIDTH-1; x++) {
-			
-				int freeSides =0;
+			for (int y= 1; y < MAP_HEIGHT-3; y++){
 				
-				if ((mapBlocks[x][y].getFieldType() == FieldType.WALL)){
-					if (mapBlocks[x-1][y].getFieldType() == FieldType.GROUND)
-						freeSides += 1;
-					if (mapBlocks[x+1][y].getFieldType() == FieldType.GROUND)
-						freeSides += 1;
-					if (mapBlocks[x][y-1].getFieldType() == FieldType.GROUND)
-						freeSides += 1;
-					if (mapBlocks[x][y+1].getFieldType() == FieldType.GROUND)
-						freeSides += 1;
-				}
+				for (int x= 1; x < MAP_WIDTH-3; x++) {
 				
-				if (freeSides>=3){
-					//System.out.println("removed tile at " + x + " " + y);
-					mapBlocks[x][y].setFieldType(FieldType.GROUND);
-				}
-				
+					int freeSides =0;
+					
+					if ((mapBlocks[x][y].getFieldType() == FieldType.WALL)){
+						if (mapBlocks[x-1][y].getFieldType() == FieldType.GROUND)
+							freeSides += 1;
+						if (mapBlocks[x+1][y].getFieldType() == FieldType.GROUND)
+							freeSides += 1;
+						if (mapBlocks[x][y-1].getFieldType() == FieldType.GROUND)
+							freeSides += 1;
+						if (mapBlocks[x][y+1].getFieldType() == FieldType.GROUND)
+							freeSides += 1;
+					}
+					
+					if (freeSides>=3){
+						found = true;
+						System.out.println("removed tile at " + x + " " + y + " " + found);
+						
+						mapBlocks[x][y].setFieldType(FieldType.GROUND);
+					
+					} 
+					
+					
+				} 
 			}
-		}
+			
+		} while (found);
 		
 	}
 	
-	// Old system
+	public void removeShapes(){
+		
+		 // Removes illegal shapes that cause rendering problems.
+		
+		boolean found;
+		
+		do {
+			found = false;
+			
+
+			for (int y= 1; y < MAP_HEIGHT/3; y++){
+				
+				for (int x= 1; x < MAP_WIDTH/3; x++) {
+			
+				/*	for (int i=0;i<3;i++){
+						Scanner checks for Shape
+						rotates scanner
+					}
+					move scanner 3x ->
+					
+			
+					*/
+				}
+			}
+			
+		} while (found);
+		 
+		
+	}
+	
+
 	
 	public void thickenWalls(){
-		for (int y= 1; y < MAP_HEIGHT-1; y++){
+		
+		boolean build;
+		
+		do {
+			build = false;
 			
-			for (int x= 1; x < MAP_WIDTH-1; x++) {
-				//checks if wall has a ground tile above AND below, places wall tile to the left if true
-				if (mapBlocks[x][y].getFieldType() == FieldType.WALL && mapBlocks[x][y-1].getFieldType() == FieldType.GROUND && mapBlocks[x][y+1].getFieldType() == FieldType.GROUND){
-					mapBlocks[x][y-1].setFieldType(FieldType.WALL);
-					//System.out.println("placed wall at  " + x + " " + y);
-				}
-				if (mapBlocks[x][y].getFieldType() == FieldType.WALL && mapBlocks[x-1][y].getFieldType() == FieldType.GROUND && mapBlocks[x+1][y].getFieldType() == FieldType.GROUND){
-					mapBlocks[x-1][y].setFieldType(FieldType.WALL);
-					//System.out.println("placed wall at  " + x + " " + y);
-				}
+			for (int y= 1; y < MAP_HEIGHT-1; y++){
 				
+				for (int x= 1; x < MAP_WIDTH-1; x++) {
+					//checks if wall has a ground tile above AND below, places wall tile to the left if true
+					if (mapBlocks[x][y].getFieldType() == FieldType.WALL && mapBlocks[x][y-1].getFieldType() == FieldType.GROUND && mapBlocks[x][y+1].getFieldType() == FieldType.GROUND){
+						mapBlocks[x][y-1].setFieldType(FieldType.WALL);
+						//System.out.println("placed wall at  " + x + " " + y);
+						build = true;
+					}
+					if (mapBlocks[x][y].getFieldType() == FieldType.WALL && mapBlocks[x-1][y].getFieldType() == FieldType.GROUND && mapBlocks[x+1][y].getFieldType() == FieldType.GROUND){
+						mapBlocks[x-1][y].setFieldType(FieldType.WALL);
+						//System.out.println("placed wall at  " + x + " " + y);
+						build = true;
+
+					}
+					
+				}
 			}
-	}
+		} while (build);
 	}
 	
 	/*public void thickenWalls(){
