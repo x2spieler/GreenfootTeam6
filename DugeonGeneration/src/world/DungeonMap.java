@@ -65,6 +65,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private FPS fps;
 
 	private boolean testing = false;
+	private boolean running = false;
 
 	// TODO: Change animation system to not top down
 	// TODO: Change enemies and player images accordingly
@@ -275,7 +276,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 			numAliveEnemies++;
 		}
-
 	}
 
 	@Override
@@ -342,34 +342,37 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	private Point getNearestAccessiblePoint(int x, int y) {
-		int smallestDX = getFullWidth();
-		int smallestDY = getFullHeight();
 
-		for (int i = 0; i < getFullWidth(); i++) {
-			for (int j = 0; j < getFullHeight(); j++) {
-				if (isInAccessibleTile(i, j)) {
-					int dX = x - i;
-					int dY = y - j;
-					if (Math.sqrt(dX * dX + dY * dY) < Math.sqrt(smallestDX * smallestDX + smallestDY * smallestDY)) {
-						smallestDX = dX;
-						smallestDY = dY;
-					}
-				}
+		int count = 2;
+		int move;
+		int dir;
+		do {
+			move = count / 2;
+			if (move % 2 == 1) {
+				dir = 1;
+			} else {
+				dir = -1;
 			}
-		}
-		x -= smallestDX;
-		y -= smallestDY;
+			if (count % 2 == 0) {
+				x += move * dir * TILE_SIZE;
+			} else {
+				y += move * dir * TILE_SIZE;
+			}
+			count++;
+		} while (!isInAccessibleTile(x, y));
 
 		return new Point(x, y);
 	}
 
 	@Override
-	public void addObject(Actor object, int x, int y) {
+	public void addObject(final Actor object, final int x, final int y) {
 		if (object instanceof DungeonMover) {
 			if (isInAccessibleTile(x, y)) {
 				super.addObject(object, x, y);
 			} else {
+				long t = System.currentTimeMillis();
 				Point p = getNearestAccessiblePoint(x, y);
+				System.out.println(System.currentTimeMillis() - t);
 				super.addObject(object, p.x, p.y);
 			}
 		} else {
@@ -439,5 +442,17 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	public boolean isTestingMode() {
 		return testing;
+	}
+
+	@Override
+	public void started() {
+		running = true;
+		super.started();
+	}
+
+	@Override
+	public void stopped() {
+		running = false;
+		super.stopped();
 	}
 }

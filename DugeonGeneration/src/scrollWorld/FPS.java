@@ -87,15 +87,15 @@ public class FPS extends Actor {
 	public void act() {
 		countAct++;
 		if (mode == Mode.REALTIME) {
-			long gap = System.nanoTime() - prevTime;
+			long gap = System.currentTimeMillis() - prevTime;
 			if (gap != 0 && countAct % updateFreq == 0) {
 				countAct = 0;
-				setFPS((1.0 / gap) * 1000000000.0);
+				setFPS((1.0 / gap) * 1000.0);
 			}
-			prevTime = System.nanoTime();
+			prevTime = System.currentTimeMillis();
 		} else if (mode == Mode.AVERAGE) {
-			long curTime = System.nanoTime();
-			if (curTime >= prevTime + 100000000) {
+			long curTime = System.currentTimeMillis();
+			if (curTime >= prevTime + 1000) {
 				setFPS(countAct);
 				prevTime = curTime;
 				countAct = 0;
@@ -113,8 +113,7 @@ public class FPS extends Actor {
 	 */
 	private final void updateImage(String value) {
 		getImage().clear();
-		GreenfootImage txt = new GreenfootImage(prefix + value, 32, textColor,
-				null);
+		GreenfootImage txt = new GreenfootImage(prefix + value, 32, textColor, null);
 		getImage().drawImage(txt, 1, 1);
 	}
 }
