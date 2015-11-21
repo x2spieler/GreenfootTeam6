@@ -1,5 +1,7 @@
 package world.mapping;
 
+import greenfoot.GreenfootImage;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,26 +17,30 @@ public class HouseTileLoader implements ITileLoader {
 	private List<ITile> tiles;
 
 	static {
-		String[] ids = { "UpperLeftInnerCorner11", "UpperLeftInnerCorner12", "UpperRightInnerCorner11",
-				"UpperRightInnerCorner12", "WallFront11", "WallCenter", "UpperLefttOuterCornerSpecial",
-				"UpperRightOuterCornerSpecial", "empty", "UpperLeftInnerCorner21", "UpperLeftInnerCorner22",
-				"UpperRightInnerCorner21", "UpperRightInnerCorner22", "WallFront21", "UpperLeftOuterCorner11",
+		String[] ids = { "UpperLeftInnerCorner11", "UpperLeftInnerCorner12",
+				"UpperRightInnerCorner11", "UpperRightInnerCorner12", "WallFront11", "WallCenter",
+				"UpperLefttOuterCornerSpecial", "UpperRightOuterCornerSpecial", "empty",
+				"UpperLeftInnerCorner21", "UpperLeftInnerCorner22", "UpperRightInnerCorner21",
+				"UpperRightInnerCorner22", "WallFront21", "UpperLeftOuterCorner11",
 				"UpperLeftOuterCorner12", "UpperRightOuterCorner11", "UpperRightOuterCorner12",
 				"UpperLeftInnerCorner31", "UpperLeftInnerCorner32", "UpperRightInnerCorner31",
-				"UpperRightInnerCorner32", "WallFront31", "UpperLeftOuterCorner21", "UpperLeftOuterCorner22",
-				"UpperRightOuterCorner21", "UpperRightOuterCorner22", "LowerLeftInnerCorner11",
-				"LowerLeftInnerCorner12", "LowerRightInnerCorner11", "LowerRightInnerCorner12", "WallBack11",
-				"LowerLeftOuterCorner11", "LowerLeftOuterCorner12", "LowerRightOuterCorner11",
-				"LowerRightOuterCorner12", "LowerLeftInnerCornerSpecial11", "LowerLeftInnerCornerSpecial12",
-				"LowerRightInnerCornerSpecial11", "LowerRightInnerCornerSpecial12", "WallBackSpecial",
-				"LowerLeftOuterCorner21", "LowerLeftOuterCorner22", "LowerRightOuterCorner21",
-				"LowerRightOuterCorner22", "Floor11", "Floor12", "Floor13", "Floor14", "empty",
-				"LowerLeftOuterCorner31", "LowerLeftOuterCorner32", "LowerRightOuterCorner31",
-				"LowerRightOuterCorner32", "empty", "Floor22", "Floor23", "Floor24", "Floor25", "WallLeft11",
-				"WallLeft12", "WallRight11", "wallRight12", "empty", "Floor32", "DoubleCornerLeft11",
-				"DoubleCornerLeft12", "DoubleCornerRight11", "DoubleCornerRight12", "FloorExtra11", "empty", "empty",
-				"empty", "DoubleCornerLeft20", "DoubleCornerLeft21", "DoubleCornerLeft22", "DoubleCornerRight21",
-				"DoubleCornerRight22", "FloorExtra21", "FloorShadow11", "FloorShadow12" };
+				"UpperRightInnerCorner32", "WallFront31", "UpperLeftOuterCorner21",
+				"UpperLeftOuterCorner22", "UpperRightOuterCorner21", "UpperRightOuterCorner22",
+				"LowerLeftInnerCorner11", "LowerLeftInnerCorner12", "LowerRightInnerCorner11",
+				"LowerRightInnerCorner12", "WallBack11", "LowerLeftOuterCorner11",
+				"LowerLeftOuterCorner12", "LowerRightOuterCorner11", "LowerRightOuterCorner12",
+				"LowerLeftInnerCornerSpecial11", "LowerLeftInnerCornerSpecial12",
+				"LowerRightInnerCornerSpecial11", "LowerRightInnerCornerSpecial12",
+				"WallBackSpecial", "LowerLeftOuterCorner21", "LowerLeftOuterCorner22",
+				"LowerRightOuterCorner21", "LowerRightOuterCorner22", "Floor11", "Floor12",
+				"Floor13", "Floor14", "empty", "LowerLeftOuterCorner31", "LowerLeftOuterCorner32",
+				"LowerRightOuterCorner31", "LowerRightOuterCorner32", "empty", "Floor22",
+				"Floor23", "Floor24", "Floor25", "WallLeft11", "WallLeft12", "WallRight11",
+				"wallRight12", "empty", "Floor32", "DoubleCornerLeft11", "DoubleCornerLeft12",
+				"DoubleCornerRight11", "DoubleCornerRight12", "FloorExtra11", "empty", "empty",
+				"empty", "DoubleCornerLeft20", "DoubleCornerLeft21", "DoubleCornerLeft22",
+				"DoubleCornerRight21", "DoubleCornerRight22", "FloorExtra21", "FloorShadow11",
+				"FloorShadow12" };
 
 		tileIDs = Arrays.asList(ids);
 	}
@@ -48,25 +54,44 @@ public class HouseTileLoader implements ITileLoader {
 
 	private List<ITileBlock> parseTileBlocks() {
 		List<ITileBlock> ret = new ArrayList<>();
-		ret.add(getUpperLeftInnerCorner());
-		ret.add(getUpperRightInnerCorner());
-		ret.add(getLowerLeftInnerCorner());
-		ret.add(getLowerRightInnerCorner());
-		ret.add(getUpperLeftOuterCorner());
-		ret.add(getUpperRightOuterCorner());
-		ret.add(getLowerLeftOuterCorner());
-		ret.add(getLowerRightOuterCorner());
-		ret.add(getWallFront());
-		ret.add(getWallBack());
-		ret.add(getWallLeft());
-		ret.add(getWallRight());
-		ret.add(getWallCenter());
-		ret.add(getFloorPattern());
-		ret.add(getDoubleCornerLeft());
-		ret.add(getDoubleCornerRight());
-		ret.add(getFloorExtra());
-		ret.add(getFloorShadow());
+		ret.add(0, getUpperLeftInnerCorner());
+		ret.add(1, getUpperRightInnerCorner());
+		ret.add(2, getLowerLeftInnerCorner());
+		ret.add(3, getLowerRightInnerCorner());
+		ret.add(4, getUpperLeftOuterCorner());
+		ret.add(5, getUpperRightOuterCorner());
+		ret.add(6, getLowerLeftOuterCorner());
+		ret.add(7, getLowerRightOuterCorner());
+		ret.add(8, getWallFront());
+		ret.add(9, getWallBack());
+		ret.add(10, getWallLeft());
+		ret.add(11, getWallRight());
+		ret.add(12, getWallCenter());
+		ret.add(13, getFloorPattern());
+		ret.add(14, getDoubleCornerLeft());
+		ret.add(15, getDoubleCornerRight());
+		ret.add(16, getFloorExtra());
+		ret.add(17, getFloorShadow());
+		ret.add(18, getDoubleCornerCenter());
 		return ret;
+	}
+
+	private ITileBlock getDoubleCornerCenter() {
+		GreenfootImage dcc11, dcc21, dcc31;
+		dcc11 = new GreenfootImage(32, 32);
+		dcc11.drawImage(findTile("UpperLeftInnerCorner12").getTileImage(), -16, 0);
+		dcc11.drawImage(findTile("UpperRightInnerCorner11").getTileImage(), 16, 0);
+		dcc21 = new GreenfootImage(32, 32);
+		dcc21.drawImage(findTile("UpperLeftInnerCorner22").getTileImage(), -16, 0);
+		dcc21.drawImage(findTile("UpperRightInnerCorner21").getTileImage(), 16, 0);
+		dcc31 = new GreenfootImage(32, 32);
+		dcc31.drawImage(findTile("UpperLeftInnerCorner32").getTileImage(), -16, 0);
+		dcc31.drawImage(findTile("UpperRightInnerCorner31").getTileImage(), 16, 0);
+		ITile specialWall11 = new MyTile("DoubleCornerCenter11", dcc11);
+		ITile specialWall21 = new MyTile("DoubleCornerCenter21", dcc21);
+		ITile specialWall31 = new MyTile("DoubleCornerCenter31", dcc31);
+		return new TileBlock(7, 3, null, null, null, specialWall11, null, null, null, null, null,
+				null, specialWall21, null, null, null, null, null, null, specialWall31);
 	}
 
 	private ITileBlock getWallRight() {
@@ -90,18 +115,20 @@ public class HouseTileLoader implements ITileLoader {
 	}
 
 	private ITileBlock getDoubleCornerRight() {
-		return new TileBlock(2, 2, findTile("DoubleCornerRight11"), findTile("DoubleCornerRight12"),
-				findTile("DoubleCornerRight21"), findTile("DoubleCornerRight22"));
+		return new TileBlock(3, 3, findTile("UpperLeftInnerCorner11"), null, null,
+				findTile("DoubleCornerRight11"), findTile("DoubleCornerRight12"), null,
+				findTile("DoubleCornerRight21"), findTile("DoubleCornerRight22"), null);
 	}
 
 	private ITileBlock getDoubleCornerLeft() {
-		return new TileBlock(2, 2, findTile("DoubleCornerLeft11"), findTile("DoubleCornerLeft12"),
+		return new TileBlock(3, 3, null, null, findTile("UpperRightInnerCorner12"), null,
+				findTile("DoubleCornerLeft11"), findTile("DoubleCornerLeft12"), null,
 				findTile("DoubleCornerLeft21"), findTile("DoubleCornerLeft22"));
 	}
 
 	private ITileBlock getFloorPattern() {
-		return new TileBlock(3, 2, findTile("Floor12"), findTile("Floor13"), findTile("Floor14"), findTile("Floor22"),
-				findTile("Floor23"), findTile("Floor24"));
+		return new TileBlock(3, 2, findTile("Floor12"), findTile("Floor13"), findTile("Floor14"),
+				findTile("Floor22"), findTile("Floor23"), findTile("Floor24"));
 	}
 
 	private ITileBlock getWallCenter() {
@@ -109,33 +136,39 @@ public class HouseTileLoader implements ITileLoader {
 	}
 
 	private ITileBlock getLowerLeftOuterCorner() {
-		return new TileBlock(2, 3, findTile("LowerLeftOuterCorner11"), findTile("LowerLeftOuterCorner12"),
-				findTile("LowerLeftOuterCorner21"), findTile("LowerLeftOuterCorner22"),
-				findTile("LowerLeftOuterCorner31"), findTile("LowerLeftOuterCorner32"));
+		return new TileBlock(2, 3, findTile("LowerLeftOuterCorner11"),
+				findTile("LowerLeftOuterCorner12"), findTile("LowerLeftOuterCorner21"),
+				findTile("LowerLeftOuterCorner22"), findTile("LowerLeftOuterCorner31"),
+				findTile("LowerLeftOuterCorner32"));
 	}
 
 	private ITileBlock getLowerRightOuterCorner() {
-		return new TileBlock(2, 3, findTile("LowerRightOuterCorner11"), findTile("LowerRightOuterCorner12"),
-				findTile("LowerRightOuterCorner21"), findTile("LowerRightOuterCorner22"),
-				findTile("LowerRightOuterCorner31"), findTile("LowerRightOuterCorner32"));
+		return new TileBlock(2, 3, findTile("LowerRightOuterCorner11"),
+				findTile("LowerRightOuterCorner12"), findTile("LowerRightOuterCorner21"),
+				findTile("LowerRightOuterCorner22"), findTile("LowerRightOuterCorner31"),
+				findTile("LowerRightOuterCorner32"));
 	}
 
 	private ITileBlock getWallFront() {
-		return new TileBlock(1, 3, findTile("WallFront11"), findTile("WallFront21"), findTile("WallFront31"));
+		return new TileBlock(1, 3, findTile("WallFront11"), findTile("WallFront21"),
+				findTile("WallFront31"));
 	}
 
 	private ITileBlock getLowerRightInnerCorner() {
-		return new TileBlock(2, 1, findTile("LowerRightInnerCorner11"), findTile("LowerRightInnerCorner12"));
+		return new TileBlock(2, 1, findTile("LowerRightInnerCorner11"),
+				findTile("LowerRightInnerCorner12"));
 	}
 
 	private ITileBlock getLowerLeftInnerCorner() {
-		return new TileBlock(2, 1, findTile("LowerLeftInnerCorner11"), findTile("LowerLeftInnerCorner12"));
+		return new TileBlock(2, 1, findTile("LowerLeftInnerCorner11"),
+				findTile("LowerLeftInnerCorner12"));
 	}
 
 	private ITileBlock getUpperRightInnerCorner() {
-		return new TileBlock(2, 3, findTile("UpperRightInnerCorner11"), findTile("UpperRightInnerCorner12"),
-				findTile("UpperRightInnerCorner21"), findTile("UpperRightInnerCorner22"),
-				findTile("UpperRightInnerCorner31"), findTile("UpperRightInnerCorner32"));
+		return new TileBlock(2, 3, findTile("UpperRightInnerCorner11"),
+				findTile("UpperRightInnerCorner12"), findTile("UpperRightInnerCorner21"),
+				findTile("UpperRightInnerCorner22"), findTile("UpperRightInnerCorner31"),
+				findTile("UpperRightInnerCorner32"));
 	}
 
 	private ITileBlock getUpperLeftInnerCorner() {
@@ -146,13 +179,15 @@ public class HouseTileLoader implements ITileLoader {
 	}
 
 	private ITileBlock getUpperRightOuterCorner() {
-		return new TileBlock(2, 2, findTile("UpperRightOuterCorner11"), findTile("UpperRightOuterCorner12"),
-				findTile("UpperRightOuterCorner21"), findTile("UpperRightOuterCorner22"));
+		return new TileBlock(2, 2, findTile("UpperRightOuterCorner11"),
+				findTile("UpperRightOuterCorner12"), findTile("UpperRightOuterCorner21"),
+				findTile("UpperRightOuterCorner22"));
 	}
 
 	private ITileBlock getUpperLeftOuterCorner() {
-		return new TileBlock(2, 2, findTile("UpperLeftOuterCorner11"), findTile("UpperLeftOuterCorner12"),
-				findTile("UpperLeftOuterCorner21"), findTile("UpperLeftOuterCorner22"));
+		return new TileBlock(2, 2, findTile("UpperLeftOuterCorner11"),
+				findTile("UpperLeftOuterCorner12"), findTile("UpperLeftOuterCorner21"),
+				findTile("UpperLeftOuterCorner22"));
 	}
 
 	private ITile findTile(String id) {

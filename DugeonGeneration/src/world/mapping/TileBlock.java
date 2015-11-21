@@ -13,10 +13,13 @@ public class TileBlock implements ITileBlock {
 		this.y = y;
 		block = new ITile[x][y];
 		int k = 0;
-		for (int i = 0; i < y; i++) {
+		outerloop: for (int i = 0; i < y; i++) {
 			for (int j = 0; j < x; j++) {
 				block[j][i] = tiles[k];
 				k++;
+				if (k >= tiles.length) {
+					break outerloop;
+				}
 			}
 		}
 	}
@@ -26,10 +29,20 @@ public class TileBlock implements ITileBlock {
 			return false;
 		for (int i = 0; i < this.y; i++) {
 			for (int j = 0; j < this.x; j++) {
-				map[x + j][y + i] = block[j][i].getTileImage();
+				if (map[x + j][y + i] == null && block[j][i] != null)
+					map[x + j][y + i] = block[j][i].getTileImage();
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public GreenfootImage getImageAt(int x, int y) {
+		if (x >= 0 && x < block.length && y >= 0 && y < block[0].length && block[x][y] != null) {
+			return block[x][y].getTileImage();
+		} else {
+			throw new IllegalArgumentException("not tile at that position");
+		}
 	}
 
 	// public boolean attachesTo(TileBlock tb) {
