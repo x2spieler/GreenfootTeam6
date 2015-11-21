@@ -365,19 +365,35 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	@Override
-	public void addObject(final Actor object, final int x, final int y) {
-		if (object instanceof DungeonMover) {
+	public void addObject(final Actor actor, final int x, final int y) {
+		if (actor instanceof DungeonMover) {
 			if (isInAccessibleTile(x, y)) {
-				super.addObject(object, x, y);
+				super.addObject(actor, x, y);
 			} else {
-				long t = System.currentTimeMillis();
 				Point p = getNearestAccessiblePoint(x, y);
-				System.out.println(System.currentTimeMillis() - t);
-				super.addObject(object, p.x, p.y);
+				super.addObject(actor, p.x, p.y);
 			}
 		} else {
-			super.addObject(object, x, y);
+			super.addObject(actor, x, y);
 		}
+	}
+
+	/**
+	 * Checks to see if the chosen location is a legal position for the argument
+	 * actor. If it isn't, does nothing and returns false. Always succeeds for
+	 * Actors not subclassing DungeonMover.
+	 * 
+	 * @param object
+	 * @param x
+	 * @param y
+	 * @return returns true only if the actor has been added to this world.
+	 */
+	public boolean tryAddObject(final Actor actor, final int x, final int y) {
+		if (actor instanceof DungeonMover && !isInAccessibleTile(x, y)) {
+			return false;
+		}
+		super.addObject(actor, x, y);
+		return true;
 	}
 
 	/**
