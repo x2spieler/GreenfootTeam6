@@ -20,10 +20,8 @@ public abstract class LongRangeWeapon extends Weapon {
 			Point2D offset = b.getCopyOfOffset();
 			rotatePoint(offset, getRotation());
 			//tryAddObject only adds the Bullet if it would be added to a legal tile. If Bullet were to no longer subclass DungeonMover this would stop working, however. Whatever happened to addBulletToWorld, btw?
-			System.out.println("tryadd");
 			if (((DungeonMap) getWorld()).tryAddObject(b, getGlobalX() + (int) offset.getX(), getGlobalY() + (int) offset.getY())) {
 				b.setRotation(getRotation());
-				System.out.println("added");
 			}
 			launchLongRangeWeapon = false;
 		}

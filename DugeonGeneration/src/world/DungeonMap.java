@@ -1,10 +1,5 @@
 package world;
 
-import enemies.Werewolf;
-import greenfoot.Actor;
-import greenfoot.Greenfoot;
-import greenfoot.GreenfootImage;
-
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
@@ -12,11 +7,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-import javax.swing.Action;
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
+import AI.Enemy;
+import AI.IWorldInterfaceForAI;
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.MapField;
+import core.FrameType;
+import core.GodFrame;
+import enemies.Werewolf;
+import greenfoot.Actor;
+import greenfoot.GreenfootImage;
 import menu.BuyItem;
 import player.BuffType;
 import player.DungeonMover;
@@ -31,13 +32,6 @@ import weapons.long_range_weapon.NinjaStar;
 import weapons.short_range.ClubWithSpikes;
 import weapons.short_range.Sword;
 import world.mapping.DungeonMapper;
-import AI.Enemy;
-import AI.IWorldInterfaceForAI;
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.FieldType;
-import DungeonGeneration.MapField;
-import core.FrameType;
-import core.GodFrame;
 
 public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
@@ -427,8 +421,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		godFrame.changeToFrame(type);
 	}
 
-	public void updateHealthLabel(int health) {
-		godFrame.updateHealthLabel(health);
+	public void updateHealthLabel(int health, int maxHealth) {
+		godFrame.updateHealthLabel(health, maxHealth);
 	}
 
 	public void updateScoreLabel(int score) {
