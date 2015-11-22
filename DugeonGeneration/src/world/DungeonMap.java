@@ -344,23 +344,24 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private Point getNearestAccessiblePoint(int x, int y) {
 
 		int count = 2;
-		int move;
-		int dir;
+		int move = count / 2;
+		int dir = ((move % 2) * -1);
 		do {
-			move = count / 2;
-			if (move % 2 == 1) {
-				dir = 1;
-			} else {
-				dir = -1;
+			if (move == 0) {
+				count++;
+				move = (count / 2) * TILE_SIZE;
+				dir = (move % 2 == 1) ? -1 : 1;
 			}
 			if (count % 2 == 0) {
-				x += move * dir * TILE_SIZE;
+				x += dir;
 			} else {
-				y += move * dir * TILE_SIZE;
+				y += dir;
 			}
-			count++;
+			move--;
+			if (count > DungeonGenerator.MAP_WIDTH * DungeonGenerator.MAP_HEIGHT * 4 * TILE_SIZE * TILE_SIZE) {
+				throw new IllegalStateException("no free tile available");
+			}
 		} while (!isInAccessibleTile(x, y));
-
 		return new Point(x, y);
 	}
 
