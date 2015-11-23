@@ -123,7 +123,7 @@ public class Player extends DeltaMover implements IDamageable {
 	public void damage(int dmg)
 	{
 		currHP-=dmg;
-		dungeonMap.updateHealthLabel(getHP());
+		dungeonMap.updateHealthLabel(getHP(), getMaxHP());
 		if(currHP<=0)
 		{
 			dungeonMap.playerDied();
@@ -176,7 +176,7 @@ public class Player extends DeltaMover implements IDamageable {
 			});
 			mouseWheelListenerRegistered=true;
 
-			dungeonMap.updateHealthLabel(getHP());
+			dungeonMap.updateHealthLabel(getHP(), getMaxHP());
 			dungeonMap.updateAmmoLabel(currWeapon);
 			dungeonMap.updateWeaponName(currWeapon);
 			dungeonMap.updateScoreLabel(getScore());
@@ -335,7 +335,7 @@ public class Player extends DeltaMover implements IDamageable {
 		currHP+=hp;
 		if(currHP>maxHP)
 			currHP=maxHP;
-		dungeonMap.updateHealthLabel(getHP());
+		dungeonMap.updateHealthLabel(getHP(), getMaxHP());
 	}
 
 	/**

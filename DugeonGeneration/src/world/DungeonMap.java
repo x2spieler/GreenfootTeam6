@@ -1,10 +1,5 @@
 package world;
 
-import enemies.Werewolf;
-import greenfoot.Actor;
-import greenfoot.Greenfoot;
-import greenfoot.GreenfootImage;
-
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
@@ -12,11 +7,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-import javax.swing.Action;
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
+import AI.Enemy;
+import AI.IWorldInterfaceForAI;
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.MapField;
+import core.FrameType;
+import core.GodFrame;
+import enemies.Werewolf;
+import greenfoot.Actor;
+import greenfoot.GreenfootImage;
 import menu.BuyItem;
 import player.BuffType;
 import player.DungeonMover;
@@ -31,13 +32,6 @@ import weapons.long_range_weapon.NinjaStar;
 import weapons.short_range.ClubWithSpikes;
 import weapons.short_range.Sword;
 import world.mapping.DungeonMapper;
-import AI.Enemy;
-import AI.IWorldInterfaceForAI;
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.FieldType;
-import DungeonGeneration.MapField;
-import core.FrameType;
-import core.GodFrame;
 
 public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
@@ -65,6 +59,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private FPS fps;
 
 	private boolean testing = false;
+	private boolean running = false;
 
 	// TODO: Change animation system to not top down
 	// TODO: Change enemies and player images accordingly
@@ -275,7 +270,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 			numAliveEnemies++;
 		}
-
 	}
 
 	@Override
@@ -342,39 +336,59 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	private Point getNearestAccessiblePoint(int x, int y) {
-		int smallestDX = getFullWidth();
-		int smallestDY = getFullHeight();
 
-		for (int i = 0; i < getFullWidth(); i++) {
-			for (int j = 0; j < getFullHeight(); j++) {
-				if (isInAccessibleTile(i, j)) {
-					int dX = x - i;
-					int dY = y - j;
-					if (Math.sqrt(dX * dX + dY * dY) < Math.sqrt(smallestDX * smallestDX + smallestDY * smallestDY)) {
-						smallestDX = dX;
-						smallestDY = dY;
-					}
-				}
+		int count = 2;
+		int move = count / 2;
+		int dir = ((move % 2) * -1);
+		do {
+			if (move == 0) {
+				count++;
+				move = (count / 2) * TILE_SIZE;
+				dir = (move % 2 == 1) ? -1 : 1;
 			}
-		}
-		x -= smallestDX;
-		y -= smallestDY;
-
+			if (count % 2 == 0) {
+				x += dir;
+			} else {
+				y += dir;
+			}
+			move--;
+			if (count > DungeonGenerator.MAP_WIDTH * DungeonGenerator.MAP_HEIGHT * 4 * TILE_SIZE * TILE_SIZE) {
+				throw new IllegalStateException("no free tile available");
+			}
+		} while (!isInAccessibleTile(x, y));
 		return new Point(x, y);
 	}
 
 	@Override
-	public void addObject(Actor object, int x, int y) {
-		if (object instanceof DungeonMover) {
+	public void addObject(final Actor actor, final int x, final int y) {
+		if (actor instanceof DungeonMover) {
 			if (isInAccessibleTile(x, y)) {
-				super.addObject(object, x, y);
+				super.addObject(actor, x, y);
 			} else {
 				Point p = getNearestAccessiblePoint(x, y);
-				super.addObject(object, p.x, p.y);
+				super.addObject(actor, p.x, p.y);
 			}
 		} else {
-			super.addObject(object, x, y);
+			super.addObject(actor, x, y);
 		}
+	}
+
+	/**
+	 * Checks to see if the chosen location is a legal position for the argument
+	 * actor. If it isn't, does nothing and returns false. Always succeeds for
+	 * Actors not subclassing DungeonMover.
+	 * 
+	 * @param object
+	 * @param x
+	 * @param y
+	 * @return returns true only if the actor has been added to this world.
+	 */
+	public boolean tryAddObject(final Actor actor, final int x, final int y) {
+		if (actor instanceof DungeonMover && !isInAccessibleTile(x, y)) {
+			return false;
+		}
+		super.addObject(actor, x, y);
+		return true;
 	}
 
 	/**
@@ -407,8 +421,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		godFrame.changeToFrame(type);
 	}
 
-	public void updateHealthLabel(int health) {
-		godFrame.updateHealthLabel(health);
+	public void updateHealthLabel(int health, int maxHealth) {
+		godFrame.updateHealthLabel(health, maxHealth);
 	}
 
 	public void updateScoreLabel(int score) {
@@ -439,5 +453,17 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	public boolean isTestingMode() {
 		return testing;
+	}
+
+	@Override
+	public void started() {
+		running = true;
+		super.started();
+	}
+
+	@Override
+	public void stopped() {
+		running = false;
+		super.stopped();
 	}
 }
