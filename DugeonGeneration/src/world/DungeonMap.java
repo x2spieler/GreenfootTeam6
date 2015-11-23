@@ -186,7 +186,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		gen = new DungeonGenerator(this, seed);
 		gen.clearMap();
 		gen.generateRooms();
-		gen.placeRooms();
 		gen.buildPaths();
 		gen.thickenWalls();
 		gen.placeDestructable();
