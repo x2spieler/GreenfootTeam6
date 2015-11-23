@@ -337,50 +337,6 @@ public class DungeonGenerator {
 		} while (build);
 	}
 	
-	/*public void thickenWalls(){
-		for (int y= 1; y < MAP_HEIGHT-1; y++){
-			
-			for (int x= 1; x < MAP_WIDTH-1;) {
-				if (mapBlocks[x][y].getFieldType() == FieldType.WALL){
-					
-					for (int i=x; i<x+2; i++){
-						mapBlocks[i][y].setFieldType(FieldType.WALL);
-						System.out.println("wall@ " + i + " " + y);
-					}
-					x+=3;
-				
-				} else if (mapBlocks[x][y].getFieldType() == FieldType.GROUND){
-					
-					for (int i=x; i<x+2; i++){
-						mapBlocks[i][y].setFieldType(FieldType.GROUND);
-						System.out.println("wall@ " + i + " " + y);
-					}
-					x+=3;
-				}	
-			}
-		}*/
-		//reverse direction
-		/*
-		for (int y= MAP_HEIGHT-1; y > 1; y--){
-					
-					for (int x= MAP_WIDTH-1; x > 1 ;) {
-						if (mapBlocks[x][y].getFieldType() == FieldType.WALL){
-							
-							for (int i=x; i<x-2; i--){
-								mapBlocks[i][y].setFieldType(FieldType.WALL);
-							}
-							x-=2;
-						
-						} else if (mapBlocks[x][y].getFieldType() == FieldType.GROUND){
-							
-							for (int i=x; i<x-2; i--){
-								mapBlocks[i][y].setFieldType(FieldType.GROUND);
-							}
-							x-=2;
-						}	
-					}
-				}
-	}*/
 	
 	//Displays the world map in the console for debugging purposes.
 	public void showMap() {
