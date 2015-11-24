@@ -1,11 +1,16 @@
 package world.mapping;
 
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.Map;
+
+import javafx.util.Pair;
+import scrollWorld.ScrollActor;
 import greenfoot.GreenfootImage;
 
 public class TileBlock implements ITileBlock {
 
 	private final ITile[][] block;
-
 	private final int x, y;
 
 	public TileBlock(int x, int y, ITile... tiles) {
@@ -44,27 +49,5 @@ public class TileBlock implements ITileBlock {
 			throw new IllegalArgumentException("not tile at that position");
 		}
 	}
-
-	// public boolean attachesTo(TileBlock tb) {
-	// for (ITile[] tiles : block) {
-	// for (ITile tile : tiles) {
-	// if (tb.getAttachingTileFor(tile) != null) {
-	// return true;
-	// }
-	// }
-	// }
-	// return false;
-	// }
-	//
-	// public ITile getAttachingTileFor(ITile tile) {
-	// for (ITile[] tiles : block) {
-	// for (ITile myTile : tiles) {
-	// if (myTile.attachesTo(tile)) {
-	// return myTile;
-	// }
-	// }
-	// }
-	// return null;
-	// }
 
 }
