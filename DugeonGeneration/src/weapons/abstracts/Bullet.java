@@ -1,5 +1,6 @@
 package weapons.abstracts;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
 
 import AI.Enemy;
@@ -20,14 +21,15 @@ public abstract class Bullet extends DeltaMover
 	private long timeStampCreated=-1;
 	private EntityType typeToIgnore;
 	private int hits=0;
-	//private boolean pendingKill=false;		//Is set by world when we killed the player but act() is still executed
+	private ArrayList<IDamageable> hitEntities;
  
 	public Bullet(EntityType typeToIgnore) 
 	{
 		super(0);
 		timeStampCreated=DungeonMap.getGreenfootTime();
 		this.typeToIgnore=typeToIgnore;
-		bulletOffsetFromPlayer=new Point2D.Double(32,0);;
+		bulletOffsetFromPlayer=new Point2D.Double(32,0);
+		hitEntities=new ArrayList<IDamageable>();
 	}
 
 	@Override
@@ -43,7 +45,9 @@ public abstract class Bullet extends DeltaMover
 		super.act();
 		move();
 		if(handleCollision())
+		{
 			hits++;
+		}
 		if (hits==maxHits || isTouchingWall() || timeStampCreated+lifetimeInMs<DungeonMap.getGreenfootTime())
 		{
 			getWorld().removeObject(this);
@@ -73,7 +77,12 @@ public abstract class Bullet extends DeltaMover
 					continue;
 
 				IDamageable id=(IDamageable) o;
+				
+				if(hitEntities.contains(id))
+					continue;
+				
 				id.damage(damage);
+				hitEntities.add(id);
 				return true;
 			}
 			return false;
