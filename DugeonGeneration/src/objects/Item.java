@@ -32,16 +32,15 @@ public abstract class Item extends ScrollActor {
 	public void act() {
 		
 		if(intersects(player)) {
-			
-			player.addBuff(buff, param, durationInMS);
-			collect();
+			if(player.addBuff(buff, param, durationInMS))
+			{
+				collect();
+			}
 		}
 	}
 	
 	
 	public void collect() {
-		
-		getWorld().removeObject(this);
-				
+		getWorld().removeObject(this);		
 	}
 }
