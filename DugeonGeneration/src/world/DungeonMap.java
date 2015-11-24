@@ -3,10 +3,14 @@ package world;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Random;
 
+import javax.print.attribute.standard.PrinterState;
 import javax.swing.JFrame;
 
 import AI.Enemy;
@@ -60,6 +64,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private boolean testing = false;
 	private boolean running = false;
+	
+	PrintStream logger;
 
 	// TODO: Change animation system to not top down
 	// TODO: Change enemies and player images accordingly
@@ -72,6 +78,19 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		outOfMap.setColor(Color.BLACK);
 		outOfMap.fill();
 		fps = new FPS();
+		try {
+			logger=new PrintStream(new File("Log.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void log(String str)
+	{
+		logger.println(str);
+		logger.flush();
+		logger.close();
+		System.out.println("Logged: \""+str+"\"");
 	}
 
 	public void playerDied() {
@@ -96,6 +115,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		greenfootTime = 0;
 		addObject(fps, 100, 20);
 		spawnEnemies();
+		log("Seed: "+seed);
 	}
 
 	public void startNewRound() {

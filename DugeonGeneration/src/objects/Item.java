@@ -25,7 +25,6 @@ public abstract class Item extends ScrollActor {
 	public void addedToWorld(World world) {
 		
 		setImage(img);
-		
 	}
 	
 	@Override
