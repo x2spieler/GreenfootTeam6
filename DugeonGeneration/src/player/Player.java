@@ -76,6 +76,12 @@ public class Player extends DeltaMover implements IDamageable {
 
 		activeBuffs=new ArrayList<Buff>();
 	}
+	
+	public void resetWeapons()
+	{
+		for(Weapon w:weapons)
+			w.resetWeapon();
+	}
 
 	@Override
 	protected void addedToWorld(World world)

@@ -138,6 +138,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		changeToFrame(FrameType.NEXT_ROUND);
 		ticksAtEndOfLastRound = getGreenfootTime();
 		enemiesSpawned=false;
+		player.resetWeapons();
 	}
 
 	public void endGame() {
@@ -151,7 +152,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		if (testing)
 			return;
 		Random r = new Random(gen.getSeed());
-		spawnWerewolfs(10, r);
+		spawnWerewolfs(2, r);
 		// Increase numAlivEenemies here , spawnWerewolfs does so
 		enemiesSpawned=true;
 	}

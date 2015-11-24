@@ -143,6 +143,13 @@ public abstract class Weapon extends ScrollActor
 		}
 		return false;
 	}
+	
+	public void resetWeapon()
+	{
+		playAnimation=false;
+		animTicks=0;
+		launchLongRangeWeapon=false;
+	}
 
 	/**
 	 * Called by use() if the weapon can be used
