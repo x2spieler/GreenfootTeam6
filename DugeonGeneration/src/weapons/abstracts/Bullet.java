@@ -8,6 +8,7 @@ import greenfoot.World;
 import player.DeltaMover;
 import player.Player;
 import weapons.EntityType;
+import weapons.bullets.NinjaStar;
 import world.DungeonMap;
 
 public abstract class Bullet extends DeltaMover
@@ -16,9 +17,11 @@ public abstract class Bullet extends DeltaMover
 	protected int lifetimeInMs = -1;
 	protected String bulletName="";
 	protected Point2D bulletOffsetFromPlayer;
+	protected int maxHits=1;
 	private long timeStampCreated=-1;
 	private EntityType typeToIgnore;
-
+	private int hits=0;
+ 
 	public Bullet(EntityType typeToIgnore) 
 	{
 		super(0);
@@ -38,10 +41,12 @@ public abstract class Bullet extends DeltaMover
 	public void act()
 	{
 		super.act();
+		
 		move();
-		if (isTouchingWall()||handleCollision() || timeStampCreated+lifetimeInMs<DungeonMap.getGreenfootTime())
+		if(handleCollision())
+			hits++;
+		if (isTouchingWall() || hits==maxHits|| timeStampCreated+lifetimeInMs<DungeonMap.getGreenfootTime())
 		{
-			//Didn't move although move was called -> tried to move into wall. If we are at a rotation of x*90�, we will just stay in front of the wall until our lifetime is over || hit player/enemy || our time has come :(
 			getWorld().removeObject(this);
 		}
 	}
