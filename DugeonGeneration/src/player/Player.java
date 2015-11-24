@@ -124,10 +124,6 @@ public class Player extends DeltaMover implements IDamageable {
 	{
 		currHP-=dmg;
 		dungeonMap.updateHealthLabel(getHP(), getMaxHP());
-		if(currHP<=0)
-		{
-			dungeonMap.playerDied();
-		}
 	}
 
 	@Override

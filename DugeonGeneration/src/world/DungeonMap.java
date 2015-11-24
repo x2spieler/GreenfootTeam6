@@ -22,6 +22,7 @@ import core.FrameType;
 import core.GodFrame;
 import enemies.Werewolf;
 import greenfoot.Actor;
+import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 import menu.BuyItem;
 import player.BuffType;
@@ -65,6 +66,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private boolean testing = false;
 	private boolean running = false;
+	
+	boolean enemiesSpawned=false;
 
 	PrintStream logger;
 
@@ -134,20 +137,23 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 		changeToFrame(FrameType.NEXT_ROUND);
 		ticksAtEndOfLastRound = getGreenfootTime();
+		enemiesSpawned=false;
 	}
 
 	public void endGame() {
 		removeObjects(getObjects(null));
 		player = null;
 		numAliveEnemies = 0;
+		enemiesSpawned=false;
 	}
 
 	private void spawnEnemies() {
 		if (testing)
 			return;
 		Random r = new Random(gen.getSeed());
-		spawnWerewolfs(2, r);
+		spawnWerewolfs(10, r);
 		// Increase numAlivEenemies here , spawnWerewolfs does so
+		enemiesSpawned=true;
 	}
 
 	@Override
@@ -157,6 +163,17 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		greenfootTime += currTicks - lastTicks;
 		lastTicks = currTicks;
 		godFrame.updateTimeLabel(getRoundTime());
+		
+		if(enemiesSpawned)
+		{
+			if(player.getHP()<=0)
+			{
+				playerDied();
+			}
+			else if (numAliveEnemies == 0) {
+				endRound();
+			}
+		}
 	}
 
 	public void createGodFrame(JFrame frame) {
@@ -333,9 +350,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void enemyDied(Enemy e) {
 		numAliveEnemies--;
 		alterPlayerScore(e.getScore());
-		if (numAliveEnemies == 0) {
-			endRound();
-		}
 	}
 
 	private void alterPlayerScore(int score) {

@@ -8,7 +8,6 @@ import greenfoot.World;
 import player.DeltaMover;
 import player.Player;
 import weapons.EntityType;
-import weapons.bullets.NinjaStar;
 import world.DungeonMap;
 
 public abstract class Bullet extends DeltaMover
@@ -21,6 +20,7 @@ public abstract class Bullet extends DeltaMover
 	private long timeStampCreated=-1;
 	private EntityType typeToIgnore;
 	private int hits=0;
+	//private boolean pendingKill=false;		//Is set by world when we killed the player but act() is still executed
  
 	public Bullet(EntityType typeToIgnore) 
 	{
@@ -41,11 +41,10 @@ public abstract class Bullet extends DeltaMover
 	public void act()
 	{
 		super.act();
-		
 		move();
 		if(handleCollision())
 			hits++;
-		if (isTouchingWall() || hits==maxHits|| timeStampCreated+lifetimeInMs<DungeonMap.getGreenfootTime())
+		if (hits==maxHits || isTouchingWall() || timeStampCreated+lifetimeInMs<DungeonMap.getGreenfootTime())
 		{
 			getWorld().removeObject(this);
 		}
