@@ -63,8 +63,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	// TODO: Change animation system to not top down
 	// TODO: Change enemies and player images accordingly
-	// TODO: Fancy up the HUD
-	// TODO: Implement medi pack
 
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE, DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
@@ -438,8 +436,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			godFrame.updateWeaponName(w);
 	}
 
-	public void addOrUpdateBuffLabel(BuffType b, double param, int remainingTime) {
-		godFrame.addOrUpdateBuffLabel(b, param, remainingTime);
+	public void addOrUpdateBuffLabel(BuffType b, double param, int remainingTime, int maxTime) {
+		godFrame.addOrUpdateBuffLabel(b, param, remainingTime, maxTime);
 	}
 
 	public void removeBuffLabel(BuffType b) {

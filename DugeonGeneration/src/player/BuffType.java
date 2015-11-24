@@ -2,11 +2,11 @@ package player;
 
 public enum BuffType 
 {
-	SPEED_MULTIPLIER("Speed-Multiplier: "),
-	MAX_HP("Max-HP: "),
-	MELEE_DAMAGE("Melee-Damage: "),
-	RELOAD_TIME("Reload-Time: "),
-	WEAPON_SPEED("Weapon-Speed: ");
+	SPEED_MULTIPLIER("RUN\nSPD"),
+	MAX_HP("MAX\nHP"),
+	MELEE_DAMAGE("MLE\nDMG"),
+	RELOAD_TIME("RLD\nTME"),
+	WEAPON_SPEED("WPN\nSPD");
 	
 	private String val;
 	
