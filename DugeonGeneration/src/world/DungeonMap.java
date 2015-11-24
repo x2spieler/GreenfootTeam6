@@ -71,7 +71,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	// TODO: Change enemies and player images accordingly
 
 	public DungeonMap() {
-		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE, DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
+		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
+				DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
 		back = getBackground();
 		empty = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		outOfMap = new GreenfootImage(TILE_SIZE, TILE_SIZE);
@@ -103,6 +104,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		new Thread(() -> {
 			try {
 				tileMap = new DungeonMapper(map).getImageForTilesetHouse();
+				if (running)
+					renderMapFully(getCameraX() - VIEWPORT_WIDTH / 2, getCameraY() - VIEWPORT_HEIGHT / 2);
 			} catch (IOException e) {
 				System.err.println("tileset not loaded");
 				e.printStackTrace();
@@ -144,7 +147,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		if (testing)
 			return;
 		Random r = new Random(gen.getSeed());
-		spawnWerewolfs(10, r);
+		spawnWerewolfs(2, r);
 		// Increase numAlivEenemies here , spawnWerewolfs does so
 	}
 
@@ -205,20 +208,18 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		gen.clearMap();
 		gen.generateRooms();
 		gen.buildPaths();
+		gen.cleanUp();
 		gen.thickenWalls();
 		gen.placeDestructable();
 		map = gen.getMap();
 	}
 
-	private void renderMap(int x, int y) {
-		if (tileMap == null)
-			return;
+	private void renderMapFully(final int x, final int y) {
 		Point startingTile = getTileOfPixel(x, y);
 		Point startingPixel = getStartingPixel(x, y);
 
 		int pixelX = startingPixel.x;
 		int pixelY;
-
 		for (int i = startingTile.x; i <= startingTile.x + viewportXTiles; i++) {
 			pixelY = startingPixel.y;
 			for (int j = startingTile.y; j <= startingTile.y + viewportYTiles; j++) {
@@ -229,13 +230,38 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 	}
 
+	private void renderMap(final int x, final int y) {
+		if (tileMap == null)
+			return;
+		// int deltax = (getCameraX() - VIEWPORT_WIDTH / 2) - x;
+		// int deltay = (getCameraY() - VIEWPORT_HEIGHT / 2) - y;
+		//
+		// if (Math.abs(deltax) < VIEWPORT_WIDTH && Math.abs(deltay) <
+		// VIEWPORT_HEIGHT) {
+		// BufferedImage image = back.getAwtImage();
+		// image.setData(image.getData().createTranslatedChild(deltax, deltay));
+		// Point rowStart = getStartingPixel(x, y);
+		// new Point(x, (deltay > 0) ? y : y + deltay + VIEWPORT_HEIGHT);
+		//
+		// Point columnStart = new Point(rowStart);
+		//
+		// rowStart.translate(Math.abs(deltax), Math.abs(deltay));
+		//
+		// } else {
+		// renderMapFully(x, y);
+		// }
+		renderMapFully(x, y);
+
+	}
+
 	private boolean cameraPositionChanged(int x, int y) {
 		return !(getCameraX() == x && getCameraY() == y);
 	}
 
 	private GreenfootImage getImageForTile(int i, int j) {
 
-		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT) ? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
+		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT)
+				? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
 	}
 
 	@Override
@@ -354,13 +380,13 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private Point getNearestAccessiblePoint(int x, int y) {
 
-		int count = 2;
-		int move = count / 2;
+		int count = 1;
+		int move = 0;
 		int dir = ((move % 2) * -1);
 		do {
 			if (move == 0) {
 				count++;
-				move = (count / 2) * TILE_SIZE;
+				move = (count / 2);
 				dir = (move % 2 == 1) ? -1 : 1;
 			}
 			if (count % 2 == 0) {
@@ -368,10 +394,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			} else {
 				y += dir;
 			}
-			move--;
-			if (count > DungeonGenerator.MAP_WIDTH * DungeonGenerator.MAP_HEIGHT * 4 * TILE_SIZE * TILE_SIZE) {
-				throw new IllegalStateException("no free tile available");
+			if (move > ((DungeonGenerator.MAP_WIDTH + DungeonGenerator.MAP_HEIGHT) * TILE_SIZE * 2)) {
+				throw new IllegalStateException("no free tile available x= " + x + " y= " + y);
 			}
+			move--;
 		} while (!isInAccessibleTile(x, y));
 		return new Point(x, y);
 	}
