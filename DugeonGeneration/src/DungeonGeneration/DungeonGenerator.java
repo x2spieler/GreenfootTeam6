@@ -34,6 +34,8 @@ public class DungeonGenerator {
 	
 	private DungeonMap dm = null;
 	
+
+	
 	
 	public DungeonGenerator(DungeonMap dm)
 	{
@@ -42,6 +44,7 @@ public class DungeonGenerator {
 		rand=new MegaRandom(mapSeed);
 		
 		this.dm = dm;
+		initGen();
 	}
 	
 	public DungeonGenerator(DungeonMap dm, int seed)
@@ -49,6 +52,8 @@ public class DungeonGenerator {
 		mapSeed = seed;
 		rand=new MegaRandom(mapSeed);
 		this.dm = dm;
+		initGen();
+
 	}
 	
 	public MapField[][] getMap() {
@@ -66,7 +71,14 @@ public class DungeonGenerator {
 		mapBlocks[x][y].setFieldType(fieldType);
 	}
 	
-	
+	public void initGen(){
+		clearMap();
+		generateRooms();
+		buildPaths();
+		cleanUp();
+		thickenWalls();
+		placeDestructable();
+	}
 	
 	
 	//Clears the map by setting every single field to fieldType wall
@@ -112,7 +124,7 @@ public class DungeonGenerator {
 					//
 					if (mapBlocks[rooms[i].getPosition().x + x ][rooms[i].getPosition().y + y].getFieldType() == FieldType.GROUND){
 						roomFree = false;
-						System.out.println(roomFree);
+						//System.out.println(roomFree);
 					}	
 				}
 			}
@@ -273,7 +285,7 @@ public class DungeonGenerator {
 					
 					if (freeSides>=3){
 						found = true;
-						System.out.println("removed tile at " + x + " " + y + " " + found);
+						//System.out.println("removed tile at " + x + " " + y + " " + found);
 						
 						mapBlocks[x][y].setFieldType(FieldType.GROUND);
 					
