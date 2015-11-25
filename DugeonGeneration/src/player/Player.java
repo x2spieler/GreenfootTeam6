@@ -76,6 +76,12 @@ public class Player extends DeltaMover implements IDamageable {
 
 		activeBuffs=new ArrayList<Buff>();
 	}
+	
+	public void resetWeapons()
+	{
+		for(Weapon w:weapons)
+			w.resetWeapon();
+	}
 
 	@Override
 	protected void addedToWorld(World world)
@@ -124,10 +130,6 @@ public class Player extends DeltaMover implements IDamageable {
 	{
 		currHP-=dmg;
 		dungeonMap.updateHealthLabel(getHP(), getMaxHP());
-		if(currHP<=0)
-		{
-			dungeonMap.playerDied();
-		}
 	}
 
 	@Override
@@ -401,7 +403,7 @@ public class Player extends DeltaMover implements IDamageable {
 				return false;
 		
 		if(durationInMs>=-1)
-			dungeonMap.addOrUpdateBuffLabel(buff, param, durationInMs>0?durationInMs/100:durationInMs);
+			dungeonMap.addOrUpdateBuffLabel(buff, param, durationInMs, durationInMs);
 		else
 			dungeonMap.removeBuffLabel(buff);
 
@@ -539,8 +541,8 @@ public class Player extends DeltaMover implements IDamageable {
 			else
 			{
 				i++;
-				int timeRemain = (int)(buff.timeStampEnd-DungeonMap.getGreenfootTime())/100;
-				dungeonMap.addOrUpdateBuffLabel(buff.buff, buff.param, timeRemain);
+				int timeRemain = (int)(buff.timeStampEnd-DungeonMap.getGreenfootTime());
+				dungeonMap.addOrUpdateBuffLabel(buff.buff, buff.param, timeRemain, buff.durationInMs);
 			}
 
 		}
@@ -552,12 +554,14 @@ public class Player extends DeltaMover implements IDamageable {
 		long timeStampEnd=-1;
 		BuffType buff;
 		double param;
+		int durationInMs;
 
 		public Buff(long timeStampEnd, BuffType buff, double param)
 		{
 			this.timeStampEnd=timeStampEnd;
 			this.buff=buff;
 			this.param=param;
+			durationInMs=(int) (timeStampEnd-DungeonMap.getGreenfootTime());
 		}
 	}
 

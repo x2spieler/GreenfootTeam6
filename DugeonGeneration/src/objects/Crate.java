@@ -95,9 +95,6 @@ public class Crate extends ScrollActor implements IDamageable{
 	}
 	
 	private void spawnItem() {
-		
-		
-		
 		Random r = new Random();
 		double randomValue = 0.0 + (1.0 - 0.0) * r.nextDouble();
 				

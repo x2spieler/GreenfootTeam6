@@ -21,4 +21,5 @@ public class MyTile implements ITile {
 	public GreenfootImage getTileImage() {
 		return image;
 	}
+
 }

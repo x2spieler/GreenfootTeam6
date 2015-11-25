@@ -1,5 +1,8 @@
 package world.mapping;
 
+import java.awt.Point;
+import java.util.Map;
+
 import greenfoot.GreenfootImage;
 
 public interface ITileBlock {

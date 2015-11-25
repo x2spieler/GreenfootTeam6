@@ -6,5 +6,4 @@ public interface ITile {
 	public String getID();
 
 	public GreenfootImage getTileImage();
-
 }

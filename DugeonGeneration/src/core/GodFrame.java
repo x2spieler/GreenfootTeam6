@@ -68,21 +68,17 @@ public class GodFrame {
 	private BufferedImage healthBarImage=null;
 	private DungeonMap world;
 
-	private LinkedHashMap<String, JLabel> buffLabels;
-	private final int LABEL_WIDTH = 300;
-	private final int LABEL_HEIGHT = 20;
-	private final int SPACE_BETWEEN_LABELS = 20;
-	private final int LABEL_X_START = 20;
-	private final int LABEL_Y_START = 300;
-	private final Color LABEL_FONT_COLOR = Color.red;
-	private final Font LABEL_FONT;
+	private LinkedHashMap<String, BuffPanel> buffPanels;
+	private final int LABEL_HEIGHT = 80;
+	private final int SPACE_BETWEEN_LABELS = 40;
+	private final int LABEL_X_START = 10;
+	private final int LABEL_Y_START = 280;
 	private JTextField seedTF;
 
 	public GodFrame(JFrame frame, DungeonMap world) {
 		this.frame = frame;
 		this.world = world;
-		buffLabels = new LinkedHashMap<String, JLabel>();
-		LABEL_FONT = new Font("Serif", Font.BOLD, 20);
+		buffPanels = new LinkedHashMap<String, BuffPanel>();
 
 		frame.getContentPane().remove(1); // Removes the greenfoot buttons
 		viewPortPane = (JScrollPane) frame.getContentPane().getComponent(0); // Component 0 is the JScrollPane containing the viewport
@@ -345,8 +341,8 @@ public class GodFrame {
 		healthBarLabel.setBounds(posX+42, posY, healthBarImage.getWidth(), healthBarImage.getHeight());
 		viewportPanel.add(healthBarLabel);
 		viewportPanel.setComponentZOrder(healthBarLabel, 0);
-		
-		
+
+
 		JLabel scoreBackground=new JLabel();
 		BufferedImage img=loadHUDBufferedImage("score_bg.png");
 		scoreBackground.setIcon(new ImageIcon(img));
@@ -354,7 +350,7 @@ public class GodFrame {
 		posY+=45;
 		scoreBackground.setBounds(posX, posY, img.getWidth(), img.getHeight());
 		viewportPanel.add(scoreBackground);
-		
+
 		scoreLabel=new JLabel();
 		scoreLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
 		scoreLabel.setForeground(Color.white);
@@ -362,7 +358,7 @@ public class GodFrame {
 		scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		viewportPanel.add(scoreLabel);
 		viewportPanel.setComponentZOrder(scoreLabel, 0);
-		
+
 		JLabel weaponBulletBackground=new JLabel();
 		img=loadHUDBufferedImage("weapon_bullets_bg.png");
 		weaponBulletBackground.setIcon(new ImageIcon(img));
@@ -370,12 +366,12 @@ public class GodFrame {
 		posY+=50;
 		weaponBulletBackground.setBounds(posX, posY, img.getWidth(), img.getHeight());
 		viewportPanel.add(weaponBulletBackground);
-		
+
 		weaponLabel=new JLabel();
 		weaponLabel.setBounds(posX-8, posY-35, 200, 100);
 		viewportPanel.add(weaponLabel);
 		viewportPanel.setComponentZOrder(weaponLabel, 0);
-		
+
 		ammoLabel=new JLabel();
 		ammoLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
 		ammoLabel.setForeground(Color.white);
@@ -383,7 +379,7 @@ public class GodFrame {
 		ammoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		viewportPanel.add(ammoLabel);
 		viewportPanel.setComponentZOrder(ammoLabel, 0);
-		
+
 		JLabel medipackBackground=new JLabel();
 		img=loadHUDBufferedImage("medipack_bg.png");
 		medipackBackground.setIcon(new ImageIcon(img));
@@ -391,7 +387,7 @@ public class GodFrame {
 		posY+=40;
 		medipackBackground.setBounds(posX, posY, img.getWidth(), img.getHeight());
 		viewportPanel.add(medipackBackground);
-		
+
 		mediPackLabel=new JLabel();
 		mediPackLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
 		mediPackLabel.setForeground(Color.white);
@@ -399,7 +395,7 @@ public class GodFrame {
 		mediPackLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		viewportPanel.add(mediPackLabel);
 		viewportPanel.setComponentZOrder(mediPackLabel, 0);
-		
+
 		JLabel timeBackground=new JLabel();
 		img=loadHUDBufferedImage("time_bg.png");
 		timeBackground.setIcon(new ImageIcon(img));
@@ -407,7 +403,7 @@ public class GodFrame {
 		posY=10;
 		timeBackground.setBounds(posX, posY, img.getWidth(), img.getHeight());
 		viewportPanel.add(timeBackground);
-		
+
 		timeLabel=new JLabel();
 		timeLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
 		timeLabel.setForeground(Color.white);
@@ -415,7 +411,7 @@ public class GodFrame {
 		timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		viewportPanel.add(timeLabel);
 		viewportPanel.setComponentZOrder(timeLabel, 0);
-		
+
 		JLabel seedBackground=new JLabel();
 		img=loadHUDBufferedImage("seed_bg.png");
 		seedBackground.setIcon(new ImageIcon(img));
@@ -423,7 +419,7 @@ public class GodFrame {
 		posY=5;
 		seedBackground.setBounds(posX, posY, img.getWidth(), img.getHeight());
 		viewportPanel.add(seedBackground);
-		
+
 		seedLabel=new JLabel();
 		seedLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
 		seedLabel.setForeground(Color.white);
@@ -450,7 +446,7 @@ public class GodFrame {
 	{
 		return loadImage("src/images/hud/"+name);
 	}
-	
+
 	private BufferedImage loadImage(String path)
 	{
 		BufferedImage img = null;
@@ -466,18 +462,11 @@ public class GodFrame {
 		mediPackLabel.setText("" + mediPacks);
 	}
 
-	private JLabel createHUDLabelAndAddToPanel(String text) {
-		JLabel label = new JLabel(text);
-		label.setForeground(LABEL_FONT_COLOR);
-		label.setFont(LABEL_FONT);
-		viewportPanel.add(label);
-		return label;
-	}
-
 	private void recalculateLabelPositions(int startIndex) {
-		Object[] jl = buffLabels.values().toArray();
-		for (int i = startIndex; i < buffLabels.size(); i++) {
-			((JLabel) jl[i]).setBounds(LABEL_X_START, LABEL_Y_START + i * (LABEL_HEIGHT + SPACE_BETWEEN_LABELS), LABEL_WIDTH, LABEL_HEIGHT);
+		Object[] jl = buffPanels.values().toArray();
+		int MAX_BUFFS_NEXT_OTHER=2;
+		for (int i = startIndex; i < buffPanels.size(); i++) {
+			((BuffPanel) jl[i]).setLocation(LABEL_X_START+(i%MAX_BUFFS_NEXT_OTHER)*SPACE_BETWEEN_LABELS, LABEL_Y_START+(i/MAX_BUFFS_NEXT_OTHER)*LABEL_HEIGHT);
 		}
 	}
 
@@ -534,25 +523,23 @@ public class GodFrame {
 		timeLabel.setText(min + " : " + sc);
 	}
 
-	public void addOrUpdateBuffLabel(BuffType b, double param, int remainingTime) {
+	public void addOrUpdateBuffLabel(BuffType b, double param, int remainingTime, int maxTime) {
 		String key = b.getValue();
-		JLabel label = buffLabels.get(key);
-		if (label == null) {
-			label = createHUDLabelAndAddToPanel("Lorem ipsum");
-			buffLabels.put(key, label);
-			recalculateLabelPositions(buffLabels.size() - 1);
+		BuffPanel bPanel = buffPanels.get(key);
+		if (bPanel == null) {
+			bPanel = new BuffPanel(b.getValue());
+			viewportPanel.add(bPanel);
+			buffPanels.put(key, bPanel);
+			recalculateLabelPositions(buffPanels.size() - 1);
 		}
-		String txt = b.getValue() + (param * 100) + " %";
-		if (remainingTime != -1)
-			txt += " , " + remainingTime / 10 + "." + remainingTime % 10 + "s";
-		label.setText(txt);
+		bPanel.updateFlask((double)remainingTime/maxTime);
 	}
 
 	public void removeBuffLabel(BuffType b) {
 		String key = b.getValue();
-		JLabel label = buffLabels.get(key);
-		viewportPanel.remove(label);
-		buffLabels.remove(key);
+		BuffPanel bPanel = buffPanels.get(key);
+		viewportPanel.remove(bPanel);
+		buffPanels.remove(key);
 		recalculateLabelPositions(0);
 	}
 

@@ -3,10 +3,15 @@ package world;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Random;
 
+import javax.print.attribute.standard.PrinterState;
 import javax.swing.JFrame;
 
 import AI.Enemy;
@@ -17,6 +22,7 @@ import core.FrameType;
 import core.GodFrame;
 import enemies.Werewolf;
 import greenfoot.Actor;
+import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 import menu.BuyItem;
 import player.BuffType;
@@ -60,11 +66,13 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private boolean testing = false;
 	private boolean running = false;
+	
+	boolean enemiesSpawned=false;
+
+	PrintStream logger;
 
 	// TODO: Change animation system to not top down
 	// TODO: Change enemies and player images accordingly
-	// TODO: Fancy up the HUD
-	// TODO: Implement medi pack
 
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE, DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
@@ -74,6 +82,18 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		outOfMap.setColor(Color.BLACK);
 		outOfMap.fill();
 		fps = new FPS();
+		try {
+			logger = new PrintStream(new File("Log.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void log(String str) {
+		logger.println(str);
+		logger.flush();
+		logger.close();
+		System.out.println("Logged: \"" + str + "\"");
 	}
 
 	public void playerDied() {
@@ -86,6 +106,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		new Thread(() -> {
 			try {
 				tileMap = new DungeonMapper(map).getImageForTilesetHouse();
+				if (running)
+					paintTiles(getCameraX() - VIEWPORT_WIDTH / 2, getCameraY() - VIEWPORT_HEIGHT / 2, 0, 0);
 			} catch (IOException e) {
 				System.err.println("tileset not loaded");
 				e.printStackTrace();
@@ -98,6 +120,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		greenfootTime = 0;
 		addObject(fps, 100, 20);
 		spawnEnemies();
+		log("Seed: " + seed);
 	}
 
 	public void startNewRound() {
@@ -114,12 +137,15 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 		changeToFrame(FrameType.NEXT_ROUND);
 		ticksAtEndOfLastRound = getGreenfootTime();
+		enemiesSpawned=false;
+		player.resetWeapons();
 	}
 
 	public void endGame() {
 		removeObjects(getObjects(null));
 		player = null;
 		numAliveEnemies = 0;
+		enemiesSpawned=false;
 	}
 
 	private void spawnEnemies() {
@@ -128,6 +154,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		Random r = new Random(gen.getSeed());
 		spawnWerewolfs(10, r);
 		// Increase numAlivEenemies here , spawnWerewolfs does so
+		enemiesSpawned=true;
 	}
 
 	@Override
@@ -137,6 +164,17 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		greenfootTime += currTicks - lastTicks;
 		lastTicks = currTicks;
 		godFrame.updateTimeLabel(getRoundTime());
+		
+		if(enemiesSpawned)
+		{
+			if(player.getHP()<=0)
+			{
+				playerDied();
+			}
+			else if (numAliveEnemies == 0) {
+				endRound();
+			}
+		}
 	}
 
 	public void createGodFrame(JFrame frame) {
@@ -184,27 +222,64 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private final void generateNewMap(int seed) {
 		gen = new DungeonGenerator(this, seed);
-		
+
 		map = gen.getMap();
 	}
 
-	private void renderMap(int x, int y) {
-		if (tileMap == null)
-			return;
+	private void paintTiles(final int x, final int y, final int deltax, final int deltay) {
 		Point startingTile = getTileOfPixel(x, y);
 		Point startingPixel = getStartingPixel(x, y);
 
+		int c = 0;
 		int pixelX = startingPixel.x;
 		int pixelY;
-
 		for (int i = startingTile.x; i <= startingTile.x + viewportXTiles; i++) {
 			pixelY = startingPixel.y;
 			for (int j = startingTile.y; j <= startingTile.y + viewportYTiles; j++) {
-				back.drawImage(getImageForTile(i, j), pixelX, pixelY);
+				if (!alreadyDrawn(pixelX, pixelY, deltax, deltay)) {
+					back.drawImage(getImageForTile(i, j), pixelX, pixelY);
+					c++;
+				}
 				pixelY += TILE_SIZE;
 			}
 			pixelX += TILE_SIZE;
 		}
+		if (testing)
+			log(((deltax == 0 && deltay == 0) ? "full render" : "partial render") + ": " + c + " calls to drawImage");
+	}
+
+	private boolean alreadyDrawn(int pixelX, int pixelY, int deltax, int deltay) {
+		if (deltax == 0 && deltay == 0)
+			return false;
+		if (deltax >= 0 && deltay >= 0) {
+			return pixelX > deltax + TILE_SIZE && pixelY > deltay + TILE_SIZE;
+		}
+		if (deltax <= 0 && deltay <= 0) {
+			return pixelX < VIEWPORT_WIDTH + deltax - TILE_SIZE && pixelY < VIEWPORT_HEIGHT + deltay - TILE_SIZE;
+		}
+		if (deltax <= 0 && deltay >= 0) {
+			return pixelX < VIEWPORT_WIDTH + deltax - TILE_SIZE && pixelY > deltay + TILE_SIZE;
+		}
+		if (deltax >= 0 && deltay <= 0) {
+			return pixelX > deltax + TILE_SIZE && pixelY < VIEWPORT_HEIGHT + deltay - TILE_SIZE;
+		}
+		return true;
+	}
+
+	private void renderMap(final int x, final int y) {
+		if (tileMap == null)
+			return;
+		int deltax = (getCameraX() - VIEWPORT_WIDTH / 2) - x;
+		int deltay = (getCameraY() - VIEWPORT_HEIGHT / 2) - y;
+
+		if (Math.abs(deltax) < VIEWPORT_WIDTH && Math.abs(deltay) < VIEWPORT_HEIGHT) {
+			BufferedImage image = back.getAwtImage();
+			image.setData(image.getData().createTranslatedChild(deltax, deltay));
+			paintTiles(x, y, deltax, deltay);
+		} else {
+			paintTiles(x, y, 0, 0);
+		}
+
 	}
 
 	private boolean cameraPositionChanged(int x, int y) {
@@ -271,9 +346,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void enemyDied(Enemy e) {
 		numAliveEnemies--;
 		alterPlayerScore(e.getScore());
-		if (numAliveEnemies == 0) {
-			endRound();
-		}
 	}
 
 	private void alterPlayerScore(int score) {
@@ -308,37 +380,26 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	public boolean isInAccessibleTile(int x, int y) {
-		if (isInMap(x, y)) {
-			return map[x / TILE_SIZE][y / TILE_SIZE].walkable();
-		}
-		return false;
+		return isInMap(x, y) && map[x / TILE_SIZE][y / TILE_SIZE].walkable();
 	}
 
 	public boolean isLegalMove(DungeonMover dungeonMover, int x, int y) {
-		if (isInAccessibleTile(x, y)) {
-			return true;
-		} else if (isInMap(x, y) && dungeonMover.noclip()) {
-			return true;
-		}
-		return false;
+		return isInAccessibleTile(x, y) || (isInMap(x, y) && dungeonMover.noclip());
 	}
 
 	public boolean isInMap(int x, int y) {
-		if (x >= 0 && y >= 0 && x < getFullWidth() && y < getFullHeight()) {
-			return true;
-		}
-		return false;
+		return (x >= 0 && y >= 0 && x < getFullWidth() && y < getFullHeight());
 	}
 
 	private Point getNearestAccessiblePoint(int x, int y) {
 
-		int count = 2;
-		int move = count / 2;
+		int count = 1;
+		int move = 0;
 		int dir = ((move % 2) * -1);
 		do {
 			if (move == 0) {
 				count++;
-				move = (count / 2) * TILE_SIZE;
+				move = (count / 2);
 				dir = (move % 2 == 1) ? -1 : 1;
 			}
 			if (count % 2 == 0) {
@@ -346,10 +407,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			} else {
 				y += dir;
 			}
-			move--;
-			if (count > DungeonGenerator.MAP_WIDTH * DungeonGenerator.MAP_HEIGHT * 4 * TILE_SIZE * TILE_SIZE) {
-				throw new IllegalStateException("no free tile available");
+			if (move > ((DungeonGenerator.MAP_WIDTH + DungeonGenerator.MAP_HEIGHT) * TILE_SIZE * 2)) {
+				throw new IllegalStateException("no free tile available x= " + x + " y= " + y);
 			}
+			move--;
 		} while (!isInAccessibleTile(x, y));
 		return new Point(x, y);
 	}
@@ -434,8 +495,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			godFrame.updateWeaponName(w);
 	}
 
-	public void addOrUpdateBuffLabel(BuffType b, double param, int remainingTime) {
-		godFrame.addOrUpdateBuffLabel(b, param, remainingTime);
+	public void addOrUpdateBuffLabel(BuffType b, double param, int remainingTime, int maxTime) {
+		godFrame.addOrUpdateBuffLabel(b, param, remainingTime, maxTime);
 	}
 
 	public void removeBuffLabel(BuffType b) {

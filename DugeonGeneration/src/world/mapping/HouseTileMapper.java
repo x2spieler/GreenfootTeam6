@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
+import scrollWorld.ScrollActor;
 import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
 import greenfoot.GreenfootImage;
@@ -53,10 +54,12 @@ public class HouseTileMapper {
 	private MapField[][] map;
 
 	private GreenfootImage[][] images;
+	private ScrollActor[][] specialTiles;
 
 	public HouseTileMapper(MapField[][] map) throws IOException {
 		this.map = map;
 		images = new GreenfootImage[map.length][map[0].length];
+		specialTiles = new ScrollActor[map.length][map[0].length];
 		blocks = loader.loadTiles();
 		blockMap = new LinkedHashMap<>();
 		initBlockMap();
