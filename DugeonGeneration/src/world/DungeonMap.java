@@ -73,6 +73,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	// TODO: Change animation system to not top down
 	// TODO: Change enemies and player images accordingly
+	// TODO: Implement all buffs to be dropped by something
+	// TODO: Make objects more flexible -> abstarct super class
 
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE, DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
