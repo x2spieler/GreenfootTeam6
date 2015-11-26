@@ -11,7 +11,8 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Random;
 
-import javax.print.attribute.standard.PrinterState;
+import javafx.util.Pair;
+
 import javax.swing.JFrame;
 
 import AI.Enemy;
@@ -24,6 +25,7 @@ import enemies.Werewolf;
 import greenfoot.Actor;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
+import greenfoot.MouseInfo;
 import menu.BuyItem;
 import player.BuffType;
 import player.DungeonMover;
@@ -57,6 +59,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private final GreenfootImage back, empty, outOfMap;
 	private GreenfootImage[][] tileMap;
+	private MapElement[][] specialTiles;
 
 	private Player player;
 
@@ -66,8 +69,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private boolean testing = false;
 	private boolean running = false;
-	
-	boolean enemiesSpawned=false;
+	private boolean debugging = false;
+
+	boolean enemiesSpawned = false;
 
 	PrintStream logger;
 
@@ -106,7 +110,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		generateNewMap(seed);
 		new Thread(() -> {
 			try {
-				tileMap = new DungeonMapper(map).getImageForTilesetHouse();
+				Pair<GreenfootImage[][], MapElement[][]> p = new DungeonMapper(map).getImageForTilesetHouse();
+				tileMap = p.getKey();
+				specialTiles = p.getValue();
 				if (running)
 					paintTiles(getCameraX() - VIEWPORT_WIDTH / 2, getCameraY() - VIEWPORT_HEIGHT / 2, 0, 0);
 			} catch (IOException e) {
@@ -138,7 +144,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 		changeToFrame(FrameType.NEXT_ROUND);
 		ticksAtEndOfLastRound = getGreenfootTime();
-		enemiesSpawned=false;
+		enemiesSpawned = false;
 		player.resetWeapons();
 	}
 
@@ -146,7 +152,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		removeObjects(getObjects(null));
 		player = null;
 		numAliveEnemies = 0;
-		enemiesSpawned=false;
+		enemiesSpawned = false;
 	}
 
 	private void spawnEnemies() {
@@ -155,7 +161,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		Random r = new Random(gen.getSeed());
 		spawnWerewolfs(10, r);
 		// Increase numAlivEenemies here , spawnWerewolfs does so
-		enemiesSpawned=true;
+		enemiesSpawned = true;
 	}
 
 	@Override
@@ -165,14 +171,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		greenfootTime += currTicks - lastTicks;
 		lastTicks = currTicks;
 		godFrame.updateTimeLabel(getRoundTime());
-		
-		if(enemiesSpawned)
-		{
-			if(player.getHP()<=0)
-			{
+
+		if (enemiesSpawned) {
+			if (player.getHP() <= 0) {
 				playerDied();
-			}
-			else if (numAliveEnemies == 0) {
+			} else if (numAliveEnemies == 0) {
 				endRound();
 			}
 		}
@@ -245,7 +248,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			}
 			pixelX += TILE_SIZE;
 		}
-		if (testing)
+		if (debugging)
 			log(((deltax == 0 && deltay == 0) ? "full render" : "partial render") + ": " + c + " calls to drawImage");
 	}
 
@@ -280,7 +283,16 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		} else {
 			paintTiles(x, y, 0, 0);
 		}
-
+		if (specialTiles != null) {
+			for (int i = 0; i < specialTiles.length; i++) {
+				for (int j = 0; j < specialTiles[i].length; j++) {
+					if (specialTiles[i][j] != null) {
+						addObject(specialTiles[i][j], i * TILE_SIZE + TILE_SIZE / 2, j * TILE_SIZE + TILE_SIZE / 2);
+					}
+				}
+			}
+			specialTiles = null;
+		}
 	}
 
 	private boolean cameraPositionChanged(int x, int y) {

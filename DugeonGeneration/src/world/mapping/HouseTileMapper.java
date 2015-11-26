@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,7 +13,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import scrollWorld.ScrollActor;
+import world.MapElement;
 import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
 import greenfoot.GreenfootImage;
@@ -54,12 +53,12 @@ public class HouseTileMapper {
 	private MapField[][] map;
 
 	private GreenfootImage[][] images;
-	private ScrollActor[][] specialTiles;
+	private MapElement[][] specialTiles;
 
 	public HouseTileMapper(MapField[][] map) throws IOException {
 		this.map = map;
 		images = new GreenfootImage[map.length][map[0].length];
-		specialTiles = new ScrollActor[map.length][map[0].length];
+		specialTiles = new MapElement[map.length][map[0].length];
 		blocks = loader.loadTiles();
 		blockMap = new LinkedHashMap<>();
 		initBlockMap();
@@ -271,26 +270,26 @@ public class HouseTileMapper {
 
 	@SuppressWarnings("unused")
 	private void testTiles() {
-		blocks.get(14).transcribe(10, 10, images);
-		blocks.get(0).transcribe(0, 0, images);
-		blocks.get(1).transcribe(2, 0, images);
-		blocks.get(2).transcribe(0, 3, images);
-		blocks.get(3).transcribe(2, 3, images);
-		blocks.get(4).transcribe(4, 0, images);
-		blocks.get(5).transcribe(6, 0, images);
-		blocks.get(6).transcribe(4, 2, images);
-		blocks.get(7).transcribe(6, 2, images);
-		blocks.get(8).transcribe(0, 4, images);
-		blocks.get(9).transcribe(1, 4, images);
-		blocks.get(9).transcribe(2, 4, images);
-		blocks.get(9).transcribe(3, 4, images);
-		blocks.get(10).transcribe(0, 7, images);
-		blocks.get(11).transcribe(0, 8, images);
+		blocks.get(14).transcribe(10, 10, images, null);
+		blocks.get(0).transcribe(0, 0, images, null);
+		blocks.get(1).transcribe(2, 0, images, null);
+		blocks.get(2).transcribe(0, 3, images, null);
+		blocks.get(3).transcribe(2, 3, images, null);
+		blocks.get(4).transcribe(4, 0, images, null);
+		blocks.get(5).transcribe(6, 0, images, null);
+		blocks.get(6).transcribe(4, 2, images, null);
+		blocks.get(7).transcribe(6, 2, images, null);
+		blocks.get(8).transcribe(0, 4, images, null);
+		blocks.get(9).transcribe(1, 4, images, null);
+		blocks.get(9).transcribe(2, 4, images, null);
+		blocks.get(9).transcribe(3, 4, images, null);
+		blocks.get(10).transcribe(0, 7, images, null);
+		blocks.get(11).transcribe(0, 8, images, null);
 
 	}
 
 	private void initBlockMap() {
-		blockMap.put(DoubleCornerCenter, blocks.get(18));
+		//blockMap.put(DoubleCornerCenter, blocks.get(18));
 		blockMap.put(DoubleCornerLeft, blocks.get(14));
 		blockMap.put(DoubleCornerRight, blocks.get(15));
 		blockMap.put(UpperLeftInner, blocks.get(0));
@@ -519,9 +518,9 @@ public class HouseTileMapper {
 		if (images[i][j] != null)
 			return;
 		if (isGround(i, j)) {
-			blocks.get(13).transcribe(i, j, images);
+			blocks.get(13).transcribe(i, j, images, null);
 		} else if (isWall(i, j)) {
-			blocks.get(12).transcribe(i, j, images);
+			blocks.get(12).transcribe(i, j, images, null);
 		}
 	}
 
@@ -530,7 +529,7 @@ public class HouseTileMapper {
 			return;
 		for (FieldType[][] tb : blockMap.keySet()) {
 			if (fitsMapAt(i, j, tb)) {
-				blockMap.get(tb).transcribe(i, j, images);
+				blockMap.get(tb).transcribe(i, j, images, specialTiles);
 			}
 		}
 	}
@@ -647,6 +646,10 @@ public class HouseTileMapper {
 			ret++;
 		}
 		return ret;
+	}
+
+	public MapElement[][] getSpecialTiles() {
+		return specialTiles;
 	}
 
 }

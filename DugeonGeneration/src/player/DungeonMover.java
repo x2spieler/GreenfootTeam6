@@ -7,15 +7,17 @@ public class DungeonMover extends ScrollActor {
 
 	private boolean noclip = false;
 	private boolean sliding;
+	private int collisionDistance;
 
 	/**
 	 * @param sliding
 	 *            If true the mover will slide when hitting a wall at an angle.
 	 *            If false the mover will stop moving when it hits a wall.
 	 */
-	public DungeonMover(boolean sliding) {
+	public DungeonMover(boolean sliding, int collisionDistance) {
 		super();
 		this.sliding = sliding;
+		this.collisionDistance = collisionDistance;
 	}
 
 	/**
@@ -24,6 +26,7 @@ public class DungeonMover extends ScrollActor {
 	public DungeonMover() {
 		super();
 		this.sliding = true;
+		this.collisionDistance = 10;
 	}
 
 	private DungeonMap world = null;
@@ -31,8 +34,7 @@ public class DungeonMover extends ScrollActor {
 	@Override
 	public void setLocation(int x, int y) {
 		DungeonMap world = getWorld();
-		if (world != null && world.isLegalMove(this, x + world.getCameraX() - (world.getWidth() / 2),
-				y + world.getCameraY() - (world.getHeight() / 2))) {
+		if (world != null && world.isLegalMove(this, x + world.getCameraX() - (world.getWidth() / 2), y + world.getCameraY() - (world.getHeight() / 2))) {
 			super.setLocation(x, y);
 		}
 	}
@@ -144,11 +146,9 @@ public class DungeonMover extends ScrollActor {
 		int x = getGlobalX();
 		int y = getGlobalY();
 		if (angle % 90 == 0) {
-			return !world.isInAccessibleTile(x + ((direction % 2 == 0) ? ((direction == 0) ? 1 : -1) : 0),
-					y + ((direction % 2 == 1) ? ((direction == 1) ? 1 : -1) : 0));
+			return !world.isInAccessibleTile(x + ((direction % 2 == 0) ? ((direction == 0) ? 1 : -1) : 0), y + ((direction % 2 == 1) ? ((direction == 1) ? 1 : -1) : 0));
 		} else {
-			return !(world.isInAccessibleTile(x + ((direction % 3 == 0) ? 1 : -1), y)
-					&& world.isInAccessibleTile(x, y + ((direction < 2) ? 1 : -1)));
+			return !(world.isInAccessibleTile(x + ((direction % 3 == 0) ? 1 : -1), y) && world.isInAccessibleTile(x, y + ((direction < 2) ? 1 : -1)));
 		}
 	}
 
@@ -162,7 +162,7 @@ public class DungeonMover extends ScrollActor {
 		for (int i = distance; i != 0; i -= ((distance > 0) ? 1 : -1)) {
 			int dx = (int) Math.round(cos * i);
 			int dy = (int) Math.round(sin * i);
-			if (world.isLegalMove(this, x + dx, y + dy) || noclip) {
+			if (world.isLegalMove(this, x + dx, y + dy)) {
 				setGlobalLocation(x + dx, y + dy);
 				return;
 			}
@@ -204,6 +204,10 @@ public class DungeonMover extends ScrollActor {
 
 	public void setSliding(boolean sliding) {
 		this.sliding = sliding;
+	}
+
+	public int getCollisionDistance() {
+		return collisionDistance;
 	}
 
 	// @Override

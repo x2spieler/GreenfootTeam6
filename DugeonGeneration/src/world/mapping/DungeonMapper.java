@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import world.MapElement;
+import javafx.util.Pair;
 import DungeonGeneration.MapField;
 import greenfoot.GreenfootImage;
 
@@ -18,9 +20,11 @@ public class DungeonMapper {
 		tiledMaps = new ArrayList<GreenfootImage[][]>();
 	}
 
-	public GreenfootImage[][] getImageForTilesetHouse() throws IOException {
-		GreenfootImage[][] ret = new HouseTileMapper(map).getImageArray();
-		tiledMaps.add(ret);
-		return ret;
+	public Pair<GreenfootImage[][], MapElement[][]> getImageForTilesetHouse() throws IOException {
+		HouseTileMapper mapper = new HouseTileMapper(map);
+		GreenfootImage[][] ret1 = mapper.getImageArray();
+		MapElement[][] ret2 = mapper.getSpecialTiles();
+		tiledMaps.add(ret1);
+		return new Pair<GreenfootImage[][], MapElement[][]>(ret1, ret2);
 	}
 }
