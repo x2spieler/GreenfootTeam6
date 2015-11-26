@@ -4,7 +4,7 @@ import world.DungeonMap;
 
 public class DeltaMover extends DungeonMover {
 
-	private long time =DungeonMap.getGreenfootTime();
+	private long time = DungeonMap.getGreenfootTime();
 	private double delta;
 
 	private int speed;
@@ -17,6 +17,11 @@ public class DeltaMover extends DungeonMover {
 	 */
 	public DeltaMover(int speed) {
 		super();
+		this.speed = speed;
+	}
+
+	public DeltaMover(int speed, boolean sliding, int... extent) {
+		super(sliding, extent);
 		this.speed = speed;
 	}
 

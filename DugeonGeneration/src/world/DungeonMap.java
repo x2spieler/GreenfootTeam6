@@ -397,14 +397,32 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	public boolean isLegalMove(DungeonMover dungeonMover, int x, int y) {
-		return isInAccessibleTile(x, y) || (isInMap(x, y) && dungeonMover.noclip());
+		return !hasCollision(x, y, dungeonMover) || (isInMap(x, y) && dungeonMover.noclip());
+	}
+
+	public boolean hasCollision(int x, int y, DungeonMover dm) {
+		if (dm.getExtent()[0] == -1)
+			return !isInAccessibleTile(x, y);
+		int rightBound = x + dm.getExtentIn(Direction.RIGHT);
+		int lowerBound = y + dm.getExtentIn(Direction.DOWN);
+		int leftBound = x - dm.getExtentIn(Direction.LEFT);
+		int upperBound = y - dm.getExtentIn(Direction.UP);
+		for (int i = leftBound; i <= rightBound; i++) {
+			for (int j = upperBound; j <= lowerBound; j++) {
+				if (i > leftBound && j > upperBound)
+					j = lowerBound;
+				if (!isInAccessibleTile(i, j))
+					return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean isInMap(int x, int y) {
 		return (x >= 0 && y >= 0 && x < getFullWidth() && y < getFullHeight());
 	}
 
-	private Point getNearestAccessiblePoint(int x, int y) {
+	private Point getNearestAccessiblePoint(int x, int y, DungeonMover dm) {
 
 		int count = 1;
 		int move = 0;
@@ -424,7 +442,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 				throw new IllegalStateException("no free tile available x= " + x + " y= " + y);
 			}
 			move--;
-		} while (!isInAccessibleTile(x, y));
+		} while (hasCollision(x, y, dm));
 		return new Point(x, y);
 	}
 
@@ -434,7 +452,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			if (isInAccessibleTile(x, y)) {
 				super.addObject(actor, x, y);
 			} else {
-				Point p = getNearestAccessiblePoint(x, y);
+				Point p = getNearestAccessiblePoint(x, y, (DungeonMover) actor);
 				super.addObject(actor, p.x, p.y);
 			}
 		} else {

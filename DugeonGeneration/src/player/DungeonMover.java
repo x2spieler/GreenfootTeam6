@@ -2,22 +2,34 @@ package player;
 
 import scrollWorld.ScrollActor;
 import world.DungeonMap;
+import world.Direction;
 
 public class DungeonMover extends ScrollActor {
 
 	private boolean noclip = false;
 	private boolean sliding;
-	private int collisionDistance;
+	private int extent[];
 
 	/**
 	 * @param sliding
 	 *            If true the mover will slide when hitting a wall at an angle.
 	 *            If false the mover will stop moving when it hits a wall.
+	 * @param extent
+	 *            takes 1,2 or 4 arguments. 1 argument means the same extent in
+	 *            all four directions, 2 arguments describe a rectangle centered
+	 *            on the mover and 4 arguments gives the extent in each
+	 *            direction in a clockwise manner, starting with the right.
+	 * 
 	 */
-	public DungeonMover(boolean sliding, int collisionDistance) {
+	public DungeonMover(boolean sliding, int... extent) {
 		super();
 		this.sliding = sliding;
-		this.collisionDistance = collisionDistance;
+		if (extent.length == 3 || extent.length > 4)
+			throw new IllegalArgumentException("extent may contain either 1, 2 or 4 elements");
+		if (extent.length == 0)
+			this.extent = new int[] { -1 };
+		else
+			this.extent = extent;
 	}
 
 	/**
@@ -26,7 +38,7 @@ public class DungeonMover extends ScrollActor {
 	public DungeonMover() {
 		super();
 		this.sliding = true;
-		this.collisionDistance = 10;
+		this.extent = new int[] { -1 };
 	}
 
 	private DungeonMap world = null;
@@ -97,35 +109,19 @@ public class DungeonMover extends ScrollActor {
 	}
 
 	private boolean facingRight(int rotation) {
-		if (rotation < 90 || rotation > 270) {
-			return true;
-		} else {
-			return false;
-		}
+		return rotation < 90 || rotation > 270;
 	}
 
 	private boolean facingDown(int rotation) {
-		if (rotation < 180 && rotation > 0) {
-			return true;
-		} else {
-			return false;
-		}
+		return rotation < 180 && rotation > 0;
 	}
 
 	private boolean facingUp(int rotation) {
-		if (rotation > 180) {
-			return true;
-		} else {
-			return false;
-		}
+		return rotation > 180;
 	}
 
 	private boolean facingLeft(int rotation) {
-		if (rotation < 270 && rotation > 90) {
-			return true;
-		} else {
-			return false;
-		}
+		return rotation < 270 && rotation > 90;
 	}
 
 	private boolean[] getNeighbouringTilesAccessibility() {
@@ -133,10 +129,10 @@ public class DungeonMover extends ScrollActor {
 		boolean[] ret = new boolean[4];
 		int x = getGlobalX();
 		int y = getGlobalY();
-		ret[0] = world.isInAccessibleTile(x + 1, y);
-		ret[1] = world.isInAccessibleTile(x, y + 1);
-		ret[2] = world.isInAccessibleTile(x - 1, y);
-		ret[3] = world.isInAccessibleTile(x, y - 1);
+		ret[0] = !world.hasCollision(x + 1, y, this);
+		ret[1] = !world.hasCollision(x, y + 1, this);
+		ret[2] = !world.hasCollision(x - 1, y, this);
+		ret[3] = !world.hasCollision(x, y - 1, this);
 		return ret;
 	}
 
@@ -146,9 +142,11 @@ public class DungeonMover extends ScrollActor {
 		int x = getGlobalX();
 		int y = getGlobalY();
 		if (angle % 90 == 0) {
-			return !world.isInAccessibleTile(x + ((direction % 2 == 0) ? ((direction == 0) ? 1 : -1) : 0), y + ((direction % 2 == 1) ? ((direction == 1) ? 1 : -1) : 0));
+			return world.hasCollision(x + ((direction % 2 == 0) ? ((direction == 0) ? 1 : -1) : 0), y + ((direction % 2 == 1) ? ((direction == 1) ? 1 : -1) : 0), this);
 		} else {
-			return !(world.isInAccessibleTile(x + ((direction % 3 == 0) ? 1 : -1), y) && world.isInAccessibleTile(x, y + ((direction < 2) ? 1 : -1)));
+			boolean wallVertical = world.hasCollision(x + ((direction % 3 == 0) ? 1 : -1), y, this);
+			boolean wallHorizontal = world.hasCollision(x, y + ((direction < 2) ? 1 : -1), this);
+			return wallVertical || wallHorizontal && !(wallHorizontal && wallVertical);
 		}
 	}
 
@@ -190,6 +188,24 @@ public class DungeonMover extends ScrollActor {
 		return false;
 	}
 
+	public int getExtentIn(final Direction direction) {
+		if (extent.length == 1)
+			return (extent[0] > 0) ? extent[0] : 0;
+		final boolean centered = extent.length == 2;
+		switch (direction) {
+		case DOWN:
+			return extent[1];
+		case LEFT:
+			return extent[(centered) ? 0 : 2];
+		case RIGHT:
+			return extent[0];
+		case UP:
+			return extent[(centered) ? 1 : 3];
+		default:
+			throw new IllegalArgumentException("unknown direction: " + direction);
+		}
+	}
+
 	public boolean noclip() {
 		return noclip;
 	}
@@ -206,21 +222,8 @@ public class DungeonMover extends ScrollActor {
 		this.sliding = sliding;
 	}
 
-	public int getCollisionDistance() {
-		return collisionDistance;
+	public int[] getExtent() {
+		return extent;
 	}
-
-	// @Override
-	// protected void addedToWorld(World world) {
-	// if (world == null)
-	// throw new IllegalArgumentException("Are you fucking kidding me?");
-	// super.addedToWorld(world);
-	// if (world instanceof DungeonMap) {
-	// this.world = (DungeonMap) world;
-	// } else {
-	// throw new IllegalArgumentException("DungeonMover must only be added to a
-	// DungeonMap");
-	// }
-	// }
 
 }
