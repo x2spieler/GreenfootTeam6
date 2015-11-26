@@ -53,7 +53,8 @@ public class Player extends DeltaMover implements IDamageable {
 	boolean mouseWheelListenerRegistered = false;
 
 	public Player(int hp) {
-		super(400, true, 7, 17, 7, 5);
+		//the varargs arguments at the end of the constructor call set the collision box of the player.
+		super(400, true, 7, 18, 7, 6);
 
 		this.maxHP = hp;
 		this.currHP = hp;
