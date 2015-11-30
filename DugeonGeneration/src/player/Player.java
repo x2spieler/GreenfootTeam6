@@ -185,7 +185,7 @@ public class Player extends DeltaMover implements IDamageable {
 
 		processQueuedBuffs();
 
-		centerCamera();
+		//centerCamera();
 
 		if (lmbClicked)
 			if (currWeapon.use())
@@ -296,12 +296,13 @@ public class Player extends DeltaMover implements IDamageable {
 	}
 
 	private void faceMouse() {
-		MouseInfo info = Greenfoot.getMouseInfo();
-		if (info != null) {
-			int x = info.getX();
-			int y = info.getY();
-			turnTowards(x, y);
-		}
+		//MouseInfo info = Greenfoot.getMouseInfo();
+		//if (info != null) {
+		DungeonMap world = getWorld();
+		int x = world.getCursorX();
+		int y = world.getCursorY();
+		turnTowards(x, y);
+		//}
 	}
 
 	private void centerCamera() {
