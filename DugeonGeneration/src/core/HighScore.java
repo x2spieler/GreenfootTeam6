@@ -4,53 +4,21 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.GridBagLayout;
-import javax.swing.JButton;
-import java.awt.GridBagConstraints;
-import org.eclipse.wb.swing.FocusTraversalOnArray;
-import java.awt.Component;
-import java.awt.FlowLayout;
-
-import javax.swing.ImageIcon;
-import javax.swing.JSlider;
-import javax.swing.JScrollBar;
 import javax.swing.JLabel;
-import javax.swing.JTextArea;
-import javax.swing.JSpinner;
-import java.awt.CardLayout;
-import javax.swing.JTextField;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JPopupMenu;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JMenuItem;
-import java.awt.Button;
-import java.awt.List;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.AncestorEvent;
-import javax.swing.border.BevelBorder;
-import javax.swing.BoxLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
+import javax.swing.JButton;
+import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Image;
-import java.awt.Panel;
 import java.awt.SystemColor;
 import java.awt.Font;
 import javax.swing.UIManager;
-import java.awt.Color;
-import javax.swing.JTextPane;
-import javax.swing.JEditorPane;
-
 public class HighScore extends JFrame {
 
 	/**
-	 * Launch the application.
+	 * 
 	 */
+	private static final long serialVersionUID = -3351359252247559119L;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -82,25 +50,21 @@ public class HighScore extends JFrame {
 		panel.setFont(new Font("Dialog", Font.PLAIN, 5));
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
-	}
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
-		});
+		
+		JButton btnZruck = new JButton("züruck");
+		btnZruck.setForeground(UIManager.getColor("Button.highlight"));
+		btnZruck.setFont(new Font("DejaVu Sans", Font.BOLD, 23));
+		btnZruck.setBounds(427, 367, 151, 51);
+		panel.add(btnZruck);
+		btnZruck.setOpaque(false);
+		btnZruck.setContentAreaFilled(false);
+		btnZruck.setOpaque(false);
+		
+		JLabel lblYourHighscoreIs = new JLabel("Your HighScore is: ");
+		lblYourHighscoreIs.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 38));
+		lblYourHighscoreIs.setForeground(SystemColor.text);
+		lblYourHighscoreIs.setBounds(67, 82, 418, 51);
+		panel.add(lblYourHighscoreIs);
+		
 	}
 }

@@ -482,7 +482,7 @@ public class GodFrame {
 	}
 
 	// Basically copied from WorldCanvas - thanks WorldCanvas!
-	private Dimension getPrefSize(JPanel panel) {
+	public Dimension getPrefSize(JPanel panel) {
 		Dimension size = new Dimension();
 		if (world != null) {
 			size.width = WorldVisitor.getWidthInPixels(world);

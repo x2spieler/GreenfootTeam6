@@ -43,9 +43,16 @@ import java.awt.SystemColor;
 import java.awt.Font;
 import javax.swing.UIManager;
 import java.awt.Color;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
 
 public class DungeonFrame extends JFrame {
-	private JTextField textField;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7379852013198002869L;
 
 	/**
 	 * Launch the application.
@@ -72,119 +79,59 @@ public class DungeonFrame extends JFrame {
 				.getImage();
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 692, 550);
-		getContentPane().setLayout(new BorderLayout(0, 0));
+		setBounds(200, 200, 1024, 800);
+		getContentPane().setLayout(null);
 		final BackgroundPanel panel = new BackgroundPanel(image);
-		final BackgroundPanel panel2 = new BackgroundPanel(image);
-		panel.setBackground(SystemColor.text);
+		panel.setBounds(0, 0, 1024, 800);
 
 		panel.setForeground(SystemColor.desktop);
 		panel.setFont(new Font("Dialog", Font.PLAIN, 5));
-		getContentPane().add(panel, BorderLayout.CENTER);
-		panel.setLayout(null);
+		getContentPane().add(panel);
 
-		Button GameStart = new Button("Game    Start");
+		JButton GameStart = new JButton("");
+		GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/StartGame.png")));
 		GameStart.setBackground(UIManager.getColor("Button.highlight"));
-		GameStart.setBounds(199, 171, 300, 50);
-		GameStart.setFont(new Font("Dialog", Font.PLAIN, 30));
-		panel.add(GameStart);
+		GameStart.setContentAreaFilled(false);
+		GameStart.setOpaque(false);
 
-		Button Highscore = new Button("High    Score");
-		Highscore.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
-		});
-		Highscore.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				panel.setVisible(false);
+		JButton Help = new JButton("");
+		Help.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Help.png")));
+		Help.setContentAreaFilled(false);
+		Help.setOpaque(false);
+		
+		JButton HighScore = new JButton("");
+		HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/HighScore.png")));
+		HighScore.setContentAreaFilled(false);
+		HighScore.setOpaque(false);
+		
+		GroupLayout gl_panel = new GroupLayout(panel);
+		gl_panel.setHorizontalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGap(335)
+							.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 266, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGap(730)
+							.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 222, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGap(403)
+							.addComponent(Help, GroupLayout.PREFERRED_SIZE, 144, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(72, Short.MAX_VALUE))
+		);
+		gl_panel.setVerticalGroup(
+			gl_panel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGap(39)
+					.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 52, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 299, Short.MAX_VALUE)
+					.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+					.addGap(27)
+					.addComponent(Help, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
+					.addGap(289))
+		);
+		panel.setLayout(gl_panel);
 
-			}
-		});
-		Highscore.setActionCommand("");
-		Highscore.setFont(new Font("Dialog", Font.PLAIN, 30));
-		Highscore.setBackground(UIManager.getColor("Button.highlight"));
-		Highscore.setBounds(199, 280, 300, 50);
-		panel.add(Highscore);
-
-		textField = new JTextField();
-		textField.setBounds(199, 124, 206, 22);
-		panel.add(textField);
-		textField.setColumns(10);
-
-		Button eingeben = new Button("eingeben");
-		eingeben.setFont(new Font("Dialog", Font.BOLD, 16));
-		eingeben.setBackground(UIManager.getColor("Button.focus"));
-		eingeben.setBounds(410, 123, 121, 22);
-		panel.add(eingeben);
-
-		JPanel MenuBarPane = new JPanel();
-		MenuBarPane.setForeground(Color.WHITE);
-		getContentPane().add(MenuBarPane, BorderLayout.NORTH);
-		MenuBarPane.setLayout(new BorderLayout(0, 0));
-
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.setMargin(new Insets(2, 0, 0, 0));
-		MenuBarPane.add(menuBar);
-		menuBar.addAncestorListener(new AncestorListener() {
-			public void ancestorAdded(AncestorEvent event) {
-			}
-
-			public void ancestorMoved(AncestorEvent event) {
-			}
-
-			public void ancestorRemoved(AncestorEvent event) {
-			}
-		});
-		menuBar.setToolTipText("");
-
-		JMenu mnFile = new JMenu("file");
-		menuBar.add(mnFile);
-
-		JMenuItem mntmSave = new JMenuItem("save");
-		mnFile.add(mntmSave);
-
-		JMenu mnOpen = new JMenu("open");
-		mnFile.add(mnOpen);
-
-		JMenuItem mntmRestart = new JMenuItem("restart");
-		mnFile.add(mntmRestart);
-
-		JMenu mnEditor = new JMenu("edit");
-		menuBar.add(mnEditor);
-
-		JMenu mnAbout = new JMenu("about");
-		menuBar.add(mnAbout);
-
-		JMenuItem mntmHowToPlay = new JMenuItem("how to play");
-		mnAbout.add(mntmHowToPlay);
-		getContentPane().setFocusTraversalPolicy(
-				new FocusTraversalOnArray(new Component[] { menuBar, mnFile,
-						mntmSave, mnOpen, mntmRestart, mnEditor, mnAbout,
-						mntmHowToPlay }));
-	}
-
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
-		});
 	}
 }
