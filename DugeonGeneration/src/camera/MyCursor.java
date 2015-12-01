@@ -1,155 +1,103 @@
 package camera;
 
 import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Robot;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 
-import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import player.Player;
-import greenfoot.Actor;
 import greenfoot.Greenfoot;
-import greenfoot.GreenfootImage;
 import greenfoot.MouseInfo;
-import greenfoot.World;
 import greenfoot.core.WorldHandler;
 import scrollWorld.ScrollActor;
-import world.DungeonMap;
 
 public class MyCursor extends ScrollActor {
-	private static final int RESTINGXINMAP = DungeonMap.VIEWPORT_WIDTH / 2;
-	private static final int RESTINGYINMAP = DungeonMap.VIEWPORT_HEIGHT / 2;
-	private static final int MAX_ANCHOR_DISTANCE = 900;
-	private int restingXinPane;
-	private int restingYinPane;
-	private int cursorCenter;
+	private static final int SPEED = 800;
 	private Robot robot;
-	private JScrollPane viewPortPane;
-	private GreenfootImage cursor;
-	private GreenfootImage emptyCursor;
-
-	private Actor anchor;
-
-	private boolean active;
+	private boolean moving = false;
+	private long time = System.nanoTime();
+	private int targetX = 0;
+	private int targetY = 0;
 
 	public MyCursor() throws AWTException {
 		super();
-		this.cursor = new GreenfootImage("default_cursor.png");
-		this.emptyCursor = new GreenfootImage(cursor.getWidth(), cursor.getHeight());
 		robot = new Robot();
-		cursorCenter = cursor.getHeight() / 2;
 	}
 
 	public void act() {
-		super.act();
+		double delta = (System.nanoTime() - time) * 0.000000001;
+		time = System.nanoTime();
+
 		MouseInfo m = Greenfoot.getMouseInfo();
+
 		if (m != null) {
-			int mouseX = m.getX();
-			int mouseY = m.getY();
-			int cursorX = getX();
-			int cursorY = getY();
-			int deltaX = mouseX - RESTINGXINMAP;
-			int deltaY = mouseY - RESTINGYINMAP;
-
-			if (mouseX != RESTINGXINMAP || mouseY != RESTINGYINMAP) {
-				setMousePosition(restingXinPane, restingYinPane);
-				setLocation(cursorX + deltaX, cursorY + deltaY);
-				getWorld().repaint();
+			if (Greenfoot.mouseMoved(null) && !moving) {
+				int x = m.getX();
+				int y = m.getY();
+				targetX = getWorld().getCameraX() + x - getWorld().getWidth()
+						/ 2;
+				targetY = getWorld().getCameraY() + y - getWorld().getHeight()
+						/ 2;
+				setLocation(x, y);
+				moving = true;
+				// System.out.println(targetX + " " + targetY);
 			}
-			centerCamera();
+
+			if (moving && !Greenfoot.mouseMoved(null)) {
+				if (targetInBounds()) {
+					int distX = targetX - getGlobalX();
+					int distY = targetY - getGlobalY();
+					// System.out.println(getGlobalX() + " " + getGlobalY());
+					double dist = Math.sqrt(distX * distX + distY * distY);
+					if (dist > 1.5 * SPEED * delta) {
+						double vX = distX / dist * SPEED * delta;
+						double vY = distY / dist * SPEED * delta;
+						getWorld().setCameraLocation(
+								getWorld().getCameraX() + (int) vX,
+								getWorld().getCameraY() + (int) vY);
+
+						Point p = new Point(getXFromCamera()
+								+ (getWorld().getWidth() / 2), getYFromCamera()
+								+ (getWorld().getHeight() / 2));
+						// System.out.println(getXFromCamera() + " "
+						// + getYFromCamera());
+						p.setLocation(p.getX() - vX, p.getY() - vY);
+						SwingUtilities.convertPointToScreen(p, WorldHandler
+								.getInstance().getWorldCanvas());
+						robot.mouseMove((int) p.getX(), (int) p.getY());
+
+						// System.out.println(vX + ", " + vY);
+					} else {
+						getWorld().setCameraLocation(targetX, targetY);
+						moving = false;
+					}
+				} else {
+					moving = false;
+				}
+			}
 		}
+		// if (m != null) {
+		// setLocation(m.getX(), m.getY());
+		// getWorld().setCameraLocation(getGlobalX(), getGlobalY());
+		// Point p = new Point(getXFromCamera(), getYFromCamera());
+		// SwingUtilities.convertPointToScreen(p, WorldHandler.getInstance()
+		// .getWorldCanvas());
+		// // System.out.println(p.getX()+", "+p.getY());
+		// // if(WorldHandler.getInstance().getWorldCanvas().contains(p1)){
+		// }
+
 	}
 
-	private void setMousePosition(int x, int y) {
-		if (viewPortPane == null)
-			return;
-		Point target = new Point(x, y);
-		SwingUtilities.convertPointToScreen(target, viewPortPane);
-		robot.mouseMove(target.x, target.y);
-	}
-
-	private void setMouseHidden(boolean hidden) {
-		if (viewPortPane == null)
-			return;
-		if (hidden) {
-			viewPortPane.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "empty_cursor"));
+	private boolean targetInBounds() {
+		if (targetX - (getWorld().getWidth() / 2) >= 0
+				&& targetY - (getWorld().getHeight() / 2) >= 0
+				&& targetX - (getWorld().getWidth() / 2) <= getWorld()
+						.getFullWidth() - (getWorld().getWidth() / 2)
+				&& targetY - (getWorld().getHeight() / 2) <= getWorld()
+						.getFullHeight() - (getWorld().getHeight() / 2)) {
+			return true;
 		} else {
-			viewPortPane.setCursor(Cursor.getDefaultCursor());
+			return false;
 		}
-	}
-
-	@Override
-	protected void addedToWorld(World world) {
-		super.addedToWorld(world);
-		this.viewPortPane = ((DungeonMap) world).getViewPort();
-
-		Dimension viewPortSize = viewPortPane.getSize();
-		restingXinPane = viewPortSize.width / 2;
-		restingYinPane = viewPortSize.height / 2;
-		setMousePosition(restingXinPane, restingYinPane);
-		setLocation(RESTINGXINMAP, RESTINGYINMAP);
-		setActive(true);
-	}
-
-	@Override
-	public void setLocation(int x, int y) {
-		if (anchor == null)
-			return;
-		int anchorX = anchor.getX();
-		int anchorY = anchor.getY();
-		int dX = x - anchorX;
-		int dY = y - anchorY;
-		double delta = Math.sqrt(x * x + y * y);
-		if ((delta > MAX_ANCHOR_DISTANCE)) {
-			double factor = MAX_ANCHOR_DISTANCE / delta;
-			dX = (int) Math.sqrt(dX * dX * factor);
-			dY = (int) Math.sqrt(dY * dY * factor);
-			super.setLocation(anchorX + cursorCenter, anchorY + cursorCenter);
-		} else {
-			super.setLocation(x, y);
-		}
-	}
-
-	private boolean isInViewport(int x, int y) {
-		return x >= 0 && y >= 0 && x < DungeonMap.VIEWPORT_WIDTH && y < DungeonMap.VIEWPORT_HEIGHT;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		if (active)
-			setImage(cursor);
-		else
-			setImage(emptyCursor);
-		this.active = active;
-		setMouseHidden(active);
-	}
-
-	private void centerCamera() {
-		getWorld().setCameraLocation(getGlobalX(), getGlobalY());
-	}
-
-	@Override
-	public int getX() {
-		return super.getX();
-	}
-
-	@Override
-	public int getY() {
-		return super.getY();
-	}
-
-	public void setAnchor(Actor player) {
-		this.anchor = player;
 	}
 }
