@@ -1,6 +1,6 @@
 package world;
 
-import enemies.Werewolf;
+import enemies.RedDragon;
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
 
@@ -185,7 +185,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		if (testing)
 			return;
 		Random r = new Random(gen.getSeed());
-		spawnWerewolfs(10, r);
+		spawnRedDragons(20, r);
 		// Increase numAlivEenemies here , spawnWerewolfs does so
 		enemiesSpawned = true;
 	}
@@ -369,14 +369,14 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		super.setCameraLocation(x, y);
 	}
 
-	private void spawnWerewolfs(int num, Random r) {
+	private void spawnRedDragons(int num, Random r) {
 		for (int k = 0; k < num; k++) {
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
-			x = 0;
-			y = 0;
-			Werewolf z = new Werewolf();
-			addObject(z, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
+			//x = 0;
+			//y = 0;
+			RedDragon rd = new RedDragon();
+			addObject(rd, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 			numAliveEnemies++;
 		}
 	}
