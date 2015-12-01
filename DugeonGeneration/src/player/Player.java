@@ -1,20 +1,19 @@
 package player;
 
-import greenfoot.Greenfoot;
-import greenfoot.GreenfootImage;
-import greenfoot.MouseInfo;
-import greenfoot.World;
-
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import AI.IDamageable;
+import core.FrameType;
+import greenfoot.Greenfoot;
+import greenfoot.GreenfootImage;
+import greenfoot.MouseInfo;
+import greenfoot.World;
 import weapons.abstracts.LongRangeWeapon;
 import weapons.abstracts.Weapon;
 import weapons.short_range.Sword;
 import world.DungeonMap;
-import AI.IDamageable;
-import core.FrameType;
 
 public class Player extends DeltaMover implements IDamageable {
 
@@ -185,7 +184,7 @@ public class Player extends DeltaMover implements IDamageable {
 
 		processQueuedBuffs();
 
-		//centerCamera();
+		centerCamera();
 
 		if (lmbClicked)
 			if (currWeapon.use())
@@ -296,13 +295,12 @@ public class Player extends DeltaMover implements IDamageable {
 	}
 
 	private void faceMouse() {
-		//MouseInfo info = Greenfoot.getMouseInfo();
-		//if (info != null) {
-		DungeonMap world = getWorld();
-		int x = world.getCursorX();
-		int y = world.getCursorY();
-		turnTowards(x, y);
-		//}
+		MouseInfo info = Greenfoot.getMouseInfo();
+		if (info != null) {
+			int x = info.getX();
+			int y = info.getY();
+			turnTowards(x, y);
+		}
 	}
 
 	private void centerCamera() {
@@ -387,7 +385,8 @@ public class Player extends DeltaMover implements IDamageable {
 				param = 1.d / param;
 			setSpeed((int) (getSpeed() * param));
 			if (durationInMs >= -1)
-				activeBuffs.add(new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1, buff, param));
+				activeBuffs.add(
+						new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1, buff, param));
 			break;
 		case MAX_HP:
 			if (durationInMs == -2)
@@ -396,7 +395,8 @@ public class Player extends DeltaMover implements IDamageable {
 			if (getHP() > getMaxHP())
 				currHP = maxHP;
 			if (durationInMs >= -1)
-				activeBuffs.add(new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1, buff, param));
+				activeBuffs.add(
+						new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1, buff, param));
 			break;
 		case MELEE_DAMAGE:
 		case RELOAD_TIME:
@@ -404,7 +404,8 @@ public class Player extends DeltaMover implements IDamageable {
 			if (durationInMs >= -1) {
 				applyWeaponBuffs(buff, param, true);
 				if (durationInMs >= -1)
-					activeBuffs.add(new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1, buff, param));
+					activeBuffs.add(new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1,
+							buff, param));
 			} else {
 				removeWeaponBuff(buff, true);
 			}

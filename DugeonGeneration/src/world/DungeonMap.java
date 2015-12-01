@@ -12,21 +12,20 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Random;
 
-import javafx.util.Pair;
-
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
-import camera.MyCursor;
 import AI.Enemy;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
+import camera.MouseController;
 import core.FrameType;
 import core.GodFrame;
 import enemies.Werewolf;
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
+import javafx.util.Pair;
 import menu.BuyItem;
 import player.BuffType;
 import player.DungeonMover;
@@ -64,7 +63,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private MapElement[][] specialTiles;
 
 	private Player player;
-	private MyCursor cursor;
+	private MouseController cursor;
 
 	private GodFrame godFrame = null;
 
@@ -83,7 +82,13 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	// TODO: Implement all buffs to be dropped by something
 
 	public DungeonMap() {
-		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE, DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
+		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE,
+				DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
+		try {
+			cursor = new MouseController(this);
+		} catch (AWTException e1) {
+			e1.printStackTrace();
+		}
 		back = getBackground();
 		empty = new GreenfootImage(TILE_SIZE, TILE_SIZE);
 		outOfMap = new GreenfootImage(TILE_SIZE, TILE_SIZE);
@@ -102,7 +107,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	@Override
 	public void setPaintOrder(Class... classes) {
 		Class[] args = new Class[classes.length + 2];
-		args[0] = MyCursor.class;
+		args[0] = MouseController.class;
 		args[1] = MapElement.class;
 		for (int i = 0; i < classes.length; i++) {
 			args[i + 2] = classes[i];
@@ -137,15 +142,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			}
 		}).start();
 		godFrame.updateSeedLabel(gen.getSeed());
-		try {
-			MyCursor cursor = new MyCursor();
-			addCameraFollower(cursor, VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2);
-			this.cursor = cursor;
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (AWTException e) {
-			e.printStackTrace();
-		}
 		setPlayer(new Player(100));
 		lastTicks = System.currentTimeMillis();
 		greenfootTime = 0;
@@ -160,7 +156,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 		this.player = player;
 		addObject(player, PLAYER_START_POS.x, PLAYER_START_POS.y);
-		cursor.setAnchor(player);
 	}
 
 	public void startNewRound() {
@@ -334,7 +329,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private GreenfootImage getImageForTile(int i, int j) {
 
-		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT) ? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
+		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT)
+				? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
 	}
 
 	@Override
@@ -577,14 +573,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	public boolean isTestingMode() {
 		return testing;
-	}
-
-	public int getCursorX() {
-		return cursor.getX();
-	}
-
-	public int getCursorY() {
-		return cursor.getY();
 	}
 
 	@Override
