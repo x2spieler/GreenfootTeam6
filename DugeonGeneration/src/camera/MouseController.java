@@ -2,64 +2,77 @@ package camera;
 
 import java.awt.AWTException;
 import java.awt.Cursor;
+import java.awt.HeadlessException;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
+import javax.imageio.ImageIO;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import greenfoot.Greenfoot;
-import greenfoot.GreenfootImage;
-import greenfoot.MouseInfo;
 import world.DungeonMap;
 
 public class MouseController {
-	private static final int RESTINGXINMAP = DungeonMap.VIEWPORT_WIDTH / 2;
-	private static final int RESTINGYINMAP = DungeonMap.VIEWPORT_HEIGHT / 2;
+	private static final int BORDER_WIDTH = 8;
 	private static final int MAX_ANCHOR_DISTANCE = 900;
-	private int restingXinPane;
-	private int restingYinPane;
-	private int cursorCenter;
+	private int viewPortDimX;
+	private int viewPortDimY;
 	private Robot robot;
+	private ExecutorService thread = Executors.newSingleThreadExecutor();
+	private FutureTask<Void> mController;
 	private DungeonMap world;
 	private JScrollPane viewPortPane;
-	private GreenfootImage cursor;
-	private GreenfootImage emptyCursor;
+	private Cursor rangedCursor;
+	private Cursor meleeCursor;
 
 	private boolean active;
 
-	public MouseController(DungeonMap world) throws AWTException {
+	public MouseController(DungeonMap world)
+			throws AWTException, HeadlessException, IndexOutOfBoundsException, IOException {
 		this.world = world;
-		this.cursor = new GreenfootImage("default_cursor.png");
-		this.emptyCursor = new GreenfootImage(cursor.getWidth(), cursor.getHeight());
+		Toolkit tk = Toolkit.getDefaultToolkit();
+		this.rangedCursor = tk.createCustomCursor(
+				ImageIO.read(getClass().getClassLoader().getResource("images" + File.separator + "default_cursor.png")),
+				new Point(32, 32), "Ranged Cursor");
 		robot = new Robot();
-		cursorCenter = cursor.getHeight() / 2;
+	}
+
+	public void setViewPorPane(JScrollPane viewPortPane) {
+		if (viewPortPane == null)
+			throw new IllegalArgumentException();
+		this.viewPortPane = viewPortPane;
+		viewPortDimX = viewPortPane.getWidth();
+		viewPortDimY = viewPortPane.getHeight();
+		viewPortDimX -= BORDER_WIDTH;
+		viewPortDimY -= BORDER_WIDTH;
+		SwingUtilities.getRoot(viewPortPane).setCursor(rangedCursor);
 	}
 
 	public void start() {
-
+		if (viewPortPane == null)
+			return;
+		mController = new MController();
+		thread.submit(mController);
+		System.out.println("mouseController started");
 	}
 
 	public void stop() {
-
+		if (mController == null)
+			return;
+		mController.cancel(true);
+		System.out.println("mouseController stopped");
 	}
 
-	public void act() {
-		MouseInfo m = Greenfoot.getMouseInfo();
-		if (m != null) {
-			int mouseX = m.getX();
-			int mouseY = m.getY();
-			int deltaX = mouseX - RESTINGXINMAP;
-			int deltaY = mouseY - RESTINGYINMAP;
-
-			if (mouseX != RESTINGXINMAP || mouseY != RESTINGYINMAP) {
-				setMousePosition(restingXinPane, restingYinPane);
-				//getWorld().repaint();
-			}
-			//centerCamera();
-		}
+	public void checkMouse() {
 	}
 
 	private void setMousePosition(int x, int y) {
@@ -114,4 +127,44 @@ public class MouseController {
 		return x >= 0 && y >= 0 && x < DungeonMap.VIEWPORT_WIDTH && y < DungeonMap.VIEWPORT_HEIGHT;
 	}
 
+	private class MController extends FutureTask<Void> {
+
+		public MController() {
+			super(new Callable<Void>() {
+				@Override
+				public Void call() throws Exception {
+
+					Point mousePos;
+					Point componentPos;
+					boolean changed;
+					while (true) {
+						mousePos = MouseInfo.getPointerInfo().getLocation();
+						componentPos = viewPortPane.getLocationOnScreen();
+						int mouseInComponentX = mousePos.x - componentPos.x;
+						int mouseInComponentY = mousePos.y - componentPos.y;
+						changed = false;
+						if (mouseInComponentX > viewPortDimX) {
+							mouseInComponentX = viewPortDimX;
+							changed = true;
+						} else if (mouseInComponentX < BORDER_WIDTH) {
+							mouseInComponentX = BORDER_WIDTH;
+							changed = true;
+						}
+						if (mouseInComponentY > viewPortDimY) {
+							mouseInComponentY = viewPortDimY;
+							changed = true;
+						} else if (mouseInComponentY < BORDER_WIDTH) {
+							mouseInComponentY = BORDER_WIDTH;
+							changed = true;
+						}
+						if (changed) {
+							robot.mouseMove(componentPos.x + mouseInComponentX, componentPos.y + mouseInComponentY);
+						}
+						Thread.sleep(1);
+					}
+				}
+			});
+		}
+
+	}
 }

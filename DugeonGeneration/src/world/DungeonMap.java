@@ -2,6 +2,7 @@ package world;
 
 import java.awt.AWTException;
 import java.awt.Color;
+import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.Random;
 
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
 
 import AI.Enemy;
 import AI.IWorldInterfaceForAI;
@@ -86,8 +86,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 				DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
 		try {
 			cursor = new MouseController(this);
-		} catch (AWTException e1) {
-			e1.printStackTrace();
+		} catch (AWTException | HeadlessException | IndexOutOfBoundsException | IOException e) {
+			e.printStackTrace();
 		}
 		back = getBackground();
 		empty = new GreenfootImage(TILE_SIZE, TILE_SIZE);
@@ -148,6 +148,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		addObject(fps, 100, 20);
 		spawnEnemies();
 		log("Seed: " + seed);
+		cursor.setViewPorPane(godFrame.getViewPortPane());
+		cursor.start();
 	}
 
 	public void setPlayer(Player player) {
@@ -523,11 +525,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		return greenfootTime - ticksAtEndOfLastRound;
 	}
 
-	// ////////////JUST FORWARDING FUNCTIONS FOR GOD_FRAME
-
-	public JScrollPane getViewPort() {
-		return godFrame.getViewPortPane();
+	public MouseController getCursor() {
+		return cursor;
 	}
+
+	// ////////////JUST FORWARDING FUNCTIONS FOR GOD_FRAME
 
 	public void updateMediPackLabel(int mediPacks) {
 		godFrame.updateMediPackLabel(mediPacks);

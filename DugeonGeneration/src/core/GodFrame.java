@@ -37,6 +37,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import camera.MouseController;
 import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 import greenfoot.WorldVisitor;
@@ -90,7 +91,8 @@ public class GodFrame {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		frame.pack();
 		frame.setLocation(screenSize.width / 2 - frame.getWidth() / 2, screenSize.height / 2 - frame.getHeight() / 2);
-		frame.getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK), "activate_testing_mode01");
+		frame.getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK),
+				"activate_testing_mode01");
 		frame.getRootPane().getActionMap().put("activate_testing_mode01", new TestingModeActivator());
 	}
 
@@ -99,6 +101,13 @@ public class GodFrame {
 	}
 
 	public void changeToFrame(FrameType type) {
+		MouseController cursor = world.getCursor();
+		if (type != null)
+			if (type != FrameType.VIEWPORT)
+				cursor.stop();
+			else
+				cursor.start();
+
 		switch (type) {
 		case VIEWPORT:
 			changeTo(viewPortPane);
@@ -186,18 +195,25 @@ public class GodFrame {
 		entryPanel.setLayout(new GridLayout(0, 1));
 		int horizontalSpace = 20;
 
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CROSSBOW, new GreenfootImage("enemies/weapons/crossbow/crossbow0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SWORD, new GreenfootImage("enemies/weapons/sword/sword0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CLUB_WITH_SPIKES, new GreenfootImage("enemies/weapons/club_spikes/club_spikes0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_NINJA_STAR, new GreenfootImage("enemies/weapons/ninja_star/ninja_star0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.BULLET_CROSSBOW_ARROW, new GreenfootImage("enemies/bullets/crossbow_arrow.png"), 30, 100, world));
-		entryPanel.add(new ShopEntry(BuyItem.BULLET_NINJA_STAR, new GreenfootImage("enemies/bullets/ninja_star.png"), 30, 100, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CROSSBOW,
+				new GreenfootImage("enemies/weapons/crossbow/crossbow0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SWORD, new GreenfootImage("enemies/weapons/sword/sword0.png"), 30,
+				1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CLUB_WITH_SPIKES,
+				new GreenfootImage("enemies/weapons/club_spikes/club_spikes0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_NINJA_STAR,
+				new GreenfootImage("enemies/weapons/ninja_star/ninja_star0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.BULLET_CROSSBOW_ARROW,
+				new GreenfootImage("enemies/bullets/crossbow_arrow.png"), 30, 100, world));
+		entryPanel.add(new ShopEntry(BuyItem.BULLET_NINJA_STAR, new GreenfootImage("enemies/bullets/ninja_star.png"),
+				30, 100, world));
 		entryPanel.add(new ShopEntry(BuyItem.MEDI_PACK, new GreenfootImage("medi_pack.png"), 30, 1, world));
 
 		JScrollPane scrollPane = new JScrollPane(entryPanel);
 		int scrollY = 100;
 		int scrollHeight = 520;
-		scrollPane.setBounds(new Rectangle(horizontalSpace, scrollY, panelSize.width - 2 * horizontalSpace, scrollHeight));
+		scrollPane.setBounds(
+				new Rectangle(horizontalSpace, scrollY, panelSize.width - 2 * horizontalSpace, scrollHeight));
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		panel.add(scrollPane);
 
@@ -214,7 +230,8 @@ public class GodFrame {
 		JButton resume = new JButton();
 		int buttonWidth = 150;
 		int buttonHeight = 40;
-		resume.setBounds(panelSize.width / 2 - buttonWidth / 2, panelSize.height - buttonHeight - 50, buttonWidth, buttonHeight);
+		resume.setBounds(panelSize.width / 2 - buttonWidth / 2, panelSize.height - buttonHeight - 50, buttonWidth,
+				buttonHeight);
 		resume.setText("Next round");
 		resume.addActionListener((ActionEvent e) -> {
 			world.startNewRound();
@@ -266,14 +283,15 @@ public class GodFrame {
 			changeToFrame(FrameType.VIEWPORT);
 			world.startNewGame(Integer.valueOf(seedTF.getText()));
 			seedTF.setText("" + new Random().nextInt()); // Already set seed for the next game
-			});
+		});
 		panel.add(start);
 
 		JLabel seedLabel = new JLabel("Seed:");
 		int lWidth = 100;
 		int lHeight = 50;
 		int space = 20;
-		seedLabel.setBounds(panelSize.width / 2 - lWidth - space, panelSize.height / 2 + 150 - lHeight / 2, lWidth, lHeight);
+		seedLabel.setBounds(panelSize.width / 2 - lWidth - space, panelSize.height / 2 + 150 - lHeight / 2, lWidth,
+				lHeight);
 		seedLabel.setHorizontalAlignment(JLabel.RIGHT);
 		panel.add(seedLabel);
 
@@ -461,7 +479,8 @@ public class GodFrame {
 		Object[] jl = buffPanels.values().toArray();
 		int MAX_BUFFS_NEXT_OTHER = 2;
 		for (int i = startIndex; i < buffPanels.size(); i++) {
-			((BuffPanel) jl[i]).setLocation(LABEL_X_START + (i % MAX_BUFFS_NEXT_OTHER) * SPACE_BETWEEN_LABELS, LABEL_Y_START + (i / MAX_BUFFS_NEXT_OTHER) * LABEL_HEIGHT);
+			((BuffPanel) jl[i]).setLocation(LABEL_X_START + (i % MAX_BUFFS_NEXT_OTHER) * SPACE_BETWEEN_LABELS,
+					LABEL_Y_START + (i / MAX_BUFFS_NEXT_OTHER) * LABEL_HEIGHT);
 		}
 	}
 
@@ -545,6 +564,7 @@ public class GodFrame {
 		private Runnable run = () -> toggleNotification();
 		ExecutorService ex = Executors.newSingleThreadExecutor();
 		private Future<? extends Object> task;
+
 		{
 			testingModeNotifier.setVisible(true);
 			testingModeNotifier.setEnabled(true);
