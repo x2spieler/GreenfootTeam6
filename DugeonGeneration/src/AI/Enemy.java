@@ -1,5 +1,4 @@
 package AI;
-import greenfoot.Actor;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
 
@@ -10,7 +9,9 @@ import java.util.Random;
 import player.DeltaMover;
 import weapons.abstracts.Weapon;
 import weapons.long_range_weapon.Crossbow;
+import weapons.long_range_weapon.LeafThrower;
 import weapons.short_range.ClubWithSpikes;
+import weapons.short_range.FlameStorm;
 import weapons.short_range.Sword;
 import world.DungeonMap;
 import DungeonGeneration.DungeonGenerator;
@@ -127,6 +128,12 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			break;
 		case "ninja_star":
 			weapon=new weapons.long_range_weapon.NinjaStar(this, Integer.MAX_VALUE);
+			break;
+		case "flame_storm":
+			weapon=new FlameStorm(this);
+			break;
+		case "leaf_thrower":
+			weapon=new LeafThrower(this, Integer.MAX_VALUE);
 			break;
 		default:
 			throw new IllegalArgumentException("Seems like somebody forgot to update this switch-statement after adding new weapons.. Bad boy!");
