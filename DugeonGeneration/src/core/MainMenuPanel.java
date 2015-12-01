@@ -1,14 +1,9 @@
 package core;
 
-import java.awt.Button;
-import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -21,9 +16,8 @@ public class MainMenuPanel extends BackgroundPanel {
 	 */
 	private static final long serialVersionUID = 1320537140564920879L;
 	private JTextField textField;
-	
 
-	public MainMenuPanel() {
+	public MainMenuPanel(final ActionListener start, final ActionListener highscore) {
 		super(new ImageIcon("src/images/background/background2.jpg").getImage());
 
 		setBackground(SystemColor.text);
@@ -34,16 +28,7 @@ public class MainMenuPanel extends BackgroundPanel {
 
 		JButton GameStart = new JButton();
 		GameStart.setIcon(new ImageIcon("src/images/background/StartGame.png"));
-		GameStart.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
-		});
-		GameStart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-			}
-		});
+		GameStart.addActionListener(start);
 		GameStart.setForeground(UIManager.getColor("Button.highlight"));
 		GameStart.setBackground(UIManager.getColor("Button.highlight"));
 		GameStart.setBounds(178, 149, 344, 90);
@@ -54,11 +39,6 @@ public class MainMenuPanel extends BackgroundPanel {
 
 		JButton Highscore = new JButton("High  Score");
 		Highscore.setForeground(UIManager.getColor("Button.highlight"));
-		Highscore.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
-		});
 		Highscore.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				HighScore highscore = new HighScore();
@@ -91,5 +71,9 @@ public class MainMenuPanel extends BackgroundPanel {
 		eingeben.setContentAreaFilled(false);
 		eingeben.setOpaque(false);
 
+	}
+
+	public JTextField getSeedTF() {
+		return textField;
 	}
 }
