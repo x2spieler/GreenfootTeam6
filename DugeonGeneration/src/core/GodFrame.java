@@ -1,5 +1,9 @@
 package core;
 
+import greenfoot.Greenfoot;
+import greenfoot.GreenfootImage;
+import greenfoot.WorldVisitor;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -37,9 +41,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import greenfoot.Greenfoot;
-import greenfoot.GreenfootImage;
-import greenfoot.WorldVisitor;
 import menu.BuyItem;
 import menu.ShopEntry;
 import player.BuffType;
@@ -65,6 +66,8 @@ public class GodFrame {
 	private JLabel ammoLabel=null;
 	private JLabel healthBarLabel=null;
 	private JLabel scoreLabel=null;
+	private JLabel noDamageLabel=null;
+	private JLabel inTimeLabel=null;
 	private BufferedImage healthBarImage=null;
 	private DungeonMap world;
 
@@ -92,6 +95,7 @@ public class GodFrame {
 		frame.setLocation(screenSize.width / 2 - frame.getWidth() / 2, screenSize.height / 2 - frame.getHeight() / 2);
 		frame.getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK), "activate_testing_mode01");
 		frame.getRootPane().getActionMap().put("activate_testing_mode01", new TestingModeActivator());
+		frame.setTitle("Super awesome window title");
 	}
 
 	public void addScrollListener(MouseWheelListener listener) {
@@ -205,6 +209,18 @@ public class GodFrame {
 		updateCoinLabelInShop();
 		coinLabel.setBounds(horizontalSpace + 10, scrollY + scrollHeight + 10, 150, 40);
 		panel.add(coinLabel);
+		
+		noDamageLabel=new JLabel();
+		noDamageLabel.setBounds(horizontalSpace + 10, scrollY + scrollHeight + 50, 500, 40);
+		noDamageLabel.setFont(new Font("", Font.ITALIC, 14));
+		noDamageLabel.setHorizontalAlignment(JLabel.LEFT);
+		panel.add(noDamageLabel);
+		
+		inTimeLabel=new JLabel();
+		inTimeLabel.setBounds(horizontalSpace + 10, scrollY + scrollHeight + 70, 500, 40);
+		inTimeLabel.setFont(new Font("", Font.ITALIC, 14));
+		inTimeLabel.setHorizontalAlignment(JLabel.LEFT);
+		panel.add(inTimeLabel);
 
 		buyFeedbackLabel = new JLabel();
 		buyFeedbackLabel.setBounds(0, scrollY + scrollHeight + 10, panelSize.width, 40);
@@ -214,7 +230,7 @@ public class GodFrame {
 		JButton resume = new JButton();
 		int buttonWidth = 150;
 		int buttonHeight = 40;
-		resume.setBounds(panelSize.width / 2 - buttonWidth / 2, panelSize.height - buttonHeight - 50, buttonWidth, buttonHeight);
+		resume.setBounds(panelSize.width - 2* buttonWidth, panelSize.height - buttonHeight - 50, buttonWidth, buttonHeight);
 		resume.setText("Next round");
 		resume.addActionListener((ActionEvent e) -> {
 			world.startNewRound();
@@ -233,6 +249,16 @@ public class GodFrame {
 	public void updateCoinLabelInShop() {
 		if (world != null && world.getPlayer() != null)
 			coinLabel.setText("Coins: " + world.getPlayer().getScore());
+	}
+	
+	public void setNoDamageLabelText(String s)
+	{
+		noDamageLabel.setText(s);
+	}
+	
+	public void setInTimeLabelText(String txt)
+	{
+		inTimeLabel.setText(txt);
 	}
 
 	public void updateFeedbackLabel(boolean success, String msg) {

@@ -51,6 +51,8 @@ public class Player extends DeltaMover implements IDamageable {
 	private DungeonMap dungeonMap = null;
 
 	boolean mouseWheelListenerRegistered = false;
+	
+	private boolean wasDamagedThisRound=false;
 
 	public Player(int hp) {
 		//the varargs arguments at the end of the constructor call set the collision box of the player.
@@ -123,6 +125,16 @@ public class Player extends DeltaMover implements IDamageable {
 	public void damage(int dmg) {
 		currHP -= dmg;
 		dungeonMap.updateHealthLabel(getHP(), getMaxHP());
+		wasDamagedThisRound=true;
+	}
+	
+	public boolean getWasDamagedThisRound()
+	{
+		return wasDamagedThisRound;
+	}
+	
+	public void setWasDamagedThisRound(boolean wasDamagedThisRound) {
+		this.wasDamagedThisRound = wasDamagedThisRound;
 	}
 
 	@Override

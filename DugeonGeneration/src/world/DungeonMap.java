@@ -1,5 +1,9 @@
 package world;
 
+import enemies.Werewolf;
+import greenfoot.Actor;
+import greenfoot.GreenfootImage;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
@@ -15,17 +19,6 @@ import javafx.util.Pair;
 
 import javax.swing.JFrame;
 
-import AI.Enemy;
-import AI.IWorldInterfaceForAI;
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.MapField;
-import core.FrameType;
-import core.GodFrame;
-import enemies.Werewolf;
-import greenfoot.Actor;
-import greenfoot.Greenfoot;
-import greenfoot.GreenfootImage;
-import greenfoot.MouseInfo;
 import menu.BuyItem;
 import player.BuffType;
 import player.DungeonMover;
@@ -40,6 +33,12 @@ import weapons.long_range_weapon.NinjaStar;
 import weapons.short_range.ClubWithSpikes;
 import weapons.short_range.Sword;
 import world.mapping.DungeonMapper;
+import AI.Enemy;
+import AI.IWorldInterfaceForAI;
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.MapField;
+import core.FrameType;
+import core.GodFrame;
 
 public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
@@ -75,9 +74,14 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	PrintStream logger;
 
+	final int BASE_SCORE_FOR_NO_DAMAGE=100;
+	final int BASE_SCORE_FOR_IN_TIME=100;
+	final int BASE_TIME_PER_ROUND=120/*seconds*/*1000/*convert to milliseconds*/;
+
+	private int round=1;
+
 	// TODO: Change animation system to not top down
 	// TODO: Change enemies and player images accordingly
-	// TODO: Implement all buffs to be dropped by something
 
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE, DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
@@ -128,6 +132,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		addObject(fps, 100, 20);
 		spawnEnemies();
 		log("Seed: " + seed);
+		round=1;
 	}
 
 	public void startNewRound() {
@@ -146,6 +151,27 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		ticksAtEndOfLastRound = getGreenfootTime();
 		enemiesSpawned = false;
 		player.resetWeapons();
+		processAbstractGoals();
+
+		round++;
+	}
+
+	private void processAbstractGoals()
+	{
+		if(!player.getWasDamagedThisRound())
+		{
+			int score=BASE_SCORE_FOR_NO_DAMAGE*round;
+			alterPlayerScore(score);
+			godFrame.setNoDamageLabelText("You got "+score+" coins for not getting damaged this round!");
+		}
+		int maxTime=BASE_TIME_PER_ROUND*round;
+		if(getGreenfootTime()<=maxTime)
+		{
+			int score=BASE_SCORE_FOR_IN_TIME*round;
+			alterPlayerScore(score);
+			godFrame.setInTimeLabelText("You got "+score+" coins for killing all enemies in time!");
+		}
+		player.setWasDamagedThisRound(false);
 	}
 
 	public void endGame() {
