@@ -1,5 +1,6 @@
 package weapons.abstracts;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
 
 import AI.Enemy;
@@ -16,15 +17,19 @@ public abstract class Bullet extends DeltaMover
 	protected int lifetimeInMs = -1;
 	protected String bulletName="";
 	protected Point2D bulletOffsetFromPlayer;
+	protected int maxHits=1;
 	private long timeStampCreated=-1;
 	private EntityType typeToIgnore;
-
+	private int hits=0;
+	private ArrayList<IDamageable> hitEntities;
+ 
 	public Bullet(EntityType typeToIgnore) 
 	{
 		super(0);
 		timeStampCreated=DungeonMap.getGreenfootTime();
 		this.typeToIgnore=typeToIgnore;
-		bulletOffsetFromPlayer=new Point2D.Double(32,0);;
+		bulletOffsetFromPlayer=new Point2D.Double(32,0);
+		hitEntities=new ArrayList<IDamageable>();
 	}
 
 	@Override
@@ -39,9 +44,12 @@ public abstract class Bullet extends DeltaMover
 	{
 		super.act();
 		move();
-		if (isTouchingWall()||handleCollision() || timeStampCreated+lifetimeInMs<DungeonMap.getGreenfootTime())
+		if(handleCollision())
 		{
-			//Didn't move although move was called -> tried to move into wall. If we are at a rotation of x*90�, we will just stay in front of the wall until our lifetime is over || hit player/enemy || our time has come :(
+			hits++;
+		}
+		if (hits==maxHits || isTouchingWall() || timeStampCreated+lifetimeInMs<DungeonMap.getGreenfootTime())
+		{
 			getWorld().removeObject(this);
 		}
 	}
@@ -69,7 +77,12 @@ public abstract class Bullet extends DeltaMover
 					continue;
 
 				IDamageable id=(IDamageable) o;
+				
+				if(hitEntities.contains(id))
+					continue;
+				
 				id.damage(damage);
+				hitEntities.add(id);
 				return true;
 			}
 			return false;

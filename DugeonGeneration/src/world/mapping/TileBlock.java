@@ -1,21 +1,26 @@
 package world.mapping;
 
+import world.MapElement;
 import greenfoot.GreenfootImage;
 
+@SuppressWarnings("rawtypes")
 public class TileBlock implements ITileBlock {
 
 	private final ITile[][] block;
-
+	private final GreenfootImage[][] specials;
 	private final int x, y;
 
 	public TileBlock(int x, int y, ITile... tiles) {
 		this.x = x;
 		this.y = y;
 		block = new ITile[x][y];
+		specials = new GreenfootImage[x][y];
 		int k = 0;
 		outerloop: for (int i = 0; i < y; i++) {
 			for (int j = 0; j < x; j++) {
 				block[j][i] = tiles[k];
+				if (tiles[k] != null)
+					specials[j][i] = tiles[k].getSpecial();
 				k++;
 				if (k >= tiles.length) {
 					break outerloop;
@@ -24,13 +29,18 @@ public class TileBlock implements ITileBlock {
 		}
 	}
 
-	public boolean transcribe(int x, int y, GreenfootImage[][] map) {
+	public boolean transcribe(int x, int y, GreenfootImage[][] map, MapElement[][] specials) {
 		if (x < 0 || x + this.x >= map.length || y < 0 || y + this.y >= map[0].length)
 			return false;
 		for (int i = 0; i < this.y; i++) {
 			for (int j = 0; j < this.x; j++) {
-				if (map[x + j][y + i] == null && block[j][i] != null)
+				if (block[j][i] == null)
+					continue;
+				if (map[x + j][y + i] == null)
 					map[x + j][y + i] = block[j][i].getTileImage();
+				if (specials != null && specials[x + i][y + j] == null && block[j][i].getSpecial() != null) {
+					specials[x + j][y + i] = new MapElement(block[j][i].getSpecial());
+				}
 			}
 		}
 		return true;
@@ -45,26 +55,9 @@ public class TileBlock implements ITileBlock {
 		}
 	}
 
-	// public boolean attachesTo(TileBlock tb) {
-	// for (ITile[] tiles : block) {
-	// for (ITile tile : tiles) {
-	// if (tb.getAttachingTileFor(tile) != null) {
-	// return true;
-	// }
-	// }
-	// }
-	// return false;
-	// }
-	//
-	// public ITile getAttachingTileFor(ITile tile) {
-	// for (ITile[] tiles : block) {
-	// for (ITile myTile : tiles) {
-	// if (myTile.attachesTo(tile)) {
-	// return myTile;
-	// }
-	// }
-	// }
-	// return null;
-	// }
+	@Override
+	public GreenfootImage getSpecial(int i, int j) {
+		return specials[i][j];
+	}
 
 }

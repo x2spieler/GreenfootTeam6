@@ -12,5 +12,6 @@ public class CrossbowArrow extends Bullet
 		lifetimeInMs=4000;
 		bulletName="crossbow_arrow";
 		setSpeed(200);
+		maxHits=3;
 	}
 }
