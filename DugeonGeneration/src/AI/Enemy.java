@@ -39,7 +39,8 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private final int RPD_MULTIPLICATOR_LRW=30;			//REACHED_PLAYER_DISTANCE_MULTIPLICATOR_LONG_RANGE_WEAPONS
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private short walkCounter=0;
-	boolean isPendingKill=false;
+	private boolean isPendingKill=false;
+	private int currRotation=0;
 	
 	private enum ImageIndex
 	{
@@ -168,7 +169,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	
 	private GreenfootImage getCurrentImage(ImageIndex indx)
 	{
-		return images[((getRotation()+45)%360)/90][indx.getValue()];
+		return images[((currRotation+45)%360)/90][indx.getValue()];
 	}
 
 	@Override
@@ -215,6 +216,8 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 					{
 						setImage(getCurrentImage(ImageIndex.IDLE));
 						turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
+						currRotation=getRotation();
+						setRotation(0);
 					}
 					if(weapon.use())
 					{
@@ -265,8 +268,10 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		if(currTargetNode!=null)
 		{
 			turnTowardsGlobalLocation(currTargetNode.x, currTargetNode.y);
+			currRotation=getRotation();
+			setRotation(0);
 			if(!isAttacking)
-				move();
+				moveAtAngle(currRotation);
 			int squaredDistToTarget=squaredDistance(currTargetNode.x, currTargetNode.y, getGlobalX(), getGlobalY());
 			int squaredDistanceToPlayer=squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
 			if(isTouchingWall())
@@ -286,7 +291,11 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			{
 				currTargetNode=currTargetNode.prev;
 				if(currTargetNode!=null)
+				{
 					turnTowardsGlobalLocation(currTargetNode.x, currTargetNode.y);
+					currRotation=getRotation();
+					setRotation(0);
+				}
 			}	
 			//Animate the enemie
 			if(walkCounter<=NUM_FRAMES_CHANGE_WALK_IMAGE)

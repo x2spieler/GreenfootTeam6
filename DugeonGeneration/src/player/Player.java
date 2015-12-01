@@ -27,13 +27,11 @@ public class Player extends DeltaMover implements IDamageable {
 	private boolean wasLmbClicked = false;
 	private boolean hClicked = false;
 	private boolean wasHClicked = false;
-
-	GreenfootImage idleImage;
-	GreenfootImage walkImgs[];
+	
+	GreenfootImage images[][];
 	int animTicks;
-	private final int CHANGE_WALK_ANIMATION_FRAMES = 20;
+	private final int CHANGE_WALK_ANIMATION_FRAMES = 8;
 
-	private final int MAX_WEAPON_ROTATION = 70;
 	private ArrayList<Weapon> weapons;
 	Weapon currWeapon = null;
 	int currWeaponIndx = 0;
@@ -53,6 +51,27 @@ public class Player extends DeltaMover implements IDamageable {
 	boolean mouseWheelListenerRegistered = false;
 	
 	private boolean wasDamagedThisRound=false;
+	
+	private int currRotation=0;
+	
+	private enum ImageIndex
+	{
+		IDLE(0),
+		WALK1(1),
+		WALK2(2);
+		
+		private int val;
+		
+		private ImageIndex(int val)
+		{
+			this.val=val;
+		}
+		
+		int getValue()
+		{
+			return val;
+		}
+	}
 
 	public Player(int hp) {
 		//the varargs arguments at the end of the constructor call set the collision box of the player.
@@ -66,14 +85,14 @@ public class Player extends DeltaMover implements IDamageable {
 
 		weapons = new ArrayList<Weapon>();
 		addWeapon(new Sword(this));
-		//addWeapon(new ClubWithSpikes(this));
-		//addWeapon(new Crossbow(this, 30));
-		//addWeapon(new NinjaStar(this, 30));
-
-		idleImage = new GreenfootImage("player/player_idle.png");
-		walkImgs = new GreenfootImage[2];
-		walkImgs[0] = new GreenfootImage("player/player_walk1.png");
-		walkImgs[1] = new GreenfootImage("player/player_walk2.png");
+		
+		images=new GreenfootImage[8][3];
+		for(int i=0;i<8;i++)
+		{
+			images[i][ImageIndex.IDLE.getValue()] = new GreenfootImage("player/player_"+i+"_base.png");
+			images[i][ImageIndex.WALK1.getValue()] = new GreenfootImage("player/player_"+i+"_walk1.png");
+			images[i][ImageIndex.WALK2.getValue()] = new GreenfootImage("player/player_"+i+"_walk2.png");
+		}
 
 		animTicks = 0;
 
@@ -212,6 +231,12 @@ public class Player extends DeltaMover implements IDamageable {
 			}
 		}
 	}
+	
+	@Override
+	public int getRotation()
+	{
+		return currRotation;
+	}
 
 	private void moveInOneOf8Directions() {
 		int walkRot = -1;
@@ -233,40 +258,29 @@ public class Player extends DeltaMover implements IDamageable {
 			walkRot = 135;
 
 		if (walkRot != -1) {
-			setRotation(walkRot);
-			move();
+			currRotation=walkRot;
+			moveAtAngle(currRotation);
 		}
-		faceMouse();
-		if (walkRot != -1) {
-			int currRot = getRotation();
-			int minAngle = walkRot - MAX_WEAPON_ROTATION;
-			int maxAngle = walkRot + MAX_WEAPON_ROTATION;
-
-			if (walkRot - currRot < -180) //Compensate the "jump" from 0� - 360� and vice versa
-				currRot -= 360;
-			else if (walkRot - currRot > 180)
-				currRot += 360;
-
-			if (currRot < minAngle)
-				setRotation(minAngle);
-			else if (currRot > maxAngle)
-				setRotation(maxAngle);
-		}
+	}
+	
+	private GreenfootImage getCurrentImage(ImageIndex indx)
+	{
+		return images[((currRotation+22)%360)/45][indx.getValue()];
 	}
 
 	private void animatePlayer() {
 		if (forward || backward || right || left) {
-			if (animTicks == 0)
-				setImage(walkImgs[0]);
-			else if (animTicks == CHANGE_WALK_ANIMATION_FRAMES)
-				setImage(walkImgs[1]);
+			if (animTicks <= CHANGE_WALK_ANIMATION_FRAMES)
+				setImage(getCurrentImage(ImageIndex.WALK1));
+			else if (animTicks < 2* CHANGE_WALK_ANIMATION_FRAMES)
+				setImage(getCurrentImage(ImageIndex.WALK2));
 
 			animTicks = (++animTicks) % (2 * CHANGE_WALK_ANIMATION_FRAMES);
 		} else {
-			if (!currWeapon.isPlayingAnimation() && getImage() != idleImage)
-				setImage(idleImage);
-			else if (currWeapon.isPlayingAnimation() && getImage() != walkImgs[0])
-				setImage(walkImgs[0]);
+			if (!currWeapon.isPlayingAnimation() && getImage() != getCurrentImage(ImageIndex.IDLE))
+				setImage(getCurrentImage(ImageIndex.IDLE));
+			else if (currWeapon.isPlayingAnimation() && getImage() != getCurrentImage(ImageIndex.WALK1))
+				setImage(getCurrentImage(ImageIndex.WALK1));
 		}
 	}
 
@@ -305,15 +319,6 @@ public class Player extends DeltaMover implements IDamageable {
 
 		if (Greenfoot.isKeyDown("escape"))
 			dungeonMap.changeToFrame(FrameType.PAUSE_MENU);
-	}
-
-	private void faceMouse() {
-		MouseInfo info = Greenfoot.getMouseInfo();
-		if (info != null) {
-			int x = info.getX();
-			int y = info.getY();
-			turnTowards(x, y);
-		}
 	}
 
 	private void centerCamera() {
