@@ -80,9 +80,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private int round=1;
 
-	// TODO: Change animation system to not top down
-	// TODO: Change enemies and player images accordingly
-
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE, DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
 		back = getBackground();
