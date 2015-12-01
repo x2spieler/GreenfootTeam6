@@ -97,27 +97,33 @@ public abstract class Weapon extends ScrollActor
 			rotatePoint(weaponOffsetToPlayer, getRotation()-prevRotation);
 			setGlobalLocation(owner.getGlobalX()+(int)weaponOffsetToPlayer.getX(), owner.getGlobalY()+(int)weaponOffsetToPlayer.getY());
 			prevRotation=getRotation();
-			MouseInfo info = Greenfoot.getMouseInfo();
-			if (info != null) {
-				int x = info.getX();
-				int y = info.getY();
-				turnTowards(x, y);
-				
-				int walkRot=owner.getRotation();
-				int currRot = getRotation();
-				int minAngle = walkRot - MAX_WEAPON_ROTATION;
-				int maxAngle = walkRot + MAX_WEAPON_ROTATION;
-
-				if (walkRot - currRot < -180) //Compensate the "jump" from 0� - 360� and vice versa
-					currRot -= 360;
-				else if (walkRot - currRot > 180)
-					currRot += 360;
-
-				if (currRot < minAngle)
-					setRotation(minAngle);
-				else if (currRot > maxAngle)
-					setRotation(maxAngle);
+			if(isPlayerWeapon)
+			{
+				MouseInfo info = Greenfoot.getMouseInfo();
+				if (info != null) {
+					int x = info.getX();
+					int y = info.getY();
+					turnTowards(x, y);
+				}
 			}
+			else
+			{
+				setRotation(owner.getRotation());
+			}
+			int walkRot=owner.getRotation();
+			int currRot = getRotation();
+			int minAngle = walkRot - MAX_WEAPON_ROTATION;
+			int maxAngle = walkRot + MAX_WEAPON_ROTATION;
+
+			if (walkRot - currRot < -180) //Compensate the "jump" from 0� - 360� and vice versa
+				currRot -= 360;
+			else if (walkRot - currRot > 180)
+				currRot += 360;
+
+			if (currRot < minAngle)
+				setRotation(minAngle);
+			else if (currRot > maxAngle)
+				setRotation(maxAngle);
 		}
 		if(playAnimation)
 		{

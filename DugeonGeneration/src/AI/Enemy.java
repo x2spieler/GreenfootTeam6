@@ -1,4 +1,5 @@
 package AI;
+import greenfoot.Actor;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
 
@@ -171,6 +172,12 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	{
 		return images[((currRotation+45)%360)/90][indx.getValue()];
 	}
+	
+	@Override
+	public int getRotation()
+	{
+		return currRotation;
+	}
 
 	@Override
 	public void act()
@@ -216,7 +223,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 					{
 						setImage(getCurrentImage(ImageIndex.IDLE));
 						turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
-						currRotation=getRotation();
+						currRotation=super.getRotation();
 						setRotation(0);
 					}
 					if(weapon.use())
@@ -268,7 +275,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		if(currTargetNode!=null)
 		{
 			turnTowardsGlobalLocation(currTargetNode.x, currTargetNode.y);
-			currRotation=getRotation();
+			currRotation=super.getRotation();
 			setRotation(0);
 			if(!isAttacking)
 				moveAtAngle(currRotation);
@@ -293,7 +300,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 				if(currTargetNode!=null)
 				{
 					turnTowardsGlobalLocation(currTargetNode.x, currTargetNode.y);
-					currRotation=getRotation();
+					currRotation=super.getRotation();
 					setRotation(0);
 				}
 			}	

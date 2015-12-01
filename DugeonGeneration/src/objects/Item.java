@@ -2,6 +2,7 @@ package objects;
 
 import java.util.Random;
 
+import Animations.PickupAnimation;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
 import player.BuffType;
@@ -57,6 +58,7 @@ public class Item extends ScrollActor {
 		if(intersects(player)) {
 			if(player.addBuff(buff, param, durationInMS))
 			{
+				getWorld().addObject(new PickupAnimation(), getGlobalX(), getGlobalY());
 				collect();
 			}
 		}
