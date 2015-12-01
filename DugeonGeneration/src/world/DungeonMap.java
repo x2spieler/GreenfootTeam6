@@ -148,7 +148,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		addObject(fps, 100, 20);
 		spawnEnemies();
 		log("Seed: " + seed);
-		cursor.setViewPorPane(godFrame.getViewPortPane());
+		cursor.setViewPortPane(godFrame.getViewPortPane());
 		cursor.start();
 	}
 
@@ -201,7 +201,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		greenfootTime += currTicks - lastTicks;
 		lastTicks = currTicks;
 		godFrame.updateTimeLabel(getRoundTime());
-
+		setCameraLocation(cursor.getTargetX(), cursor.getTargetY());
 		if (enemiesSpawned) {
 			if (player.getHP() <= 0) {
 				playerDied();

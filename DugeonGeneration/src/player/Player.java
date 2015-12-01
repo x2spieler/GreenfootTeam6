@@ -184,7 +184,7 @@ public class Player extends DeltaMover implements IDamageable {
 
 		processQueuedBuffs();
 
-		centerCamera();
+		//centerCamera();
 
 		if (lmbClicked)
 			if (currWeapon.use())
@@ -304,7 +304,10 @@ public class Player extends DeltaMover implements IDamageable {
 	}
 
 	private void centerCamera() {
-		getWorld().setCameraLocation(getGlobalX(), getGlobalY());
+		MouseInfo info = Greenfoot.getMouseInfo();
+		DungeonMap world = getWorld();
+		if (info != null)
+			getWorld().setCameraLocation(world.getCameraX() + info.getX(), world.getCameraY() + info.getY());
 	}
 
 	///////////////////////// BUFFS AND POWERUPS

@@ -19,13 +19,15 @@ import javax.imageio.ImageIO;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
+import player.Player;
 import world.DungeonMap;
 
 public class MouseController {
 	private static final int BORDER_WIDTH = 8;
-	private static final int MAX_ANCHOR_DISTANCE = 900;
+	private static final int MAX_ANCHOR_DISTANCE = 300;
 	private int viewPortDimX;
 	private int viewPortDimY;
+	private int ingame_correct;
 	private Robot robot;
 	private ExecutorService thread = Executors.newSingleThreadExecutor();
 	private FutureTask<Void> mController;
@@ -34,7 +36,7 @@ public class MouseController {
 	private Cursor rangedCursor;
 	private Cursor meleeCursor;
 
-	private boolean active;
+	private Player player;
 
 	public MouseController(DungeonMap world)
 			throws AWTException, HeadlessException, IndexOutOfBoundsException, IOException {
@@ -46,21 +48,22 @@ public class MouseController {
 		robot = new Robot();
 	}
 
-	public void setViewPorPane(JScrollPane viewPortPane) {
+	public void setViewPortPane(JScrollPane viewPortPane) {
 		if (viewPortPane == null)
 			throw new IllegalArgumentException();
 		this.viewPortPane = viewPortPane;
 		viewPortDimX = viewPortPane.getWidth();
 		viewPortDimY = viewPortPane.getHeight();
-		viewPortDimX -= BORDER_WIDTH;
-		viewPortDimY -= BORDER_WIDTH;
-		SwingUtilities.getRoot(viewPortPane).setCursor(rangedCursor);
+		System.out.println(viewPortDimX + ", " + viewPortDimY);
+		ingame_correct = (viewPortDimX - DungeonMap.VIEWPORT_WIDTH) / 2;
+		viewPortPane.setCursor(rangedCursor);
+		player = world.getPlayer();
 	}
 
 	public void start() {
 		if (viewPortPane == null)
 			return;
-		mController = new MController();
+		mController = getFutureTask();
 		thread.submit(mController);
 		System.out.println("mouseController started");
 	}
@@ -127,44 +130,74 @@ public class MouseController {
 		return x >= 0 && y >= 0 && x < DungeonMap.VIEWPORT_WIDTH && y < DungeonMap.VIEWPORT_HEIGHT;
 	}
 
-	private class MController extends FutureTask<Void> {
+	private int mouseInComponentX;
+	private int mouseInComponentY;
+	private int playerX;
+	private int playerY;
+	private static final int SLEEPTIME = 1;
 
-		public MController() {
-			super(new Callable<Void>() {
-				@Override
-				public Void call() throws Exception {
+	private int targetX;
+	private int targetY;
 
-					Point mousePos;
-					Point componentPos;
-					boolean changed;
-					while (true) {
-						mousePos = MouseInfo.getPointerInfo().getLocation();
-						componentPos = viewPortPane.getLocationOnScreen();
-						int mouseInComponentX = mousePos.x - componentPos.x;
-						int mouseInComponentY = mousePos.y - componentPos.y;
-						changed = false;
-						if (mouseInComponentX > viewPortDimX) {
-							mouseInComponentX = viewPortDimX;
-							changed = true;
-						} else if (mouseInComponentX < BORDER_WIDTH) {
-							mouseInComponentX = BORDER_WIDTH;
-							changed = true;
-						}
-						if (mouseInComponentY > viewPortDimY) {
-							mouseInComponentY = viewPortDimY;
-							changed = true;
-						} else if (mouseInComponentY < BORDER_WIDTH) {
-							mouseInComponentY = BORDER_WIDTH;
-							changed = true;
-						}
-						if (changed) {
-							robot.mouseMove(componentPos.x + mouseInComponentX, componentPos.y + mouseInComponentY);
-						}
-						Thread.sleep(1);
+	private FutureTask<Void> getFutureTask() {
+		Callable c = new Callable<Void>() {
+			@Override
+			public Void call() throws Exception {
+
+				Point mousePos;
+				Point componentPos;
+				boolean changed;
+				int i = 0;
+				while (true) {
+					i += SLEEPTIME;
+					changed = false;
+					mousePos = MouseInfo.getPointerInfo().getLocation();
+					componentPos = viewPortPane.getLocationOnScreen();
+					mouseInComponentX = mousePos.x - componentPos.x + ingame_correct;
+					mouseInComponentY = mousePos.y - componentPos.y + ingame_correct;
+					playerX = player.getX();
+					playerY = player.getY();
+					int maxPosX = playerX + MAX_ANCHOR_DISTANCE;
+					int minPosX = playerX - MAX_ANCHOR_DISTANCE;
+					int maxPosY = playerY + MAX_ANCHOR_DISTANCE;
+					int minPosY = playerY - MAX_ANCHOR_DISTANCE;
+					if (mouseInComponentX > maxPosX) {
+						mouseInComponentX = maxPosX;
+						changed = true;
+					} else if (mouseInComponentX < minPosX) {
+						mouseInComponentX = minPosX;
+						changed = true;
 					}
+					if (mouseInComponentY > maxPosY) {
+						mouseInComponentY = maxPosY;
+						changed = true;
+					} else if (mouseInComponentY < minPosY) {
+						mouseInComponentY = minPosY;
+						changed = true;
+					}
+					if (changed) {
+						robot.mouseMove(componentPos.x + mouseInComponentX - ingame_correct,
+								componentPos.y + mouseInComponentY - ingame_correct);
+					}
+					targetX = player.getGlobalX() + mouseInComponentX - playerX;
+					targetY = player.getGlobalY() + mouseInComponentY - playerY;
 				}
-			});
-		}
+			}
+		};
+		return new FutureTask<>(c);
+	}
 
+	/**
+	 * @return the targetX
+	 */
+	public int getTargetX() {
+		return targetX;
+	}
+
+	/**
+	 * @return the targetY
+	 */
+	public int getTargetY() {
+		return targetY;
 	}
 }
