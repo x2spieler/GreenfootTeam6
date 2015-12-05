@@ -1,9 +1,5 @@
 package core;
 
-import greenfoot.Greenfoot;
-import greenfoot.GreenfootImage;
-import greenfoot.WorldVisitor;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -41,6 +37,9 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import greenfoot.Greenfoot;
+import greenfoot.GreenfootImage;
+import greenfoot.WorldVisitor;
 import menu.BuyItem;
 import menu.ShopEntry;
 import player.BuffType;
@@ -352,7 +351,6 @@ public class GodFrame {
 		viewportPanel = (JPanel) ((JPanel) ((JViewport) viewPortPane.getComponent(0)).getComponent(0)).getComponent(1);
 		viewportPanel.setLayout(null);
 
-
 		JLabel healthBackgroundLabel=new JLabel();
 		ImageIcon bg=loadHUDImageIcon("health_bar_bg.png");
 		healthBackgroundLabel.setIcon(bg);
@@ -453,7 +451,7 @@ public class GodFrame {
 		seedLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		viewportPanel.add(seedLabel);
 		viewportPanel.setComponentZOrder(seedLabel, 0);
-
+	
 		recalculateLabelPositions(0);
 	}
 

@@ -19,12 +19,15 @@ import java.util.Random;
 import javafx.util.Pair;
 
 import javax.swing.JFrame;
+import javax.swing.Scrollable;
 
 import menu.BuyItem;
+import objects.StairsToHeaven;
 import player.BuffType;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
+import scrollWorld.ScrollActor;
 import scrollWorld.ScrollWorld;
 import weapons.abstracts.Bullet;
 import weapons.abstracts.Weapon;
@@ -72,6 +75,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private boolean debugging = false;
 
 	boolean enemiesSpawned = false;
+	boolean stairsToHeavenSpawned=false;
 
 	PrintStream logger;
 
@@ -80,7 +84,13 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	final int BASE_TIME_PER_ROUND=120/*seconds*/*1000/*convert to milliseconds*/;
 
 	private int round=1;
-
+	
+	// TODO: Save Highscores - database?
+	// TODO: More weapons & enemies
+	// TODO: Balance gameplay
+	// TODO: Balance waves
+	// TODO: Spawn new destroyable objects after 5 rounds?
+	
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE, DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
 		back = getBackground();
@@ -136,13 +146,17 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void startNewRound() {
 		lastTicks = System.currentTimeMillis();
 		spawnEnemies();
+		stairsToHeavenSpawned=false;
 	}
 
 	@SuppressWarnings("unchecked")
 	public void endRound() {
+		if(numAliveEnemies!=0)
+			return;
+		
 		List<Object> l = getObjects(null);
 		for (Object o : l.toArray()) {
-			if (o instanceof Enemy || o instanceof Bullet)
+			if (o instanceof Enemy || o instanceof Bullet||o instanceof StairsToHeaven)
 				removeObject((Actor) o);
 		}
 		changeToFrame(FrameType.NEXT_ROUND);
@@ -150,7 +164,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		enemiesSpawned = false;
 		player.resetWeapons();
 		processAbstractGoals();
-
 		round++;
 	}
 
@@ -217,8 +230,25 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		if (enemiesSpawned) {
 			if (player.getHP() <= 0) {
 				playerDied();
-			} else if (numAliveEnemies == 0) {
-				endRound();
+			} 
+			else if(numAliveEnemies==0&&!stairsToHeavenSpawned)
+			{
+				stairsToHeavenSpawned=true;
+				Random r=new Random();
+				StairsToHeaven stairs=new StairsToHeaven();
+				int x=0;
+				int y=0;
+				do
+				{
+					do
+					{
+						x = 1+r.nextInt(DungeonGenerator.MAP_WIDTH-2);
+						y = 1+r.nextInt(DungeonGenerator.MAP_HEIGHT-2);
+					}
+					while(!map[x+1][y].walkable()||!map[x-1][y].walkable()||!map[x][y+1].walkable()||!map[x][y-1].walkable());
+				}
+				while(!tryAddObject(stairs ,x*TILE_SIZE, y*TILE_SIZE));;
+				//TODO: Transition schöner machen
 			}
 		}
 	}
