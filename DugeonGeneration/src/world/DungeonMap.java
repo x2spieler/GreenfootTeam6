@@ -1,10 +1,5 @@
 package world;
 
-import enemies.BlueFlower;
-import enemies.RedDragon;
-import greenfoot.Actor;
-import greenfoot.GreenfootImage;
-
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
@@ -16,18 +11,36 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Random;
 
-import javafx.util.Pair;
-
 import javax.swing.JFrame;
-import javax.swing.Scrollable;
 
+import AI.Enemy;
+import AI.IWorldInterfaceForAI;
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.MapField;
+import core.FrameType;
+import core.GodFrame;
+import enemies.BlueFlower;
+import enemies.Goblin;
+import enemies.Mummy;
+import enemies.Orc;
+import enemies.PurpleDemon;
+import enemies.PurpleEyeGhost;
+import enemies.PurpleWorm;
+import enemies.RedDragon;
+import enemies.RedWitch;
+import enemies.SkeletonCape;
+import enemies.Snake;
+import enemies.Vampire;
+import enemies.Zombie;
+import greenfoot.Actor;
+import greenfoot.GreenfootImage;
+import javafx.util.Pair;
 import menu.BuyItem;
 import objects.StairsToHeaven;
 import player.BuffType;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
-import scrollWorld.ScrollActor;
 import scrollWorld.ScrollWorld;
 import weapons.abstracts.Bullet;
 import weapons.abstracts.Weapon;
@@ -37,12 +50,6 @@ import weapons.long_range_weapon.NinjaStar;
 import weapons.short_range.ClubWithSpikes;
 import weapons.short_range.Sword;
 import world.mapping.DungeonMapper;
-import AI.Enemy;
-import AI.IWorldInterfaceForAI;
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.MapField;
-import core.FrameType;
-import core.GodFrame;
 
 public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
@@ -203,7 +210,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			//x = 0;
 			//y = 0;
 			Enemy e=null;
-			switch(r.nextInt(2))
+			switch(r.nextInt(14))
 			{
 			case 0:
 				e=new RedDragon();
@@ -211,7 +218,44 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			case 1:
 				e=new BlueFlower();
 				break;
+			case 2:
+				e=new SkeletonCape();
+				break;
+			case 3:
+				e=new PurpleEyeGhost();
+				break;
+			case 4:
+				e=new PurpleDemon();
+				break;
+			case 5:
+				e=new Goblin();
+				break;
+			case 6:
+				e=new Vampire();
+				break;
+			case 7:
+				e=new RedWitch();
+				break;
+			case 8:
+				e=new RedWitch();
+				break;
+			case 9:
+				e=new Snake();
+				break;
+			case 10:
+				e=new PurpleWorm();
+				break;
+			case 11:
+				e=new Mummy();
+				break;
+			case 12:
+				e=new Zombie();
+				break;
+			case 13:
+				e=new Orc();
+				break;
 			}
+			e=new Orc();
 			addObject(e, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 			numAliveEnemies++;
 		}
