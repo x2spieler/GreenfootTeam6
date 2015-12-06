@@ -279,10 +279,10 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 					if(getImage()!=getCurrentImage(ImageIndex.IDLE)&&!isAttacking)
 					{
 						setImage(getCurrentImage(ImageIndex.IDLE));
-						turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
-						currRotation=super.getRotation();
-						setRotation(0);
 					}
+					turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
+					currRotation=super.getRotation();
+					setRotation(0);
 					if(weapon.use())
 					{
 						isAttacking=true;
