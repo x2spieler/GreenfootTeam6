@@ -7,8 +7,10 @@ public enum BuyItem
 	BULLET_NINJA_STAR("Ninja Star (bullet)"),
 	WEAPON_CROSSBOW("Crossbow"),
 	WEAPON_NINJA_STAR("Ninja star (weapon)"),
-	WEAPON_CLUB_WITH_SPIKES("Club with spikes"),
-	WEAPON_SWORD("Sword");
+	WEAPON_SWORD("Sword"),
+	WEAPON_AXE("Axe"),
+	WEAPON_SPEAR("Spear"),
+	WEAPON_HAMMER("Hammer");
 	
 	String val="";
 	

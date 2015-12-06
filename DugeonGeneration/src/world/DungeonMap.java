@@ -19,6 +19,7 @@ import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
 import core.FrameType;
 import core.GodFrame;
+import enemies.Bee;
 import enemies.BlueFlower;
 import enemies.Goblin;
 import enemies.Mummy;
@@ -47,7 +48,9 @@ import weapons.abstracts.Weapon;
 import weapons.bullets.CrossbowArrow;
 import weapons.long_range_weapon.Crossbow;
 import weapons.long_range_weapon.NinjaStar;
-import weapons.short_range.ClubWithSpikes;
+import weapons.short_range.Axe;
+import weapons.short_range.Hammer;
+import weapons.short_range.Spear;
 import weapons.short_range.Sword;
 import world.mapping.DungeonMapper;
 
@@ -91,13 +94,13 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	final int BASE_TIME_PER_ROUND=120/*seconds*/*1000/*convert to milliseconds*/;
 
 	private int round=1;
-	
+
 	// TODO: Save Highscores - database?
 	// TODO: More weapons & enemies
 	// TODO: Balance gameplay
 	// TODO: Balance waves
 	// TODO: Spawn new destroyable objects after 5 rounds?
-	
+
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, DungeonGenerator.MAP_WIDTH * TILE_SIZE, DungeonGenerator.MAP_HEIGHT * TILE_SIZE);
 		back = getBackground();
@@ -111,6 +114,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+
+		setPaintOrder(MapElement.class, Enemy.class, Weapon.class);
 	}
 
 	public void log(String str) {
@@ -160,7 +165,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void endRound() {
 		if(numAliveEnemies!=0)
 			return;
-		
+
 		List<Object> l = getObjects(null);
 		for (Object o : l.toArray()) {
 			if (o instanceof Enemy || o instanceof Bullet||o instanceof StairsToHeaven)
@@ -210,7 +215,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			//x = 0;
 			//y = 0;
 			Enemy e=null;
-			switch(r.nextInt(14))
+			switch(r.nextInt(15))
 			{
 			case 0:
 				e=new RedDragon();
@@ -254,8 +259,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			case 13:
 				e=new Orc();
 				break;
+			case 14:
+				e=new Bee();
+				break;
 			}
-			e=new Orc();
 			addObject(e, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 			numAliveEnemies++;
 		}
@@ -311,17 +318,23 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			player.addMediPacks(1);
 			ret = true;
 			break;
-		case WEAPON_CLUB_WITH_SPIKES:
-			player.addWeapon(new ClubWithSpikes(player));
-			break;
 		case WEAPON_CROSSBOW:
 			player.addWeapon(new Crossbow(player, amount));
+			break;
+		case WEAPON_AXE:
+			ret=player.addWeapon(new Axe(player));
+			break;
+		case WEAPON_SPEAR:
+			ret=player.addWeapon(new Spear(player));
+			break;
+		case WEAPON_HAMMER:
+			ret=player.addWeapon(new Hammer(player));
 			break;
 		case WEAPON_NINJA_STAR:
 			player.addWeapon(new NinjaStar(player, amount));
 			break;
 		case WEAPON_SWORD:
-			player.addWeapon(new Sword(player));
+			ret=player.addWeapon(new Sword(player));
 			break;
 		case BULLET_CROSSBOW_ARROW:
 			ret = player.addAmmo(CrossbowArrow.class, amount);

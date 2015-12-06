@@ -14,7 +14,6 @@ public class MapElement extends ScrollActor {
 	@Override
 	protected void addedToWorld(World world) {
 		super.addedToWorld(world);
-		world.setPaintOrder(this.getClass());
 	}
 
 	@Override

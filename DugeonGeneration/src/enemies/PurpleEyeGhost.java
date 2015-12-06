@@ -11,7 +11,7 @@ public class PurpleEyeGhost extends Enemy
 		hp = 1;
 		viewRangeSquared = 32*32*10*10;
 		enemyName="purple_eye_ghost";
-		allowedWeapons=new String[]{"flame_storm"};
+		allowedWeapons=new String[]{"psycho"};
 	}
 	
 	@Override

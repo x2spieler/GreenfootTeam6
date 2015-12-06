@@ -11,7 +11,7 @@ public class Orc extends Enemy
 		hp = 1;
 		viewRangeSquared = 32*32*10*10;
 		enemyName="orc";
-		allowedWeapons=new String[]{"flame_storm"};
+		allowedWeapons=new String[]{"double_axe"};
 	}
 	
 	@Override

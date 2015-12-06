@@ -7,6 +7,7 @@ import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
 import greenfoot.MouseInfo;
 import greenfoot.World;
+import player.Player;
 import scrollWorld.ScrollActor;
 import sun.security.util.UntrustedCertificates;
 import weapons.EntityType;
@@ -136,11 +137,9 @@ public abstract class Weapon extends ScrollActor
 				playAnimation=false;
 				if(owner instanceof Enemy)
 				{
-					setImage(emptyImage);
 					((Enemy)owner).stopAttacking();
 				}
-				else
-					setImage(animImages[0]);
+				setImage(emptyImage);
 
 				launchLongRangeWeapon=true;
 			}

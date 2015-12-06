@@ -11,7 +11,7 @@ public class Zombie extends Enemy
 		hp = 1;
 		viewRangeSquared = 32*32*10*10;
 		enemyName="zombie";
-		allowedWeapons=new String[]{"flame_storm"};
+		allowedWeapons=new String[]{"shovel"};
 	}
 	
 	@Override

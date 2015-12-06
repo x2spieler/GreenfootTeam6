@@ -11,7 +11,7 @@ public class SkeletonCape extends Enemy
 		hp = 1;
 		viewRangeSquared = 32*32*10*10;
 		enemyName="skeleton_cape";
-		allowedWeapons=new String[]{"flame_storm"};
+		allowedWeapons=new String[]{"bone"};
 	}
 	
 	@Override

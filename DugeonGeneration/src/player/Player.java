@@ -1,20 +1,19 @@
 package player;
 
-import greenfoot.Greenfoot;
-import greenfoot.GreenfootImage;
-import greenfoot.MouseInfo;
-import greenfoot.World;
-
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import AI.IDamageable;
+import core.FrameType;
+import greenfoot.Greenfoot;
+import greenfoot.GreenfootImage;
+import greenfoot.MouseInfo;
+import greenfoot.World;
 import weapons.abstracts.LongRangeWeapon;
 import weapons.abstracts.Weapon;
 import weapons.short_range.Sword;
 import world.DungeonMap;
-import AI.IDamageable;
-import core.FrameType;
 
 public class Player extends DeltaMover implements IDamageable {
 
@@ -360,21 +359,24 @@ public class Player extends DeltaMover implements IDamageable {
 	 * and it is a LongRangeWeapon, only the ammo weapon
 	 * 
 	 * @param weapon
+	 * @return If weapon or its ammo was added
 	 */
-	public void addWeapon(Weapon weapon) {
+	public boolean addWeapon(Weapon weapon) {
 		for (Weapon w : weapons) {
 			if (w.getWeaponName().equals(weapon.getWeaponName())) {
 				if (w.isLongRangeWeapon()) {
 					LongRangeWeapon lrw = (LongRangeWeapon) w;
 					lrw.addAmmo(((LongRangeWeapon) weapon).getAmmo());
+					return true;
 				}
-				return;
+				return false;
 			}
 		}
 		weapons.add(weapon);
 		if (dungeonMap != null) //Only do this for at runtime added weapons
 			getWorld().addObject(weapon, getGlobalX(), getGlobalY());
 		weapon.deactivateWeapon();
+		return true;
 	}
 
 	/**

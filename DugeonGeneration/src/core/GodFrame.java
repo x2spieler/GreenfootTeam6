@@ -189,9 +189,11 @@ public class GodFrame {
 		entryPanel.setLayout(new GridLayout(0, 1));
 		int horizontalSpace = 20;
 
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_AXE, new GreenfootImage("enemies/weapons/axe/axe0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_HAMMER, new GreenfootImage("enemies/weapons/hammer/hammer0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SPEAR, new GreenfootImage("enemies/weapons/spear/spear0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CROSSBOW, new GreenfootImage("enemies/weapons/crossbow/crossbow0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SWORD, new GreenfootImage("enemies/weapons/sword/sword0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CLUB_WITH_SPIKES, new GreenfootImage("enemies/weapons/club_spikes/club_spikes0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_NINJA_STAR, new GreenfootImage("enemies/weapons/ninja_star/ninja_star0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.BULLET_CROSSBOW_ARROW, new GreenfootImage("enemies/bullets/crossbow_arrow.png"), 30, 100, world));
 		entryPanel.add(new ShopEntry(BuyItem.BULLET_NINJA_STAR, new GreenfootImage("enemies/bullets/ninja_star.png"), 30, 100, world));

@@ -11,11 +11,18 @@ public class Bee extends Enemy
 		hp = 1;
 		viewRangeSquared = 32*32*10*10;
 		enemyName="bee";
-		allowedWeapons=new String[]{"flame_storm"};
+		allowedWeapons=new String[]{"sting"};
 	}
 	
 	@Override
 	protected int getNumFramesChangeWalkImage() {
 		return 20;
+	}
+	
+	@Override
+	protected void alterImages()
+	{
+		for(int i=0;i<4;i++)
+			images[i][ImageIndex.ATTACK.getValue()]=images[(i+2)%4][ImageIndex.WALK1.getValue()];
 	}
 }

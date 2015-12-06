@@ -1,21 +1,31 @@
 package AI;
-import greenfoot.GreenfootImage;
-import greenfoot.World;
-
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.MapField;
+import greenfoot.GreenfootImage;
+import greenfoot.World;
 import player.DeltaMover;
 import weapons.abstracts.Weapon;
 import weapons.long_range_weapon.Crossbow;
 import weapons.long_range_weapon.LeafThrower;
-import weapons.short_range.ClubWithSpikes;
+import weapons.long_range_weapon.LoveWand;
+import weapons.long_range_weapon.Sceptre;
+import weapons.short_range.AcidBubbles;
+import weapons.short_range.Bite;
+import weapons.short_range.Bone;
+import weapons.short_range.Dagger;
+import weapons.short_range.DoubleAxe;
 import weapons.short_range.FlameStorm;
+import weapons.short_range.Psycho;
+import weapons.short_range.Shovel;
+import weapons.short_range.Sting;
 import weapons.short_range.Sword;
+import weapons.short_range.Tongue;
+import weapons.short_range.WoodStake;
 import world.DungeonMap;
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.MapField;
 
 public abstract class Enemy extends DeltaMover implements IDamageable
 {
@@ -44,7 +54,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private boolean isPendingKill=false;
 	private int currRotation=0;
 	
-	private enum ImageIndex
+	protected enum ImageIndex
 	{
 		IDLE(0),
 		WALK1(1),
@@ -58,7 +68,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			this.val=val;
 		}
 		
-		int getValue()
+		public int getValue()
 		{
 			return val;
 		}
@@ -89,8 +99,15 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			return;
 		}
 		loadImages();
+		alterImages();
 		createWeapon();
 	}
+	
+	/*
+	 * Can be overriden to change certain animation images.
+	 * Default implementation does nothing
+	 */
+	protected void alterImages(){}
 	
 	/**
 	 * @return True if this enemy has been killed and is only in the world to to his death animation
@@ -120,20 +137,53 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		case "sword":
 			weapon=new Sword(this);
 			break;
-		case "club_spikes":
-			weapon=new ClubWithSpikes(this);
+		case "flame_storm":
+			weapon=new FlameStorm(this);
+			break;
+		case "sting":
+			weapon=new Sting(this);
+			break;
+		case "dagger":
+			weapon=new Dagger(this);
+			break;
+		case "double_axe":
+			weapon=new DoubleAxe(this);
+			break;
+		case "acid_bubbles":
+			weapon=new AcidBubbles(this);
+			break;
+		case "psycho":
+			weapon=new Psycho(this);
+			break;
+		case "bite":
+			weapon=new Bite(this);
+			break;
+		case "bone":
+			weapon=new Bone(this);
+			break;
+		case "tongue":
+			weapon=new Tongue(this);
+			break;
+		case "wood_stake":
+			weapon=new WoodStake(this);
+			break;
+		case "shovel":
+			weapon=new Shovel(this);
+			break;
+		case "leaf_thrower":
+			weapon=new LeafThrower(this, Integer.MAX_VALUE);
+			break;
+		case "love_wand":
+			weapon=new LoveWand(this, Integer.MAX_VALUE);
+			break;
+		case "sceptre":
+			weapon=new Sceptre(this, Integer.MAX_VALUE);
 			break;
 		case "crossbow":
 			weapon=new Crossbow(this, Integer.MAX_VALUE);
 			break;
 		case "ninja_star":
 			weapon=new weapons.long_range_weapon.NinjaStar(this, Integer.MAX_VALUE);
-			break;
-		case "flame_storm":
-			weapon=new FlameStorm(this);
-			break;
-		case "leaf_thrower":
-			weapon=new LeafThrower(this, Integer.MAX_VALUE);
 			break;
 		default:
 			throw new IllegalArgumentException("Seems like somebody forgot to update this switch-statement after adding new weapons.. Bad boy!");
