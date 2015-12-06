@@ -96,7 +96,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private int round=1;
 
 	// TODO: Save Highscores - database?
-	// TODO: More weapons & enemies
 	// TODO: Balance gameplay
 	// TODO: Balance waves
 	// TODO: Spawn new destroyable objects after 5 rounds?
