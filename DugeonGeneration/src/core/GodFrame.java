@@ -56,16 +56,18 @@ public class GodFrame {
 	private JScrollPane gameOverPane = null;
 	private JScrollPane nextRoundPane = null;
 	private JPanel viewportPanel = null;
-	private JLabel seedLabel = null;
+	private JLabel seedLabel=null;
 	private JLabel coinLabel = null;
 	private JLabel buyFeedbackLabel = null;
 	private JLabel timeLabel = null;
 	private JLabel mediPackLabel = null;
-	private JLabel weaponLabel = null;
-	private JLabel ammoLabel = null;
-	private JLabel healthBarLabel = null;
-	private JLabel scoreLabel = null;
-	private BufferedImage healthBarImage = null;
+	private JLabel weaponLabel=null;
+	private JLabel ammoLabel=null;
+	private JLabel healthBarLabel=null;
+	private JLabel scoreLabel=null;
+	private JLabel noDamageLabel=null;
+	private JLabel inTimeLabel=null;
+	private BufferedImage healthBarImage=null;
 	private DungeonMap world;
 
 	private LinkedHashMap<String, BuffPanel> buffPanels;
@@ -92,6 +94,7 @@ public class GodFrame {
 		frame.setLocation(screenSize.width / 2 - frame.getWidth() / 2, screenSize.height / 2 - frame.getHeight() / 2);
 		frame.getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK), "activate_testing_mode01");
 		frame.getRootPane().getActionMap().put("activate_testing_mode01", new TestingModeActivator());
+		frame.setTitle("Super awesome window title");
 	}
 
 	public void addScrollListener(MouseWheelListener listener) {
@@ -186,9 +189,11 @@ public class GodFrame {
 		entryPanel.setLayout(new GridLayout(0, 1));
 		int horizontalSpace = 20;
 
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_AXE, new GreenfootImage("enemies/weapons/axe/axe0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_HAMMER, new GreenfootImage("enemies/weapons/hammer/hammer0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SPEAR, new GreenfootImage("enemies/weapons/spear/spear0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CROSSBOW, new GreenfootImage("enemies/weapons/crossbow/crossbow0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SWORD, new GreenfootImage("enemies/weapons/sword/sword0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CLUB_WITH_SPIKES, new GreenfootImage("enemies/weapons/club_spikes/club_spikes0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_NINJA_STAR, new GreenfootImage("enemies/weapons/ninja_star/ninja_star0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.BULLET_CROSSBOW_ARROW, new GreenfootImage("enemies/bullets/crossbow_arrow.png"), 30, 100, world));
 		entryPanel.add(new ShopEntry(BuyItem.BULLET_NINJA_STAR, new GreenfootImage("enemies/bullets/ninja_star.png"), 30, 100, world));
@@ -205,6 +210,18 @@ public class GodFrame {
 		updateCoinLabelInShop();
 		coinLabel.setBounds(horizontalSpace + 10, scrollY + scrollHeight + 10, 150, 40);
 		panel.add(coinLabel);
+		
+		noDamageLabel=new JLabel();
+		noDamageLabel.setBounds(horizontalSpace + 10, scrollY + scrollHeight + 50, 500, 40);
+		noDamageLabel.setFont(new Font("", Font.ITALIC, 14));
+		noDamageLabel.setHorizontalAlignment(JLabel.LEFT);
+		panel.add(noDamageLabel);
+		
+		inTimeLabel=new JLabel();
+		inTimeLabel.setBounds(horizontalSpace + 10, scrollY + scrollHeight + 70, 500, 40);
+		inTimeLabel.setFont(new Font("", Font.ITALIC, 14));
+		inTimeLabel.setHorizontalAlignment(JLabel.LEFT);
+		panel.add(inTimeLabel);
 
 		buyFeedbackLabel = new JLabel();
 		buyFeedbackLabel.setBounds(0, scrollY + scrollHeight + 10, panelSize.width, 40);
@@ -214,7 +231,7 @@ public class GodFrame {
 		JButton resume = new JButton();
 		int buttonWidth = 150;
 		int buttonHeight = 40;
-		resume.setBounds(panelSize.width / 2 - buttonWidth / 2, panelSize.height - buttonHeight - 50, buttonWidth, buttonHeight);
+		resume.setBounds(panelSize.width - 2* buttonWidth, panelSize.height - buttonHeight - 50, buttonWidth, buttonHeight);
 		resume.setText("Next round");
 		resume.addActionListener((ActionEvent e) -> {
 			world.startNewRound();
@@ -233,6 +250,16 @@ public class GodFrame {
 	public void updateCoinLabelInShop() {
 		if (world != null && world.getPlayer() != null)
 			coinLabel.setText("Coins: " + world.getPlayer().getScore());
+	}
+	
+	public void setNoDamageLabelText(String s)
+	{
+		noDamageLabel.setText(s);
+	}
+	
+	public void setInTimeLabelText(String txt)
+	{
+		inTimeLabel.setText(txt);
 	}
 
 	public void updateFeedbackLabel(boolean success, String msg) {
@@ -263,10 +290,15 @@ public class GodFrame {
 		start.setBounds(panelSize.width / 2 - buttonWidth / 2, panelSize.height / 2 - 60, buttonWidth, buttonHeight);
 		start.setText("Start");
 		start.addActionListener((ActionEvent e) -> {
-			changeToFrame(FrameType.VIEWPORT);
-			world.startNewGame(Integer.valueOf(seedTF.getText()));
-			seedTF.setText("" + new Random().nextInt()); // Already set seed for the next game
-			});
+			try {
+				changeToFrame(FrameType.VIEWPORT);
+				world.startNewGame(Integer.valueOf(seedTF.getText()));
+				seedTF.setText("" + new Random().nextInt()); // Already set seed for the next game
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
 		panel.add(start);
 
 		JLabel seedLabel = new JLabel("Seed:");
@@ -326,8 +358,8 @@ public class GodFrame {
 		viewportPanel = (JPanel) ((JPanel) ((JViewport) viewPortPane.getComponent(0)).getComponent(0)).getComponent(1);
 		viewportPanel.setLayout(null);
 
-		JLabel healthBackgroundLabel = new JLabel();
-		ImageIcon bg = loadHUDImageIcon("health_bar_bg.png");
+		JLabel healthBackgroundLabel=new JLabel();
+		ImageIcon bg=loadHUDImageIcon("health_bar_bg.png");
 		healthBackgroundLabel.setIcon(bg);
 		int posX = 10;
 		int posY = 75;
@@ -425,7 +457,7 @@ public class GodFrame {
 		seedLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		viewportPanel.add(seedLabel);
 		viewportPanel.setComponentZOrder(seedLabel, 0);
-
+	
 		recalculateLabelPositions(0);
 	}
 

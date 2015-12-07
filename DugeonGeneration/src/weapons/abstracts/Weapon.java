@@ -3,9 +3,13 @@ import java.awt.geom.Point2D;
 
 import AI.Enemy;
 import AI.IWorldInterfaceForAI;
+import greenfoot.Greenfoot;
 import greenfoot.GreenfootImage;
+import greenfoot.MouseInfo;
 import greenfoot.World;
+import player.Player;
 import scrollWorld.ScrollActor;
+import sun.security.util.UntrustedCertificates;
 import weapons.EntityType;
 import world.DungeonMap;
 
@@ -31,9 +35,10 @@ public abstract class Weapon extends ScrollActor
 	
 	private int showWeaponWhileChanging=0;
 	private final int SHOW_WEAPON_ON_CHANGE_DUR=30;
-	private int currRotation=0;
+	private int prevRotation=0;
 	private int animTicks=0;
 	private boolean active=false;
+	private final int MAX_WEAPON_ROTATION = 22;
 
 	public Weapon()
 	{
@@ -90,10 +95,36 @@ public abstract class Weapon extends ScrollActor
 	{
 		if((isPlayerWeapon&&active)||playAnimation)
 		{
-			rotatePoint(weaponOffsetToPlayer, owner.getRotation()-currRotation);
+			rotatePoint(weaponOffsetToPlayer, getRotation()-prevRotation);
 			setGlobalLocation(owner.getGlobalX()+(int)weaponOffsetToPlayer.getX(), owner.getGlobalY()+(int)weaponOffsetToPlayer.getY());
-			setRotation(owner.getRotation());
-			currRotation=owner.getRotation();
+			prevRotation=getRotation();
+			if(isPlayerWeapon)
+			{
+				MouseInfo info = Greenfoot.getMouseInfo();
+				if (info != null) {
+					int x = info.getX();
+					int y = info.getY();
+					turnTowards(x, y);
+				}
+			}
+			else
+			{
+				setRotation(owner.getRotation());
+			}
+			int walkRot=owner.getRotation();
+			int currRot = getRotation();
+			int minAngle = walkRot - MAX_WEAPON_ROTATION;
+			int maxAngle = walkRot + MAX_WEAPON_ROTATION;
+
+			if (walkRot - currRot < -180) //Compensate the "jump" from 0� - 360� and vice versa
+				currRot -= 360;
+			else if (walkRot - currRot > 180)
+				currRot += 360;
+
+			if (currRot < minAngle)
+				setRotation(minAngle);
+			else if (currRot > maxAngle)
+				setRotation(maxAngle);
 		}
 		if(playAnimation)
 		{
@@ -106,11 +137,9 @@ public abstract class Weapon extends ScrollActor
 				playAnimation=false;
 				if(owner instanceof Enemy)
 				{
-					setImage(emptyImage);
 					((Enemy)owner).stopAttacking();
 				}
-				else
-					setImage(animImages[0]);
+				setImage(emptyImage);
 
 				launchLongRangeWeapon=true;
 			}

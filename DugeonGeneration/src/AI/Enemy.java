@@ -1,19 +1,31 @@
 package AI;
-import greenfoot.GreenfootImage;
-import greenfoot.World;
-
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
+import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.MapField;
+import greenfoot.GreenfootImage;
+import greenfoot.World;
 import player.DeltaMover;
 import weapons.abstracts.Weapon;
 import weapons.long_range_weapon.Crossbow;
-import weapons.short_range.ClubWithSpikes;
+import weapons.long_range_weapon.LeafThrower;
+import weapons.long_range_weapon.LoveWand;
+import weapons.long_range_weapon.Sceptre;
+import weapons.short_range.AcidBubbles;
+import weapons.short_range.Bite;
+import weapons.short_range.Bone;
+import weapons.short_range.Dagger;
+import weapons.short_range.DoubleAxe;
+import weapons.short_range.FlameStorm;
+import weapons.short_range.Psycho;
+import weapons.short_range.Shovel;
+import weapons.short_range.Sting;
 import weapons.short_range.Sword;
+import weapons.short_range.Tongue;
+import weapons.short_range.WoodStake;
 import world.DungeonMap;
-import DungeonGeneration.DungeonGenerator;
-import DungeonGeneration.MapField;
 
 public abstract class Enemy extends DeltaMover implements IDamageable
 {
@@ -24,10 +36,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	protected int hp = -1;
 	protected int viewRangeSquared = -1;		//In Pixels, not tiles
 	protected String enemyName="";
-	protected GreenfootImage idleImage=null;
-	protected GreenfootImage walk1Image=null;
-	protected GreenfootImage walk2Image=null;
-	protected GreenfootImage attackImage=null;
+	protected GreenfootImage[][] images;
 	protected String[] allowedWeapons;
 
 	private boolean isAttacking=false;
@@ -42,7 +51,28 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private final int RPD_MULTIPLICATOR_LRW=30;			//REACHED_PLAYER_DISTANCE_MULTIPLICATOR_LONG_RANGE_WEAPONS
 	private final int TILE_SIZE=DungeonMap.TILE_SIZE;
 	private short walkCounter=0;
-	boolean isPendingKill=false;
+	private boolean isPendingKill=false;
+	private int currRotation=0;
+	
+	protected enum ImageIndex
+	{
+		IDLE(0),
+		WALK1(1),
+		WALK2(2),
+		ATTACK(0);
+		
+		private int val;
+		
+		private ImageIndex(int val)
+		{
+			this.val=val;
+		}
+		
+		public int getValue()
+		{
+			return val;
+		}
+	}
 	
 	public Enemy()
 	{
@@ -69,8 +99,15 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			return;
 		}
 		loadImages();
+		alterImages();
 		createWeapon();
 	}
+	
+	/*
+	 * Can be overriden to change certain animation images.
+	 * Default implementation does nothing
+	 */
+	protected void alterImages(){}
 	
 	/**
 	 * @return True if this enemy has been killed and is only in the world to to his death animation
@@ -82,10 +119,14 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 
 	private void loadImages()
 	{
-		idleImage=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_idle.png");
-		walk1Image=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_walk1.png");
-		walk2Image=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_walk2.png");
-		attackImage=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_attack.png");
+		images=new GreenfootImage[4][3];
+		for(int i=0;i<4;i++)
+		{
+			images[i][ImageIndex.IDLE.getValue()]=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_"+i+"_base.png");
+			images[i][ImageIndex.WALK1.getValue()]=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_"+i+"_walk1.png");
+			images[i][ImageIndex.WALK2.getValue()]=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_"+i+"_walk2.png");
+			images[i][ImageIndex.ATTACK.getValue()]=new GreenfootImage("enemies/"+enemyName+"/"+enemyName+"_"+i+"_walk1.png");
+		}
 	}
 
 	private void createWeapon()
@@ -96,8 +137,47 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		case "sword":
 			weapon=new Sword(this);
 			break;
-		case "club_spikes":
-			weapon=new ClubWithSpikes(this);
+		case "flame_storm":
+			weapon=new FlameStorm(this);
+			break;
+		case "sting":
+			weapon=new Sting(this);
+			break;
+		case "dagger":
+			weapon=new Dagger(this);
+			break;
+		case "double_axe":
+			weapon=new DoubleAxe(this);
+			break;
+		case "acid_bubbles":
+			weapon=new AcidBubbles(this);
+			break;
+		case "psycho":
+			weapon=new Psycho(this);
+			break;
+		case "bite":
+			weapon=new Bite(this);
+			break;
+		case "bone":
+			weapon=new Bone(this);
+			break;
+		case "tongue":
+			weapon=new Tongue(this);
+			break;
+		case "wood_stake":
+			weapon=new WoodStake(this);
+			break;
+		case "shovel":
+			weapon=new Shovel(this);
+			break;
+		case "leaf_thrower":
+			weapon=new LeafThrower(this, Integer.MAX_VALUE);
+			break;
+		case "love_wand":
+			weapon=new LoveWand(this, Integer.MAX_VALUE);
+			break;
+		case "sceptre":
+			weapon=new Sceptre(this, Integer.MAX_VALUE);
 			break;
 		case "crossbow":
 			weapon=new Crossbow(this, Integer.MAX_VALUE);
@@ -144,6 +224,17 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	{
 		isAttacking=false;
 	}
+	
+	private GreenfootImage getCurrentImage(ImageIndex indx)
+	{
+		return images[((currRotation+45)%360)/90][indx.getValue()];
+	}
+	
+	@Override
+	public int getRotation()
+	{
+		return currRotation;
+	}
 
 	@Override
 	public void act()
@@ -164,7 +255,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		super.act();
 		
 		if(getImage()==null)
-			setImage(idleImage);
+			setImage(getCurrentImage(ImageIndex.IDLE));
 
 		seesPlayer=isInRangeOfPlayer();
 		Point currPlayerTile=wi.getPlayerPosition();
@@ -185,15 +276,17 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 				}
 				else
 				{
-					if(getImage()!=idleImage&&!isAttacking)
+					if(getImage()!=getCurrentImage(ImageIndex.IDLE)&&!isAttacking)
 					{
-						setImage(idleImage);
-						turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
+						setImage(getCurrentImage(ImageIndex.IDLE));
 					}
+					turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
+					currRotation=super.getRotation();
+					setRotation(0);
 					if(weapon.use())
 					{
 						isAttacking=true;
-						setImage(attackImage);
+						setImage(getCurrentImage(ImageIndex.ATTACK));
 					}	
 				}
 
@@ -239,8 +332,10 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		if(currTargetNode!=null)
 		{
 			turnTowardsGlobalLocation(currTargetNode.x, currTargetNode.y);
+			currRotation=super.getRotation();
+			setRotation(0);
 			if(!isAttacking)
-				move();
+				moveAtAngle(currRotation);
 			int squaredDistToTarget=squaredDistance(currTargetNode.x, currTargetNode.y, getGlobalX(), getGlobalY());
 			int squaredDistanceToPlayer=squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
 			if(isTouchingWall())
@@ -260,19 +355,27 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			{
 				currTargetNode=currTargetNode.prev;
 				if(currTargetNode!=null)
+				{
 					turnTowardsGlobalLocation(currTargetNode.x, currTargetNode.y);
+					currRotation=super.getRotation();
+					setRotation(0);
+				}
 			}	
 			//Animate the enemie
-			if(walkCounter==NUM_FRAMES_CHANGE_WALK_IMAGE)
+			if(walkCounter<=NUM_FRAMES_CHANGE_WALK_IMAGE)
 			{
-				setImage(walk1Image);
+				setImage(getCurrentImage(ImageIndex.WALK1));
 			}
-			else if(walkCounter==2*NUM_FRAMES_CHANGE_WALK_IMAGE)
+			else if(walkCounter<2*NUM_FRAMES_CHANGE_WALK_IMAGE)
 			{
-				setImage(walk2Image);
+				setImage(getCurrentImage(ImageIndex.WALK2));
+			}
+			if(walkCounter==2*NUM_FRAMES_CHANGE_WALK_IMAGE)
+			{
 				walkCounter=0;
 			}
-			walkCounter++;
+			else
+				walkCounter++;
 		}
 		sawPlayer=seesPlayer;
 	}
