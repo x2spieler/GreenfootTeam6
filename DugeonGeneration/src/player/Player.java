@@ -1,9 +1,13 @@
 package player;
 
+import java.awt.AWTException;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.JScrollPane;
+
+import camera.ActorWithCursor;
 import AI.IDamageable;
 import core.FrameType;
 import greenfoot.Greenfoot;
@@ -15,7 +19,7 @@ import weapons.abstracts.Weapon;
 import weapons.short_range.Sword;
 import world.DungeonMap;
 
-public class Player extends DeltaMover implements IDamageable {
+public class Player extends ActorWithCursor implements IDamageable {
 
 	private boolean forward = false;
 	private boolean backward = false;
@@ -51,9 +55,9 @@ public class Player extends DeltaMover implements IDamageable {
 
 	boolean mouseWheelListenerRegistered = false;
 
-	public Player(int hp) {
+	public Player(int hp, JScrollPane viewPortPane) throws AWTException {
 		//the varargs arguments at the end of the constructor call set the collision box of the player.
-		super(400, true, 7, 18, 7, 6);
+		super(viewPortPane, 400, true, 7, 18, 7, 6);
 
 		this.maxHP = hp;
 		this.currHP = hp;
@@ -295,13 +299,12 @@ public class Player extends DeltaMover implements IDamageable {
 	}
 
 	private void faceMouse() {
-		//MouseInfo info = Greenfoot.getMouseInfo();
-		//if (info != null) {
-		DungeonMap world = getWorld();
-		int x = world.getCursorX();
-		int y = world.getCursorY();
+		//		MouseInfo info = Greenfoot.getMouseInfo();
+		//		if (info != null) {
+		int x = cursor.getX();
+		int y = cursor.getY();
 		turnTowards(x, y);
-		//}
+		//		}
 	}
 
 	private void centerCamera() {
@@ -386,8 +389,7 @@ public class Player extends DeltaMover implements IDamageable {
 				param = 1.d / param;
 			setSpeed((int) (getSpeed() * param));
 			if (durationInMs >= -1)
-				activeBuffs.add(
-						new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1, buff, param));
+				activeBuffs.add(new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1, buff, param));
 			break;
 		case MAX_HP:
 			if (durationInMs == -2)
@@ -396,8 +398,7 @@ public class Player extends DeltaMover implements IDamageable {
 			if (getHP() > getMaxHP())
 				currHP = maxHP;
 			if (durationInMs >= -1)
-				activeBuffs.add(
-						new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1, buff, param));
+				activeBuffs.add(new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1, buff, param));
 			break;
 		case MELEE_DAMAGE:
 		case RELOAD_TIME:
@@ -405,8 +406,7 @@ public class Player extends DeltaMover implements IDamageable {
 			if (durationInMs >= -1) {
 				applyWeaponBuffs(buff, param, true);
 				if (durationInMs >= -1)
-					activeBuffs.add(new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1,
-							buff, param));
+					activeBuffs.add(new Buff(durationInMs != -1 ? DungeonMap.getGreenfootTime() + durationInMs : -1, buff, param));
 			} else {
 				removeWeaponBuff(buff, true);
 			}

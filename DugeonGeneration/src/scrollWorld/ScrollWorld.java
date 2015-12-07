@@ -65,11 +65,9 @@ public abstract class ScrollWorld extends World {
 		this.fullWidth = fullWidth;
 		this.fullHeight = fullHeight;
 		if (fullWidth <= 0)
-			throw new IllegalArgumentException("The width of the big space (" + fullWidth
-					+ ") can't be smaller then the width of the world (" + width + ")");
+			throw new IllegalArgumentException("The width of the big space (" + fullWidth + ") can't be smaller then the width of the world (" + width + ")");
 		if (fullHeight <= 0)
-			throw new IllegalArgumentException("The height of the big space (" + fullHeight
-					+ ") can't be smaller then the height of the world (" + height + ")");
+			throw new IllegalArgumentException("The height of the big space (" + fullHeight + ") can't be smaller then the height of the world (" + height + ")");
 
 		objects = new ArrayList<ScrollActor>();
 		camFollowers = new ArrayList<ScrollActor>();
@@ -77,7 +75,6 @@ public abstract class ScrollWorld extends World {
 		camX = getWidth() / 2;
 		camY = getHeight() / 2;
 		camDir = 0;
-
 
 		/*Never used anywhere
 		scrollPosX = 0;
