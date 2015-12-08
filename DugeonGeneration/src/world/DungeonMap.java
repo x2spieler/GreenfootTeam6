@@ -20,6 +20,8 @@ import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
 import core.FrameType;
 import core.GodFrame;
+import database.DatabaseHandler;
+import database.HighscoreEntry;
 import enemies.Bee;
 import enemies.BlueFlower;
 import enemies.Goblin;
@@ -100,6 +102,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	final int BASE_TIME_PER_ROUND=120/*seconds*/*1000/*convert to milliseconds*/;
 
 	private int round=1;
+	
+	DatabaseHandler dbHandler;
 
 	// TODO: Save Highscores - database?
 	// TODO: Balance gameplay
@@ -121,6 +125,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 
 		setPaintOrder(MapElement.class, Enemy.class, Weapon.class);
+		
+		dbHandler=new DatabaseHandler(this);
 	}
 
 	public void log(String str) {
@@ -128,6 +134,13 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		logger.flush();
 		logger.close();
 		System.out.println("Logged: \"" + str + "\"");
+	}
+	
+	public void logError(String str) {
+		logger.println("Error: "+str);
+		logger.flush();
+		logger.close();
+		System.out.println("Logged: Error:\"" + str + "\"");
 	}
 
 	public void playerDied() {
