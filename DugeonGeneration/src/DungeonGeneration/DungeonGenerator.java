@@ -5,6 +5,7 @@ package DungeonGeneration;
 //Branching
 
 import java.awt.Point;
+import java.util.*;
 
 import java.util.Random;
 import objects.Crate;
@@ -193,12 +194,15 @@ public class DungeonGenerator {
 		int absDeltaY = 0;
 		double delta = 0;
 		int absDelta = 0;
-		int temp = 0;
+		int temp [] = new int [3]; //[distance, from, to]
+		ArrayList<Integer> visited = new ArrayList<Integer>();
 		
 		
-		for (int r1 = 0; r1 < ROOM_POOL; r1++){
+		for (int r1 = 0; r1 < ROOM_POOL-1; r1++){
+			temp [0] = 300;
 			for (int r2 = r1+1; r2 < ROOM_POOL; r2++){
-
+				
+				
 				//calculate upper half distance matrix
 				deltaX = rooms[r1].getCenter().x - rooms[r2].getCenter().x;
 				deltaY = rooms[r1].getCenter().y - rooms[r2].getCenter().y;
@@ -207,13 +211,27 @@ public class DungeonGenerator {
 				
 				delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
 				absDelta = (int)Math.round(Math.abs(delta));
+				
+				//distances[r1].equals(visited.indexOf(r1));
 
+				if (absDelta < temp[0] && visited.indexOf(r2) < 0 && visited.indexOf(r1) < 0 ){
+					temp [0]= absDelta;
+					temp [1]= r1;
+					temp[2] = r2;
+					visited.add(r2);
+					visited.add(r1);
+					
+				}
+				
 				distances [r1][r2] = absDelta;
 				System.out.print(distances [r1][r2] + " ");
 			}
+			System.out.print("| " + temp[0] + " from " + temp[1] + " to " +temp[2]);
+			
 			System.out.println();
 			
 		}
+		System.out.println(visited);
 	}
 	
 	public void buildPaths(){
