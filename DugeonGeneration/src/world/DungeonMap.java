@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -22,6 +23,8 @@ import DungeonGeneration.MapField;
 import camera.MyCursor;
 import core.FrameType;
 import core.GodFrame;
+import database.DatabaseHandler;
+import database.HighscoreEntry;
 import enemies.Bee;
 import enemies.BlueFlower;
 import enemies.Goblin;
@@ -105,8 +108,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	final int BASE_TIME_PER_ROUND = 120/*seconds*/ * 1000/*convert to milliseconds*/;
 
 	private int round = 1;
+	
+	private DatabaseHandler dbHandler;
 
-	// TODO: Save Highscores - database?
 	// TODO: Balance gameplay
 	// TODO: Balance waves
 	// TODO: Spawn new destroyable objects after 5 rounds?
@@ -125,6 +129,18 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		
+		dbHandler=new DatabaseHandler(this);
+	}
+	
+	public ArrayList<HighscoreEntry> getTopEntries(int number)
+	{
+		return dbHandler.getTopEntries(number);
+	}
+	
+	public void addHighscore(String name, int highscore)
+	{
+		dbHandler.addHighscore(name, highscore);
 	}
 
 	@SuppressWarnings("rawtypes")
