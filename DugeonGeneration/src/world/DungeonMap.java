@@ -148,6 +148,13 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		logger.close();
 		System.out.println("Logged: \"" + str + "\"");
 	}
+	
+	public void logError(String str) {
+		logger.println("Error: "+str);
+		logger.flush();
+		logger.close();
+		System.out.println("Logged: Error: \"" + str + "\"");
+	}
 
 	public void playerDied() {
 		endGame();
