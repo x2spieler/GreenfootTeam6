@@ -131,7 +131,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	@Override
 	public void setPaintOrder(Class... classes) {
 		Class[] args = new Class[classes.length + 5];
-		args[1] = FPS.class;
+		args[0] = FPS.class;
 		args[1] = MyCursor.class;
 		args[2] = MapElement.class;
 		args[3] = Enemy.class;
@@ -317,10 +317,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 					do {
 						x = 1 + r.nextInt(DungeonGenerator.MAP_WIDTH - 2);
 						y = 1 + r.nextInt(DungeonGenerator.MAP_HEIGHT - 2);
-					}
-					while(!map[x+1][y].walkable()||!map[x-1][y].walkable()||!map[x][y+1].walkable()||!map[x][y-1].walkable());
-				}
-				while(!tryAddObject(stairs ,x*TILE_SIZE, y*TILE_SIZE));;
+					} while (!map[x + 1][y].walkable() || !map[x - 1][y].walkable() || !map[x][y + 1].walkable()
+							|| !map[x][y - 1].walkable());
+				} while (!tryAddObject(stairs, x * TILE_SIZE, y * TILE_SIZE));
+				;
 				//TODO: Transition sch�ner machen
 			}
 		}
@@ -381,23 +381,19 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		addDestructableObjectsToWorld();
 	}
 
-	private void addDestructableObjectsToWorld()
-	{
-		Random random=new Random(gen.getSeed());
-		for(int x=0;x<map.length;x++)
-		{
-			for(int y=0;y<map[0].length;y++)
-			{
-				if(map[x][y].getFieldType()==FieldType.DESTRUCTABLE)
-				{
-					DestroyableObject dO=null;
-					if(random.nextBoolean())
-						dO = new Crate(100, new Point(x,y), gen);
-					else if(random.nextBoolean())
-						dO = new Vase(100, new Point(x,y), gen);
-					else 
-						dO = new Grave(100, new Point(x,y), gen);
-					addObject(dO, x*TILE_SIZE+TILE_SIZE/2, y*TILE_SIZE+TILE_SIZE/2);
+	private void addDestructableObjectsToWorld() {
+		Random random = new Random(gen.getSeed());
+		for (int x = 0; x < map.length; x++) {
+			for (int y = 0; y < map[0].length; y++) {
+				if (map[x][y].getFieldType() == FieldType.DESTRUCTABLE) {
+					DestroyableObject dO = null;
+					if (random.nextBoolean())
+						dO = new Crate(100, new Point(x, y), gen);
+					else if (random.nextBoolean())
+						dO = new Vase(100, new Point(x, y), gen);
+					else
+						dO = new Grave(100, new Point(x, y), gen);
+					addObject(dO, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 				}
 			}
 		}
@@ -571,10 +567,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	public boolean hasCollision(int x, int y, ScrollActor sa) {
-		if(!(sa instanceof DungeonMover))
+		if (!(sa instanceof DungeonMover))
 			return isInAccessibleTile(x, y);
 
-		DungeonMover dm=(DungeonMover)sa;
+		DungeonMover dm = (DungeonMover) sa;
 		if (dm.getExtent()[0] == -1)
 			return !isInAccessibleTile(x, y);
 		int rightBound = x + dm.getExtentIn(Direction.RIGHT);
@@ -622,16 +618,16 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	@Override
 	public void addObject(final Actor actor, final int x, final int y) {
-			if (isInAccessibleTile(x, y)) {
-				super.addObject(actor, x, y);
-			} else {
-			Point p=null;
-			if(actor instanceof ScrollActor)
-				p = getNearestAccessiblePoint(x, y, (ScrollActor)actor);
+		if (isInAccessibleTile(x, y)) {
+			super.addObject(actor, x, y);
+		} else {
+			Point p = null;
+			if (actor instanceof ScrollActor)
+				p = getNearestAccessiblePoint(x, y, (ScrollActor) actor);
 			else
-				p=new Point(x, y);
-				super.addObject(actor, p.x, p.y);
-			}
+				p = new Point(x, y);
+			super.addObject(actor, p.x, p.y);
+		}
 
 	}
 
