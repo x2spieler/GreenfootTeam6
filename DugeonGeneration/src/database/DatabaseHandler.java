@@ -26,7 +26,6 @@ public class DatabaseHandler
 			con=DriverManager.getConnection("jdbc:sqlite:game.db");
 			dm.log("Succesfully established database connection");
 			stmt=con.createStatement();
-			stmt.execute("DELETE FROM Highscore");
 			stmt.execute("CREATE TABLE IF NOT EXISTS Highscore (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), score INTEGER)");
 			stmt.close();
 		} 
