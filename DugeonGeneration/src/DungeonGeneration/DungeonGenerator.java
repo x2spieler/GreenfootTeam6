@@ -40,6 +40,8 @@ public class DungeonGenerator {
 	private DungeonMap dm = null;
 	
 	boolean couldnNotFindWay=false;
+	boolean startPointBlocked=false;
+	boolean endPointBlocked=false;
 	
 	
 	public DungeonGenerator(DungeonMap dm)
@@ -382,10 +384,20 @@ public class DungeonGenerator {
 	private void createWay(Point start, Point end, int radius)
 	{
 		couldnNotFindWay=false;
-		if(mapBlocks[end.x][end.y].getFieldType()!=FieldType.CELL||mapBlocks[start.x][start.y].getFieldType()!=FieldType.CELL)
+		endPointBlocked=false;
+		startPointBlocked=false;
+		if(mapBlocks[end.x][end.y].getFieldType()!=FieldType.CELL)
 		{
+			endPointBlocked=true;
 			couldnNotFindWay=true;
-			System.out.println("Start or end point is not a cell");
+			System.out.println("End point is not a cell");
+			return;
+		}
+		if(mapBlocks[start.x][start.y].getFieldType()!=FieldType.CELL)
+		{
+			startPointBlocked=true;
+			couldnNotFindWay=true;
+			System.out.println("Start point is not a cell");
 			return;
 		}
 		
