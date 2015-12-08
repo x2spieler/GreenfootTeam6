@@ -91,10 +91,11 @@ public abstract class DestroyableObject extends ScrollActor implements IDamageab
 			{
 				DungeonMap dm = (DungeonMap)getWorld();
 				Item item = new Item(dm, bt);
+				
 				int xAdd=1;
+				int yAdd=1;
 				if(r.nextBoolean())
 					xAdd=-1;
-				int yAdd=1;
 				if(r.nextBoolean())
 					yAdd=-1;
 				dm.addObject(item, (mapCoords.x+xAdd) * DungeonMap.TILE_SIZE + DungeonMap.TILE_SIZE/2, (mapCoords.y+yAdd) * DungeonMap.TILE_SIZE + DungeonMap.TILE_SIZE/2);
