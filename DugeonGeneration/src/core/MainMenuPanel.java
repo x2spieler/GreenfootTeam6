@@ -18,7 +18,7 @@ public class MainMenuPanel extends BackgroundPanel {
 	private JTextField textField;
 
 	public MainMenuPanel(final ActionListener start, final ActionListener highscore) {
-		super(new ImageIcon("src/images/background/background2.jpg").getImage());
+		super(new ImageIcon("src/images/background/background.jpg").getImage());
 
 		setBackground(SystemColor.text);
 
@@ -41,8 +41,6 @@ public class MainMenuPanel extends BackgroundPanel {
 		Highscore.setForeground(UIManager.getColor("Button.highlight"));
 		Highscore.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				HighScore highscore = new HighScore();
-				highscore.setVisible(true);
 
 			}
 		});

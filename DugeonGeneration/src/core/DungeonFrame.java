@@ -47,12 +47,14 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
+import javax.swing.JTextPane;
 
 public class DungeonFrame extends JFrame {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7379852013198002869L;
+	private JTextField textField;
 
 	/**
 	 * Launch the application.
@@ -75,61 +77,105 @@ public class DungeonFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public DungeonFrame() {
-		Image image = new ImageIcon("src/images/background/background2.jpg")
+		Image image = new ImageIcon("src/images/background/background.png")
 				.getImage();
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(200, 200, 1024, 800);
+		setBounds(200, 200, 1331, 750);
 		getContentPane().setLayout(null);
 		final BackgroundPanel panel = new BackgroundPanel(image);
-		panel.setBounds(0, 0, 1024, 800);
+		panel.setBounds(0, 0, 1387, 750);
 
 		panel.setForeground(SystemColor.desktop);
 		panel.setFont(new Font("Dialog", Font.PLAIN, 5));
 		getContentPane().add(panel);
 
-		JButton GameStart = new JButton("");
-		GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/StartGame.png")));
+		JButton GameStart = new JButton();
+		GameStart.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/StartGame_white.png")));
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Startgame.png")));
+			}
+		});
+		GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Startgame.png")));
 		GameStart.setBackground(UIManager.getColor("Button.highlight"));
 		GameStart.setContentAreaFilled(false);
 		GameStart.setOpaque(false);
+		GameStart.setBorder(null);
 
-		JButton Help = new JButton("");
-		Help.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Help.png")));
-		Help.setContentAreaFilled(false);
-		Help.setOpaque(false);
+		JButton eingeben = new JButton("");
+		eingeben.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/eingeben_white.png")));
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Eingeben.png")));
+			}
+		});
+		eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Eingeben.png")));
+		eingeben.setContentAreaFilled(false);
+		eingeben.setOpaque(false);
+		eingeben.setBorder(null);
 		
 		JButton HighScore = new JButton("");
-		HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/HighScore.png")));
+		HighScore.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore_white.png")));
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore.png")));
+			}
+		});
+		HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore.png")));
 		HighScore.setContentAreaFilled(false);
 		HighScore.setOpaque(false);
+		HighScore.setBorder(null);
+		
+		textField = new JTextField();
+		textField.setColumns(10);
+		textField.setOpaque(false);
+		textField.setBorder(null);
+		
 		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
+			gl_panel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(Alignment.LEADING, gl_panel.createSequentialGroup()
+					.addGap(427)
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_panel.createSequentialGroup()
+								.addGap(86)
+								.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 348, GroupLayout.PREFERRED_SIZE))
+							.addGroup(gl_panel.createSequentialGroup()
+								.addGap(217)
+								.addComponent(eingeben, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE))
+							.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 423, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(335)
-							.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 266, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(730)
-							.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 222, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(403)
-							.addComponent(Help, GroupLayout.PREFERRED_SIZE, 144, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(72, Short.MAX_VALUE))
+							.addGap(205)
+							.addComponent(textField, GroupLayout.PREFERRED_SIZE, 282, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(473, Short.MAX_VALUE))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(39)
-					.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 52, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 299, Short.MAX_VALUE)
-					.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-					.addGap(27)
-					.addComponent(Help, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
-					.addGap(289))
+					.addContainerGap(263, Short.MAX_VALUE)
+					.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(textField, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(eingeben)
+					.addGap(194))
 		);
 		panel.setLayout(gl_panel);
 
