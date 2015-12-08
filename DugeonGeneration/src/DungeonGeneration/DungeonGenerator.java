@@ -5,9 +5,11 @@ package DungeonGeneration;
 //Branching
 
 import java.awt.Point;
-import java.util.*;
-
+import java.util.ArrayList;
 import java.util.Random;
+
+import com.sun.jmx.snmp.SnmpUnknownSubSystemException;
+
 import objects.Crate;
 import objects.DestroyableObject;
 import objects.Grave;
@@ -16,7 +18,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 10;
+	public static final int ROOM_POOL = 45;
 	public static final int MAP_WIDTH = 120;
 	public static final int MAP_HEIGHT = 120;
 	
@@ -37,7 +39,7 @@ public class DungeonGenerator {
 	
 	private DungeonMap dm = null;
 	
-
+	boolean couldnNotFindWay=false;
 	
 	
 	public DungeonGenerator(DungeonMap dm)
@@ -78,6 +80,7 @@ public class DungeonGenerator {
 		clearMap();
 		generateRooms();
 		removeCells();
+		createWay(new Point(5, 5), new Point(110, 110), 3);
 		showMap();
 		calculatePaths();
 	}
@@ -194,15 +197,12 @@ public class DungeonGenerator {
 		int absDeltaY = 0;
 		double delta = 0;
 		int absDelta = 0;
-		int temp [] = new int [3]; //[distance, from, to]
-		ArrayList<Integer> visited = new ArrayList<Integer>();
+		int temp = 0;
 		
 		
-		for (int r1 = 0; r1 < ROOM_POOL-1; r1++){
-			temp [0] = 300;
+		for (int r1 = 0; r1 < ROOM_POOL; r1++){
 			for (int r2 = r1+1; r2 < ROOM_POOL; r2++){
-				
-				
+
 				//calculate upper half distance matrix
 				deltaX = rooms[r1].getCenter().x - rooms[r2].getCenter().x;
 				deltaY = rooms[r1].getCenter().y - rooms[r2].getCenter().y;
@@ -211,27 +211,13 @@ public class DungeonGenerator {
 				
 				delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
 				absDelta = (int)Math.round(Math.abs(delta));
-				
-				//distances[r1].equals(visited.indexOf(r1));
 
-				if (absDelta < temp[0] && visited.indexOf(r2) < 0 && visited.indexOf(r1) < 0 ){
-					temp [0]= absDelta;
-					temp [1]= r1;
-					temp[2] = r2;
-					visited.add(r2);
-					visited.add(r1);
-					
-				}
-				
 				distances [r1][r2] = absDelta;
 				System.out.print(distances [r1][r2] + " ");
 			}
-			System.out.print("| " + temp[0] + " from " + temp[1] + " to " +temp[2]);
-			
 			System.out.println();
 			
 		}
-		System.out.println(visited);
 	}
 	
 	public void buildPaths(){
@@ -350,8 +336,6 @@ public class DungeonGenerator {
 				
 		}					
 	}
-				
-		
 
 	//Displays the world map in the console for debugging purposes.
 	public void showMap() {
@@ -393,5 +377,184 @@ public class DungeonGenerator {
 		
 		System.out.println("\n Map Seed: " + mapSeed);
 		
+	}
+	
+	private void createWay(Point start, Point end, int radius)
+	{
+		couldnNotFindWay=false;
+		if(mapBlocks[end.x][end.y].getFieldType()!=FieldType.CELL||mapBlocks[start.x][start.y].getFieldType()!=FieldType.CELL)
+		{
+			couldnNotFindWay=true;
+			System.out.println("Start or end point is not a cell");
+			return;
+		}
+		
+		ArrayList<Node>closedList=new ArrayList<Node>();
+		ArrayList<Node>openList=new ArrayList<Node>();
+
+		openList.add(new Node(manhattanDistance(start, end.x, end.y),0, end.x, end.y, null));
+
+		Node endNode=null;
+		while(endNode==null&&couldnNotFindWay==false)
+		{
+			endNode=step(closedList, openList, start,radius);
+		}
+		if(endNode!=null)
+		{
+			Node n=endNode;
+			while(n.prev!=null)
+			{
+				int x=n.x;
+				int y=n.y;
+				for(int i=x-radius/2;i<=x+radius/2;i++)
+				{
+					for(int j=y-radius/2;j<=y+radius/2;j++)
+					{
+						mapBlocks[i][j].setFieldType(FieldType.GROUND);
+					}
+				}
+				n=n.prev;
+			}
+		}
+	}
+	
+
+	private Node step(ArrayList<Node>closedList, ArrayList<Node>openList, Point start, int radius)
+	{
+		if(openList.size()==0)
+		{
+			couldnNotFindWay=true;
+			System.out.println("Couldn't find a way");
+			return null;
+		}
+		Node closest=openList.get(0);
+		for(Node node:openList)
+		{
+			if(node.cost<closest.cost)
+			{
+				closest=node;
+			}
+		}
+
+		if(closest.x==start.x&&closest.y==start.y)
+		{
+			return closest;
+		}
+		int x=-1,y=-1;
+		int addX=1;
+		int addY=0;
+		outerFor:
+		for(int i=0;i<4;i++)
+		{
+			if(i==1||i==3)
+			{
+				addX*=-1;
+				addY*=-1;
+			}
+			if(i==2)
+			{
+				addX=0;
+				addY=1;
+			}
+			//1. Loop: 1 , 0
+			//2. Loop: -1, 0
+			//3. Loop: 0, 1l
+			//4. Loop: 0, -1
+			x=closest.x+addX;	
+			y=closest.y+addY;
+			if(x<0||y<0||x>=mapBlocks.length||y>=mapBlocks[0].length)
+				continue;
+			Node currNode=new Node(manhattanDistance(start, x,y)+closest.movementCost+1,closest.movementCost+1, x,y, closest);
+			if(addY!=0)
+			{
+				for(int k=x-radius/2;k<=x+radius/2;k++)
+				{
+					for(int l=y;l!=y+addY*(radius/2)+addY;l+=addY)
+					{
+						if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
+							continue outerFor;
+					}
+				}
+			}
+			else
+			{
+				for(int k=x;k!=x+addX*(radius/2)+addX;k+=addX)
+				{
+					for(int l=y-radius/2;l<=y+radius/2;l++)
+					{
+						if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
+							continue outerFor;
+					}
+				}
+			}
+			if(!closedList.contains(currNode))
+			{
+				int indx=openList.indexOf(currNode);
+				if(indx==-1)
+				{
+					openList.add(currNode);
+				}
+				else
+				{
+					Node inList=openList.get(indx);
+					if(currNode.cost<=inList.cost)
+					{
+						inList.cost=currNode.cost;
+						inList.prev=currNode.prev;
+						inList.movementCost=currNode.movementCost;
+					}
+				}
+			}
+		}
+
+		openList.remove(closest);
+		closedList.add(closest);
+
+		return null;
+	}
+
+	private double manhattanDistance(Point start, int x, int y)
+	{
+		return Math.abs(start.x-x)+Math.abs(start.y-y);
+	}
+
+	class Node
+	{
+		double cost;
+		double movementCost;
+		int x;
+		int y;
+		Node prev;
+
+		public Node(double cost,double movementCost, int x, int y, Node prev)
+		{
+			this.movementCost=movementCost;
+			this.cost=cost;
+			this.x=x;
+			this.y=y;
+			this.prev=prev;
+		}
+
+		public Node(int x, int y)
+		{
+			this.x=x;
+			this.y=y;
+		}
+
+		@Override
+		public boolean equals(Object v)
+		{
+			if(v instanceof Node)
+			{
+				Node n=(Node)v;
+				return n.x==x&&n.y==y;
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return x*100000+y;
+		}
 	}
 }
