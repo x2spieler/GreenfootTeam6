@@ -2,18 +2,12 @@ package world;
 
 import greenfoot.GreenfootImage;
 import greenfoot.World;
-import objects.StairsToHeaven;
 import scrollWorld.ScrollActor;
 
 public class MapElement extends ScrollActor {
 
 	public MapElement(GreenfootImage image) {
 		setImage(image);
-	}
-
-	@Override
-	protected void addedToWorld(World world) {
-		super.addedToWorld(world);
 	}
 
 	@Override
