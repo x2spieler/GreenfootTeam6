@@ -262,6 +262,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 				e=new Bee();
 				break;
 			}
+			e=new Vampire();
 			addObject(e, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 			numAliveEnemies++;
 		}
@@ -564,16 +565,13 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	@Override
 	public void addObject(final Actor actor, final int x, final int y) {
-		if (actor instanceof DungeonMover) {
-			if (isInAccessibleTile(x, y)) {
-				super.addObject(actor, x, y);
-			} else {
-				Point p = getNearestAccessiblePoint(x, y, (DungeonMover) actor);
-				super.addObject(actor, p.x, p.y);
-			}
-		} else {
+		if (isInAccessibleTile(x, y)) {
 			super.addObject(actor, x, y);
+		} else {
+			Point p = getNearestAccessiblePoint(x, y, (DungeonMover) actor);
+			super.addObject(actor, p.x, p.y);
 		}
+
 	}
 
 	/**
