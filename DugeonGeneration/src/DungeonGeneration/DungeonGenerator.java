@@ -8,7 +8,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.sun.jmx.snmp.SnmpUnknownSubSystemException;
 
 import objects.Crate;
 import objects.DestroyableObject;
@@ -18,7 +17,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 45;
+	public static final int ROOM_POOL = 5;
 	public static final int MAP_WIDTH = 120;
 	public static final int MAP_HEIGHT = 120;
 	
@@ -82,9 +81,10 @@ public class DungeonGenerator {
 		clearMap();
 		generateRooms();
 		removeCells();
-		createWay(new Point(5, 5), new Point(110, 110), 3);
-		showMap();
+		
+		
 		calculatePaths();
+		showMap();
 	}
 	
 	
@@ -190,7 +190,7 @@ public class DungeonGenerator {
 			
 	}
 	
-	public void calculatePaths(){
+public void calculatePaths(){
 		
 		int distances [][] = new int [ROOM_POOL][ROOM_POOL];
 		int deltaX = 0;
@@ -199,12 +199,15 @@ public class DungeonGenerator {
 		int absDeltaY = 0;
 		double delta = 0;
 		int absDelta = 0;
-		int temp = 0;
+		int temp [] = new int [3]; //[distance, from, to]
+		ArrayList<Integer> visited = new ArrayList<Integer>();
 		
 		
-		for (int r1 = 0; r1 < ROOM_POOL; r1++){
+		for (int r1 = 0; r1 < ROOM_POOL-1; r1++){
+			temp [0] = 300;
 			for (int r2 = r1+1; r2 < ROOM_POOL; r2++){
-
+				
+				
 				//calculate upper half distance matrix
 				deltaX = rooms[r1].getCenter().x - rooms[r2].getCenter().x;
 				deltaY = rooms[r1].getCenter().y - rooms[r2].getCenter().y;
@@ -213,20 +216,61 @@ public class DungeonGenerator {
 				
 				delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
 				absDelta = (int)Math.round(Math.abs(delta));
+				
+				//distances[r1].equals(visited.indexOf(r1));
 
+				if (absDelta < temp[0] && visited.indexOf(r2) < 0 && visited.indexOf(r1) < 0 ){
+					temp [0]= absDelta;
+					temp [1]= r1;
+					temp[2] = r2;
+					visited.add(r1);
+					
+					
+				}
+				
 				distances [r1][r2] = absDelta;
 				System.out.print(distances [r1][r2] + " ");
 			}
+			System.out.print("| " + temp[0] + " from " + temp[1] + " to " +temp[2]);
+			
 			System.out.println();
+			buildPath(temp[1], temp[2]);
 			
 		}
+		System.out.println(visited);
 	}
 	
-	public void buildPaths(){
-		
-		for(int r1 = 0; r1 < ROOM_POOL -1; r1++) {
-			
-		}
+public void buildPath(int r1, int r2){
+	
+	
+	int deltaX = rooms[r1].getCenter().x -  rooms[r2].getCenter().x ;
+	int deltaY = rooms[r1].getCenter().y -  rooms[r2].getCenter().y ;
+	
+	int absDeltaX = Math.abs(deltaX);
+	int absDeltaY = Math.abs(deltaY);
+	int posX = 0;
+	int posY = 0;
+	int startOffsetX = 0;
+	int endOffsetX = 0;
+	
+	
+	if (deltaX<0){
+		startOffsetX = -rooms[r1].getSizeX()/2-2;
+		endOffsetX = rooms[r2].getSizeX()/2+2;
+	} else {
+		startOffsetX = rooms[r1].getSizeX()/2+2;
+		endOffsetX = -rooms[r2].getSizeX()/2-2;
+	}
+	
+	posX = rooms[r1].getCenter().x;
+	posY = rooms[r1].getCenter().y;
+	Point startPos = new Point(posX-startOffsetX, posY);
+	
+	posX = rooms[r2].getCenter().x;
+	posY = rooms[r2].getCenter().y;
+	Point endPos = new Point(posX-endOffsetX, posY);
+
+	createWay(startPos, endPos ,3);
 	}
 	
 	
