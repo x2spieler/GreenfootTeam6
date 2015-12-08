@@ -1,103 +1,169 @@
 package camera;
 
 import java.awt.AWTException;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.Robot;
+import java.awt.Shape;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import greenfoot.Greenfoot;
+import greenfoot.GreenfootImage;
 import greenfoot.MouseInfo;
-import greenfoot.core.WorldHandler;
+import greenfoot.World;
 import scrollWorld.ScrollActor;
+import scrollWorld.ScrollWorld;
+import world.DungeonMap;
 
 public class MyCursor extends ScrollActor {
-	private static final int SPEED = 800;
+	public static final int RESTINGXINMAP = DungeonMap.VIEWPORT_WIDTH / 2;
+	public static final int RESTINGYINMAP = DungeonMap.VIEWPORT_HEIGHT / 2;
+	public static final Polygon DEFAULT_BOUNDS = new Polygon(new int[] { 0, RESTINGXINMAP, RESTINGXINMAP, 0 }, new int[] { 0, 0, RESTINGYINMAP, RESTINGYINMAP }, 4);
+	private int restingXinPane;
+	private int restingYinPane;
 	private Robot robot;
-	private boolean moving = false;
-	private long time = System.nanoTime();
-	private int targetX = 0;
-	private int targetY = 0;
+	private JScrollPane viewPortPane;
+	private GreenfootImage cursor;
 
-	public MyCursor() throws AWTException {
+	private Polygon bounds;
+
+	private int anchorX;
+	private int anchorY;
+	private int lastAnchorX;
+	private int lastAnchorY;
+
+	public MyCursor(JScrollPane viewPortPane) throws AWTException {
 		super();
-		robot = new Robot();
+		this.robot = new Robot();
+		setViewPortPane(viewPortPane);
+		this.cursor = new GreenfootImage("default_cursor.png");
+		setImage(cursor);
+		this.bounds = new Polygon(new int[] { 0, RESTINGXINMAP * 2, RESTINGXINMAP * 2, 0 }, new int[] { 0, 0, RESTINGYINMAP * 2, RESTINGYINMAP * 2 }, 4);
 	}
 
 	public void act() {
-		double delta = (System.nanoTime() - time) * 0.000000001;
-		time = System.nanoTime();
-
-		MouseInfo m = Greenfoot.getMouseInfo();
-
-		if (m != null) {
-			if (Greenfoot.mouseMoved(null) && !moving) {
-				int x = m.getX();
-				int y = m.getY();
-				targetX = getWorld().getCameraX() + x - getWorld().getWidth()
-						/ 2;
-				targetY = getWorld().getCameraY() + y - getWorld().getHeight()
-						/ 2;
-				setLocation(x, y);
-				moving = true;
-				// System.out.println(targetX + " " + targetY);
-			}
-
-			if (moving && !Greenfoot.mouseMoved(null)) {
-				if (targetInBounds()) {
-					int distX = targetX - getGlobalX();
-					int distY = targetY - getGlobalY();
-					// System.out.println(getGlobalX() + " " + getGlobalY());
-					double dist = Math.sqrt(distX * distX + distY * distY);
-					if (dist > 1.5 * SPEED * delta) {
-						double vX = distX / dist * SPEED * delta;
-						double vY = distY / dist * SPEED * delta;
-						getWorld().setCameraLocation(
-								getWorld().getCameraX() + (int) vX,
-								getWorld().getCameraY() + (int) vY);
-
-						Point p = new Point(getXFromCamera()
-								+ (getWorld().getWidth() / 2), getYFromCamera()
-								+ (getWorld().getHeight() / 2));
-						// System.out.println(getXFromCamera() + " "
-						// + getYFromCamera());
-						p.setLocation(p.getX() - vX, p.getY() - vY);
-						SwingUtilities.convertPointToScreen(p, WorldHandler
-								.getInstance().getWorldCanvas());
-						robot.mouseMove((int) p.getX(), (int) p.getY());
-
-						// System.out.println(vX + ", " + vY);
-					} else {
-						getWorld().setCameraLocation(targetX, targetY);
-						moving = false;
-					}
-				} else {
-					moving = false;
-				}
-			}
-		}
-		// if (m != null) {
-		// setLocation(m.getX(), m.getY());
-		// getWorld().setCameraLocation(getGlobalX(), getGlobalY());
-		// Point p = new Point(getXFromCamera(), getYFromCamera());
-		// SwingUtilities.convertPointToScreen(p, WorldHandler.getInstance()
-		// .getWorldCanvas());
-		// // System.out.println(p.getX()+", "+p.getY());
-		// // if(WorldHandler.getInstance().getWorldCanvas().contains(p1)){
-		// }
-
+		super.act();
+		updateCursor();
 	}
 
-	private boolean targetInBounds() {
-		if (targetX - (getWorld().getWidth() / 2) >= 0
-				&& targetY - (getWorld().getHeight() / 2) >= 0
-				&& targetX - (getWorld().getWidth() / 2) <= getWorld()
-						.getFullWidth() - (getWorld().getWidth() / 2)
-				&& targetY - (getWorld().getHeight() / 2) <= getWorld()
-						.getFullHeight() - (getWorld().getHeight() / 2)) {
-			return true;
-		} else {
-			return false;
+	public void updateCursor() {
+		super.act();
+		int x = getX();
+		int y = getY();
+		int anctorxInViewport = anchorX - getGlobalX();
+		int axtoryInViewport = anchorY - getGlobalY();
+		SetBoundsLocation(anctorxInViewport, anctorxInViewport);
+		moveTo(RESTINGXINMAP + anchorX - lastAnchorX, RESTINGYINMAP + anchorY - lastAnchorY);
+		//		if (!bounds.contains(x, y)) {
+		//			moveTo(anchorX, anchorY);
+		//		}
+		MouseInfo m = Greenfoot.getMouseInfo();
+		if (m != null) {
+			int mouseX = m.getX();
+			int mouseY = m.getY();
+			if (mouseX != RESTINGXINMAP || mouseY != RESTINGYINMAP) {
+				setMousePosition(restingXinPane, restingYinPane);
+				moveTo(mouseX, mouseY);
+			}
 		}
+	}
+
+	private void setMousePosition(int x, int y) {
+		if (viewPortPane == null)
+			return;
+		Point target = new Point(x, y);
+		SwingUtilities.convertPointToScreen(target, viewPortPane);
+		robot.mouseMove(target.x, target.y);
+	}
+
+	private void setMouseHidden(boolean hidden) {
+		if (viewPortPane == null)
+			return;
+		if (hidden) {
+			viewPortPane.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "empty_cursor"));
+		} else {
+			viewPortPane.setCursor(Cursor.getDefaultCursor());
+		}
+	}
+
+	protected void setViewPortPane(JScrollPane viewPortPane) {
+		this.viewPortPane = viewPortPane;
+
+		restingXinPane = viewPortPane.getWidth() / 2;
+		restingYinPane = viewPortPane.getHeight() / 2;
+		setMousePosition(restingXinPane, restingYinPane);
+		setMouseHidden(true);
+	}
+
+	public void moveTo(int x, int y) {
+		if (getWorld() == null)
+			return;
+		//if (bounds.contains(x, y)) {
+		ScrollWorld world = getWorld();
+		world.setCameraLocation(world.getCameraX() + x - RESTINGXINMAP, world.getCameraY() + y - RESTINGYINMAP);
+		bounds.translate(RESTINGXINMAP - x, RESTINGYINMAP - y);
+		//}
+	}
+
+	public void updateAnchorLocation(int x, int y) {
+		if (getWorld() == null)
+			return;
+		//if (x != anchorX || y != anchorY) {
+		//			ScrollWorld world = getWorld();
+		//			int xInViewport = x - world.getCameraX() + RESTINGXINMAP;
+		//			int yInViewport = y - world.getCameraY() + RESTINGYINMAP;
+		//			if (bounds.contains(xInViewport, yInViewport)) {
+		//				int deltaX = x - anchorX;
+		//				int deltaY = y - anchorY;
+		//				bounds.translate(deltaX, deltaY);
+		//				moveTo(RESTINGXINMAP + deltaX, RESTINGYINMAP + deltaY);
+		//			} else {
+		//				SetBoundsLocation(xInViewport, yInViewport);
+		//				moveTo(xInViewport, yInViewport);
+		//			}
+		if (!(lastAnchorX == 0 && lastAnchorY == 0 && anchorX == 0 && anchorY == 0)) {
+			this.lastAnchorX = anchorX;
+			this.lastAnchorY = anchorY;
+			this.anchorX = x;
+			this.anchorY = y;
+		} else {
+			lastAnchorX = anchorX = x;
+			lastAnchorY = anchorY = y;
+		}
+		//}
+	}
+
+	private void SetBoundsLocation(int x, int y) {
+		Rectangle r = bounds.getBounds();
+		if (r.getX() != 0 || r.getY() != 0) {
+			bounds.translate((int) (0 - r.getX()), (int) (0 - r.getY()));
+		}
+		int dy = y - r.height / 2;
+		if (bounds.npoints == 3) {
+			bounds.translate(anchorX, dy);
+		} else if (bounds.npoints == 4) {
+			int dx = x - r.width / 2;
+			bounds.translate(dx, dy);
+		}
+	}
+
+	public void setBoundingArea(Polygon bounds) {
+		if (bounds.npoints == 3 || bounds.npoints == 4) {
+			this.bounds = bounds;
+			SetBoundsLocation(RESTINGXINMAP, RESTINGYINMAP);
+		} else {
+			throw new IllegalArgumentException("cursor bounding area must be a triangle or a rectangle");
+		}
+	}
+
+	@Override
+	public void setLocation(int x, int y) {
 	}
 }
