@@ -2,5 +2,5 @@ package DungeonGeneration;
 
 public enum FieldType {
 
-	GROUND, WALL, DESTRUCTABLE, PICKUP
+	GROUND, WALL, OPENING, CELL, DESTRUCTABLE, PICKUP, CENTER
 }

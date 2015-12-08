@@ -146,6 +146,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		godFrame.updateSeedLabel(gen.getSeed());
 		player = new Player(100);
 		addObject(player, 0, 0);
+		player.setNoclip(true);
 		lastTicks = System.currentTimeMillis();
 		greenfootTime = 0;
 		addObject(fps, 100, 20);
