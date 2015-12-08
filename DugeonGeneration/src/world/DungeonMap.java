@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import AI.Enemy;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
+import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
 import core.FrameType;
 import core.GodFrame;
@@ -37,11 +38,16 @@ import greenfoot.Actor;
 import greenfoot.GreenfootImage;
 import javafx.util.Pair;
 import menu.BuyItem;
+import objects.Crate;
+import objects.DestroyableObject;
+import objects.Grave;
 import objects.StairsToHeaven;
+import objects.Vase;
 import player.BuffType;
 import player.DungeonMover;
 import player.Player;
 import scrollWorld.FPS;
+import scrollWorld.ScrollActor;
 import scrollWorld.ScrollWorld;
 import weapons.abstracts.Bullet;
 import weapons.abstracts.Weapon;
@@ -355,8 +361,30 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private final void generateNewMap(int seed) {
 		gen = new DungeonGenerator(this, seed);
-
 		map = gen.getMap();
+		addDestructableObjectsToWorld();
+	}
+
+	private void addDestructableObjectsToWorld()
+	{
+		Random random=new Random(gen.getSeed());
+		for(int x=0;x<map.length;x++)
+		{
+			for(int y=0;y<map[0].length;y++)
+			{
+				if(map[x][y].getFieldType()==FieldType.DESTRUCTABLE)
+				{
+					DestroyableObject dO=null;
+					if(random.nextBoolean())
+						dO = new Crate(100, new Point(x,y), gen);
+					else if(random.nextBoolean())
+						dO = new Vase(100, new Point(x,y), gen);
+					else 
+						dO = new Grave(100, new Point(x,y), gen);
+					addObject(dO, x*TILE_SIZE+TILE_SIZE/2, y*TILE_SIZE+TILE_SIZE/2);
+				}
+			}
+		}
 	}
 
 	private void paintTiles(final int x, final int y, final int deltax, final int deltay) {
@@ -517,7 +545,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		return !hasCollision(x, y, dungeonMover) || (isInMap(x, y) && dungeonMover.noclip());
 	}
 
-	public boolean hasCollision(int x, int y, DungeonMover dm) {
+	public boolean hasCollision(int x, int y, ScrollActor sa) {
+		if(!(sa instanceof DungeonMover))
+			return isInAccessibleTile(x, y);
+
+		DungeonMover dm=(DungeonMover)sa;
 		if (dm.getExtent()[0] == -1)
 			return !isInAccessibleTile(x, y);
 		int rightBound = x + dm.getExtentIn(Direction.RIGHT);
@@ -539,7 +571,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		return (x >= 0 && y >= 0 && x < getFullWidth() && y < getFullHeight());
 	}
 
-	private Point getNearestAccessiblePoint(int x, int y, DungeonMover dm) {
+	private Point getNearestAccessiblePoint(int x, int y, ScrollActor sa) {
 
 		int count = 1;
 		int move = 0;
@@ -559,7 +591,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 				throw new IllegalStateException("no free tile available x= " + x + " y= " + y);
 			}
 			move--;
-		} while (hasCollision(x, y, dm));
+		} while (hasCollision(x, y, sa));
 		return new Point(x, y);
 	}
 
@@ -568,7 +600,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		if (isInAccessibleTile(x, y)) {
 			super.addObject(actor, x, y);
 		} else {
-			Point p = getNearestAccessiblePoint(x, y, (DungeonMover) actor);
+			Point p=null;
+			if(actor instanceof ScrollActor)
+				p = getNearestAccessiblePoint(x, y, (ScrollActor)actor);
+			else
+				p=new Point(x, y);
 			super.addObject(actor, p.x, p.y);
 		}
 

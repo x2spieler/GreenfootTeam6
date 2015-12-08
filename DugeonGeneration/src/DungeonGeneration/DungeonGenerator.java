@@ -164,14 +164,6 @@ public class DungeonGenerator {
 					
 					if (mapBlocks[posX][posY].getFieldType() == FieldType.GROUND){
 						mapBlocks[posX][posY].setFieldType(FieldType.DESTRUCTABLE);
-						DestroyableObject dO=null;
-						if(random.nextBoolean())
-							dO = new Crate(100, new Point(rooms[i].getPosition().x + randomOffsetX, rooms[i].getPosition().y + randomOffsetY), this);
-						else if(random.nextBoolean())
-							dO = new Vase(100, new Point(rooms[i].getPosition().x + randomOffsetX, rooms[i].getPosition().y + randomOffsetY), this);
-						else 
-							dO = new Grave(100, new Point(rooms[i].getPosition().x + randomOffsetX, rooms[i].getPosition().y + randomOffsetY), this);
-						dm.addObject(dO, (rooms[i].getPosition().x + randomOffsetX) * 32 + DungeonMap.TILE_SIZE/2, (rooms[i].getPosition().y + randomOffsetY) * 32 + DungeonMap.TILE_SIZE/2);
 					}
 				}
 				
