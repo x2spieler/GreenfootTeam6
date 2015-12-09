@@ -56,18 +56,18 @@ public class GodFrame {
 	private JScrollPane gameOverPane = null;
 	private JScrollPane nextRoundPane = null;
 	private JPanel viewportPanel = null;
-	private JLabel seedLabel=null;
+	private JLabel seedLabel = null;
 	private JLabel coinLabel = null;
 	private JLabel buyFeedbackLabel = null;
 	private JLabel timeLabel = null;
 	private JLabel mediPackLabel = null;
-	private JLabel weaponLabel=null;
-	private JLabel ammoLabel=null;
-	private JLabel healthBarLabel=null;
-	private JLabel scoreLabel=null;
-	private JLabel noDamageLabel=null;
-	private JLabel inTimeLabel=null;
-	private BufferedImage healthBarImage=null;
+	private JLabel weaponLabel = null;
+	private JLabel ammoLabel = null;
+	private JLabel healthBarLabel = null;
+	private JLabel scoreLabel = null;
+	private JLabel noDamageLabel = null;
+	private JLabel inTimeLabel = null;
+	private BufferedImage healthBarImage = null;
 	private DungeonMap world;
 
 	private LinkedHashMap<String, BuffPanel> buffPanels;
@@ -188,12 +188,12 @@ public class GodFrame {
 		JPanel entryPanel = new JPanel();
 		entryPanel.setLayout(new GridLayout(0, 1));
 		int horizontalSpace = 20;
-
+		//TODO find a smart way to get the Icon from the weapon it belongs to
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_AXE, new GreenfootImage("enemies/weapons/axe/axe0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_HAMMER, new GreenfootImage("enemies/weapons/hammer/hammer0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SPEAR, new GreenfootImage("enemies/weapons/spear/spear0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CROSSBOW, new GreenfootImage("enemies/weapons/crossbow/crossbow0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SWORD, new GreenfootImage("enemies/weapons/sword/sword0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SWORD, new GreenfootImage("enemies/weapons/sword/sword.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_NINJA_STAR, new GreenfootImage("enemies/weapons/ninja_star/ninja_star0.png"), 30, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.BULLET_CROSSBOW_ARROW, new GreenfootImage("enemies/bullets/crossbow_arrow.png"), 30, 100, world));
 		entryPanel.add(new ShopEntry(BuyItem.BULLET_NINJA_STAR, new GreenfootImage("enemies/bullets/ninja_star.png"), 30, 100, world));
@@ -210,14 +210,14 @@ public class GodFrame {
 		updateCoinLabelInShop();
 		coinLabel.setBounds(horizontalSpace + 10, scrollY + scrollHeight + 10, 150, 40);
 		panel.add(coinLabel);
-		
-		noDamageLabel=new JLabel();
+
+		noDamageLabel = new JLabel();
 		noDamageLabel.setBounds(horizontalSpace + 10, scrollY + scrollHeight + 50, 500, 40);
 		noDamageLabel.setFont(new Font("", Font.ITALIC, 14));
 		noDamageLabel.setHorizontalAlignment(JLabel.LEFT);
 		panel.add(noDamageLabel);
-		
-		inTimeLabel=new JLabel();
+
+		inTimeLabel = new JLabel();
 		inTimeLabel.setBounds(horizontalSpace + 10, scrollY + scrollHeight + 70, 500, 40);
 		inTimeLabel.setFont(new Font("", Font.ITALIC, 14));
 		inTimeLabel.setHorizontalAlignment(JLabel.LEFT);
@@ -231,7 +231,7 @@ public class GodFrame {
 		JButton resume = new JButton();
 		int buttonWidth = 150;
 		int buttonHeight = 40;
-		resume.setBounds(panelSize.width - 2* buttonWidth, panelSize.height - buttonHeight - 50, buttonWidth, buttonHeight);
+		resume.setBounds(panelSize.width - 2 * buttonWidth, panelSize.height - buttonHeight - 50, buttonWidth, buttonHeight);
 		resume.setText("Next round");
 		resume.addActionListener((ActionEvent e) -> {
 			world.startNewRound();
@@ -251,14 +251,12 @@ public class GodFrame {
 		if (world != null && world.getPlayer() != null)
 			coinLabel.setText("Coins: " + world.getPlayer().getScore());
 	}
-	
-	public void setNoDamageLabelText(String s)
-	{
+
+	public void setNoDamageLabelText(String s) {
 		noDamageLabel.setText(s);
 	}
-	
-	public void setInTimeLabelText(String txt)
-	{
+
+	public void setInTimeLabelText(String txt) {
 		inTimeLabel.setText(txt);
 	}
 
@@ -358,8 +356,8 @@ public class GodFrame {
 		viewportPanel = (JPanel) ((JPanel) ((JViewport) viewPortPane.getComponent(0)).getComponent(0)).getComponent(1);
 		viewportPanel.setLayout(null);
 
-		JLabel healthBackgroundLabel=new JLabel();
-		ImageIcon bg=loadHUDImageIcon("health_bar_bg.png");
+		JLabel healthBackgroundLabel = new JLabel();
+		ImageIcon bg = loadHUDImageIcon("health_bar_bg.png");
 		healthBackgroundLabel.setIcon(bg);
 		int posX = 10;
 		int posY = 75;
@@ -457,7 +455,7 @@ public class GodFrame {
 		seedLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		viewportPanel.add(seedLabel);
 		viewportPanel.setComponentZOrder(seedLabel, 0);
-	
+
 		recalculateLabelPositions(0);
 	}
 
@@ -536,8 +534,8 @@ public class GodFrame {
 	}
 
 	public void updateWeaponName(Weapon w) {
-		String path = "src/images/enemies/weapons/" + w.getWeaponName() + "/" + w.getWeaponName() + "0.png";
-		BufferedImage img = loadImage(path);
+		//String path = "src/images/enemies/weapons/" + w.getWeaponName() + "/" + w.getWeaponName() + "0.png";
+		BufferedImage img = w.getIcon().getAwtImage();
 		weaponLabel.setIcon(new ImageIcon(img.getScaledInstance(64, 32, BufferedImage.SCALE_DEFAULT)));
 	}
 

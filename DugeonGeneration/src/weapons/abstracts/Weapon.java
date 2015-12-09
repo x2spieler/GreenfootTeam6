@@ -19,6 +19,7 @@ public abstract class Weapon extends ScrollActor {
 	protected int additionalValue = -1; // value that adds to the enemys value
 	protected ScrollActor owner = null;
 	protected GreenfootImage[] animImages;
+	protected GreenfootImage icon;
 	protected String weaponName;
 	protected Point2D weaponOffsetToPlayer = null;
 	protected int ticksPerAnimImg = -1;
@@ -86,6 +87,8 @@ public abstract class Weapon extends ScrollActor {
 		typeToIgnore = (owner instanceof Enemy ? EntityType.ENEMY : EntityType.PLAYER);
 		isPlayerWeapon = typeToIgnore == EntityType.PLAYER;
 		loadImages();
+		if (icon == null)
+			icon = animImages[0];
 	}
 
 	@Override
@@ -234,5 +237,9 @@ public abstract class Weapon extends ScrollActor {
 
 	public int geTicksPerAnimImg() {
 		return ticksPerAnimImg;
+	}
+
+	public GreenfootImage getIcon() {
+		return icon;
 	}
 }

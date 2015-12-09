@@ -1,5 +1,7 @@
 package weapons.short_range;
 
+import greenfoot.GreenfootImage;
+
 import java.awt.geom.Point2D;
 
 import scrollWorld.ScrollActor;
@@ -18,6 +20,7 @@ public class Sword extends ShortRangeWeapon {
 		anim_frame_count = 6;
 		weaponOffsetToPlayer = new Point2D.Double(DungeonMap.TILE_SIZE, DungeonMap.TILE_SIZE / 3);
 		default_anim_frame = 5;
+		icon = new GreenfootImage("enemies/weapons/sword/sword.png");
 	}
 
 	@Override
