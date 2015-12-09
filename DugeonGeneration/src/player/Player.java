@@ -17,6 +17,8 @@ import world.DungeonMap;
 
 public class Player extends DeltaMover implements IDamageable {
 
+	private static final int[] allowedAngles = { 0, 45, 90, 135, 180, 225, 270, 315 };
+
 	private boolean forward = false;
 	private boolean backward = false;
 	private boolean right = false;
@@ -26,7 +28,7 @@ public class Player extends DeltaMover implements IDamageable {
 	private boolean wasLmbClicked = false;
 	private boolean hClicked = false;
 	private boolean wasHClicked = false;
-	
+
 	GreenfootImage images[][];
 	int animTicks;
 	private final int CHANGE_WALK_ANIMATION_FRAMES = 8;
@@ -48,26 +50,21 @@ public class Player extends DeltaMover implements IDamageable {
 	private DungeonMap dungeonMap = null;
 
 	boolean mouseWheelListenerRegistered = false;
-	
-	private boolean wasDamagedThisRound=false;
-	
-	private int currRotation=0;
-	
-	private enum ImageIndex
-	{
-		IDLE(0),
-		WALK1(1),
-		WALK2(2);
-		
+
+	private boolean wasDamagedThisRound = false;
+
+	private int currRotation = 0;
+
+	private enum ImageIndex {
+		IDLE(0), WALK1(1), WALK2(2);
+
 		private int val;
-		
-		private ImageIndex(int val)
-		{
-			this.val=val;
+
+		private ImageIndex(int val) {
+			this.val = val;
 		}
-		
-		int getValue()
-		{
+
+		int getValue() {
 			return val;
 		}
 	}
@@ -84,13 +81,12 @@ public class Player extends DeltaMover implements IDamageable {
 
 		weapons = new ArrayList<Weapon>();
 		addWeapon(new Sword(this));
-		
-		images=new GreenfootImage[8][3];
-		for(int i=0;i<8;i++)
-		{
-			images[i][ImageIndex.IDLE.getValue()] = new GreenfootImage("player/player_"+i+"_base.png");
-			images[i][ImageIndex.WALK1.getValue()] = new GreenfootImage("player/player_"+i+"_walk1.png");
-			images[i][ImageIndex.WALK2.getValue()] = new GreenfootImage("player/player_"+i+"_walk2.png");
+
+		images = new GreenfootImage[8][3];
+		for (int i = 0; i < 8; i++) {
+			images[i][ImageIndex.IDLE.getValue()] = new GreenfootImage("player/player_" + i + "_base.png");
+			images[i][ImageIndex.WALK1.getValue()] = new GreenfootImage("player/player_" + i + "_walk1.png");
+			images[i][ImageIndex.WALK2.getValue()] = new GreenfootImage("player/player_" + i + "_walk2.png");
 		}
 
 		animTicks = 0;
@@ -143,14 +139,13 @@ public class Player extends DeltaMover implements IDamageable {
 	public void damage(int dmg) {
 		currHP -= dmg;
 		dungeonMap.updateHealthLabel(getHP(), getMaxHP());
-		wasDamagedThisRound=true;
+		wasDamagedThisRound = true;
 	}
-	
-	public boolean getWasDamagedThisRound()
-	{
+
+	public boolean getWasDamagedThisRound() {
 		return wasDamagedThisRound;
 	}
-	
+
 	public void setWasDamagedThisRound(boolean wasDamagedThisRound) {
 		this.wasDamagedThisRound = wasDamagedThisRound;
 	}
@@ -217,9 +212,41 @@ public class Player extends DeltaMover implements IDamageable {
 
 		centerCamera();
 
+		if (!(left || right || forward || backward))
+			faceMouse();
+
 		if (lmbClicked)
 			if (currWeapon.use())
 				dungeonMap.updateAmmoLabel(currWeapon);
+	}
+
+	private void faceMouse() {
+		MouseInfo info = Greenfoot.getMouseInfo();
+		if (info == null)
+			return;
+		int cx = info.getX() - getX();
+		int cy = info.getY() - getY();
+		if (cx != cy && cx != 0 && cy != 0) {
+			double aR = Math.atan2(cy, cx);
+			int aD = (int) Math.toDegrees(aR);
+			if (aD < 0)
+				aD += 360;
+			currRotation = closestTo(aD, allowedAngles);
+			setImage(getCurrentImage(ImageIndex.IDLE));
+		}
+	}
+
+	private int closestTo(int aD, int[] values) {
+		int minDifference = Integer.MAX_VALUE;
+		int minDifferentAngle = 0;
+		for (int i = 0; i < values.length; i++) {
+			int difference = Math.abs(values[i] - aD);
+			if (difference < minDifference) {
+				minDifference = difference;
+				minDifferentAngle = values[i];
+			}
+		}
+		return minDifferentAngle;
 	}
 
 	private void checkUseMediPack() {
@@ -230,10 +257,9 @@ public class Player extends DeltaMover implements IDamageable {
 			}
 		}
 	}
-	
+
 	@Override
-	public int getRotation()
-	{
+	public int getRotation() {
 		return currRotation;
 	}
 
@@ -257,21 +283,20 @@ public class Player extends DeltaMover implements IDamageable {
 			walkRot = 135;
 
 		if (walkRot != -1) {
-			currRotation=walkRot;
+			currRotation = walkRot;
 			moveAtAngle(currRotation);
 		}
 	}
-	
-	private GreenfootImage getCurrentImage(ImageIndex indx)
-	{
-		return images[((currRotation+22)%360)/45][indx.getValue()];
+
+	private GreenfootImage getCurrentImage(ImageIndex indx) {
+		return images[((currRotation + 22) % 360) / 45][indx.getValue()];
 	}
 
 	private void animatePlayer() {
 		if (forward || backward || right || left) {
 			if (animTicks <= CHANGE_WALK_ANIMATION_FRAMES)
 				setImage(getCurrentImage(ImageIndex.WALK1));
-			else if (animTicks < 2* CHANGE_WALK_ANIMATION_FRAMES)
+			else if (animTicks < 2 * CHANGE_WALK_ANIMATION_FRAMES)
 				setImage(getCurrentImage(ImageIndex.WALK2));
 
 			animTicks = (++animTicks) % (2 * CHANGE_WALK_ANIMATION_FRAMES);

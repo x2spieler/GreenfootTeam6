@@ -14,9 +14,9 @@ public class Sword extends ShortRangeWeapon {
 		this.owner = owner;
 		reloadTimeInMS = 750;
 		additionalValue = 1;
-		ticksPerAnimImg = 4;
+		ticksPerAnimImg = 3;
 		anim_frame_count = 6;
-		weaponOffsetToPlayer = new Point2D.Double(DungeonMap.TILE_SIZE, 0);
+		weaponOffsetToPlayer = new Point2D.Double(DungeonMap.TILE_SIZE, DungeonMap.TILE_SIZE / 3);
 		default_anim_frame = 5;
 	}
 

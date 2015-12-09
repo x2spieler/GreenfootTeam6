@@ -38,7 +38,7 @@ public abstract class Weapon extends ScrollActor {
 	private int prevRotation = 0;
 	private int animTicks = 0;
 	private boolean active = false;
-	private final int MAX_WEAPON_ROTATION = 22;
+	private final int MAX_WEAPON_ROTATION = 45;
 
 	public Weapon() {
 		anim_frame_count = getAnimFrameCount();
@@ -92,15 +92,21 @@ public abstract class Weapon extends ScrollActor {
 	public void act() {
 		if ((isPlayerWeapon && active) || playAnimation) {
 			rotatePoint(weaponOffsetToPlayer, getRotation() - prevRotation);
-			setGlobalLocation(owner.getGlobalX() + (int) weaponOffsetToPlayer.getX(),
-					owner.getGlobalY() + (int) weaponOffsetToPlayer.getY());
+			//System.out.println(weaponOffsetToPlayer.getX() + ", " + weaponOffsetToPlayer.getY());
+			setGlobalLocation(owner.getGlobalX() + (int) weaponOffsetToPlayer.getX(), owner.getGlobalY() + (int) weaponOffsetToPlayer.getY());
 			prevRotation = getRotation();
 			if (isPlayerWeapon) {
 				MouseInfo info = Greenfoot.getMouseInfo();
 				if (info != null) {
-					int x = info.getX();
-					int y = info.getY();
-					turnTowards(x, y);
+					//Info: the bug where the weapon appeared in two places simultaneaously was cause by an unfortunate interaction 
+					//between turnToPoint and the waponOffsetToPlayer rotation operation. When the mouse was close enough to the 
+					//weaponOffsetToPlayer point, hitting MAX(or MIN)_WEAPON_ROTATION made the rotation of the weaponOffsetToPlayer 
+					//point cause a toggle between max and min weapon rotation, which in turn rotated the weapon offset point around 
+					//the mouse. Solved by rotating around the player instead of the weapon.
+					int adjacent = info.getX() - owner.getX();
+					int opposite = info.getY() - owner.getY();
+					double aR = Math.atan2(opposite, adjacent);
+					setRotation((int) Math.toDegrees(aR));
 				}
 			} else {
 				setRotation(owner.getRotation());
@@ -124,7 +130,7 @@ public abstract class Weapon extends ScrollActor {
 			if (animTicks % ticksPerAnimImg == 0)
 				setImage(animImages[animTicks / ticksPerAnimImg]);
 			animTicks++;
-			if (animTicks == 4 * ticksPerAnimImg) {
+			if (animTicks == anim_frame_count * ticksPerAnimImg) {
 				animTicks = 0;
 				playAnimation = false;
 				if (owner instanceof Enemy) {
@@ -143,7 +149,8 @@ public abstract class Weapon extends ScrollActor {
 	}
 
 	/**
-	 * @return If the weapon was fired (in this term a sword is able to fire, doesn't matter). Also pays attention to the ammo
+	 * @return If the weapon was fired (in this term a sword is able to fire,
+	 *         doesn't matter). Also pays attention to the ammo
 	 */
 	public boolean use() {
 		long millisNow = DungeonMap.getGreenfootTime();
@@ -180,7 +187,7 @@ public abstract class Weapon extends ScrollActor {
 		}
 		emptyImage = new GreenfootImage("empty.png");
 		if (isPlayerWeapon)
-			setImage(animImages[0]);
+			setImage(animImages[default_anim_frame]);
 		else
 			setImage(emptyImage);
 	}

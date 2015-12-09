@@ -2,9 +2,11 @@ package world;
 
 import java.awt.AWTException;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,6 +43,7 @@ import enemies.Vampire;
 import enemies.Zombie;
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.util.Pair;
 import menu.BuyItem;
 import objects.Crate;
@@ -105,10 +108,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	final int BASE_SCORE_FOR_NO_DAMAGE = 100;
 	final int BASE_SCORE_FOR_IN_TIME = 100;
-	final int BASE_TIME_PER_ROUND = 120/*seconds*/ * 1000/*convert to milliseconds*/;
+	final int BASE_TIME_PER_ROUND = 120/*seconds*/* 1000/*convert to milliseconds*/;
 
 	private int round = 1;
-	
+
 	private DatabaseHandler dbHandler;
 
 	// TODO: Balance gameplay
@@ -129,17 +132,15 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
-		dbHandler=new DatabaseHandler(this);
+
+		dbHandler = new DatabaseHandler(this);
 	}
-	
-	public ArrayList<HighscoreEntry> getTopEntries(int number)
-	{
+
+	public ArrayList<HighscoreEntry> getTopEntries(int number) {
 		return dbHandler.getTopEntries(number);
 	}
-	
-	public void addHighscore(String name, int highscore)
-	{
+
+	public void addHighscore(String name, int highscore) {
 		dbHandler.addHighscore(name, highscore);
 	}
 
@@ -164,9 +165,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		logger.close();
 		System.out.println("Logged: \"" + str + "\"");
 	}
-	
+
 	public void logError(String str) {
-		logger.println("Error: "+str);
+		logger.println("Error: " + str);
 		logger.flush();
 		logger.close();
 		System.out.println("Logged: Error: \"" + str + "\"");
@@ -340,8 +341,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 					do {
 						x = 1 + r.nextInt(DungeonGenerator.MAP_WIDTH - 2);
 						y = 1 + r.nextInt(DungeonGenerator.MAP_HEIGHT - 2);
-					} while (!map[x + 1][y].walkable() || !map[x - 1][y].walkable() || !map[x][y + 1].walkable()
-							|| !map[x][y - 1].walkable());
+					} while (!map[x + 1][y].walkable() || !map[x - 1][y].walkable() || !map[x][y + 1].walkable() || !map[x][y - 1].walkable());
 				} while (!tryAddObject(stairs, x * TILE_SIZE, y * TILE_SIZE));
 				;
 				//TODO: Transition sch�ner machen
@@ -422,6 +422,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 	}
 
+	//TODO find out why some directions cause more calls to drawImage than others.
 	private void paintTiles(final int x, final int y, final int deltax, final int deltay) {
 		Point startingTile = getTileOfPixel(x, y);
 		Point startingPixel = getStartingPixel(x, y);
@@ -429,17 +430,22 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		int c = 0;
 		int pixelX = startingPixel.x;
 		int pixelY;
+		ImageObserver io = (a, b, d, e, f, h) -> {
+			return false;
+		};
+		Graphics2D g = back.getAwtImage().createGraphics();
 		for (int i = startingTile.x; i <= startingTile.x + viewportXTiles; i++) {
 			pixelY = startingPixel.y;
 			for (int j = startingTile.y; j <= startingTile.y + viewportYTiles; j++) {
 				if (!alreadyDrawn(pixelX, pixelY, deltax, deltay)) {
-					back.drawImage(getImageForTile(i, j), pixelX, pixelY);
+					g.drawImage(getImageForTile(i, j).getAwtImage(), pixelX, pixelY, io);
 					c++;
 				}
 				pixelY += TILE_SIZE;
 			}
 			pixelX += TILE_SIZE;
 		}
+		g.dispose();
 		if (debugging)
 			log(((deltax == 0 && deltay == 0) ? "full render" : "partial render") + ": " + c + " calls to drawImage");
 	}
@@ -493,8 +499,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private GreenfootImage getImageForTile(int i, int j) {
 
-		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT)
-				? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
+		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT) ? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
 	}
 
 	@Override
