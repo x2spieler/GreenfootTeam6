@@ -56,6 +56,7 @@ public class DungeonGenerator {
 	public DungeonGenerator(DungeonMap dm, int seed)
 	{
 		mapSeed = seed;
+		mapSeed=-1548136302;
 		rand=new MegaRandom(mapSeed);
 		this.dm = dm;
 		initGen();
@@ -85,7 +86,6 @@ public class DungeonGenerator {
 		removeUnusedCells();
 		showMap();
 		removeUnusedCells();
-
 	}
 
 
@@ -235,19 +235,24 @@ public class DungeonGenerator {
 
 			//System.out.println();
 			buildPath(temp[1], temp[2]);
+
 		}
 		//System.out.println(visited);
 	}
 
 	public void buildPath(int r1, int r2){
-			
+
 		int status = 0;
-		
+		int counter=0;
 		do {
 			Point startPos = new Point(randomShift(rooms[r1]));
 			Point endPos = new Point(randomShift(rooms[r2]));
-
 			status = createWay(startPos, endPos ,rand.randomInt(3, 5));
+			if(counter++==32)
+			{
+				System.out.println("FORCE BREAK");
+				break;
+			}
 		} while (status != 0);
 	}
 
@@ -284,7 +289,7 @@ public class DungeonGenerator {
 		}
 		return pos;
 	}
-	
+
 	public void removeUnusedCells(){
 		for (int y = 0; y < MAP_HEIGHT; y++ ){
 			for (int x = 0; x < MAP_WIDTH; x++){
@@ -372,22 +377,32 @@ public class DungeonGenerator {
 		couldnNotFindWay=false;
 		endPointBlocked=false;
 		startPointBlocked=false;
-		if(mapBlocks[end.x][end.y].getFieldType()!=FieldType.CELL)
+		if(!canLeavePosition(end.x, end.y, radius))
 		{
 			endPointBlocked=true;
 			couldnNotFindWay=true;
-			System.out.println("End point is not a cell");
+			System.out.println("Can't leave end point");
 
 			return 2;
 		}
-		if(mapBlocks[start.x][start.y].getFieldType()!=FieldType.CELL)
+		if(!canLeavePosition(start.x, start.y, radius))
 		{
 			startPointBlocked=true;
 			couldnNotFindWay=true;
-			System.out.println("Start point is not a cell");
+			System.out.println("Can't leave start point");
 			return 1;
 		}
-
+		int shiftX=0;
+		int shiftY=0;
+		if(mapBlocks[start.x-1][start.y].getFieldType()==FieldType.GROUND)
+			shiftX=1;
+		if(mapBlocks[start.x+1][start.y].getFieldType()==FieldType.GROUND)
+			shiftX=-1;
+		if(mapBlocks[start.x][start.y-1].getFieldType()==FieldType.GROUND)
+			shiftY=1;
+		if(mapBlocks[start.x][start.y+1].getFieldType()==FieldType.GROUND)
+			shiftY=-1;
+		start.translate(shiftX*radius/2,shiftY*radius/2);
 		ArrayList<Node>closedList=new ArrayList<Node>();
 		ArrayList<Node>openList=new ArrayList<Node>();
 
@@ -418,6 +433,47 @@ public class DungeonGenerator {
 		return 0;
 	}
 
+	private boolean canLeavePosition(int x, int y, int radius)
+	{
+		int addX=1;
+		int addY=1;
+		for(int i=0;i<2;i++)
+		{
+			boolean obstructed=false;
+			outer:
+				for(int l=y;l!=y+addY+addY*(radius/2);l+=addY)
+				{
+					for(int k=x-radius/2;k<=x+radius/2;k++)
+					{
+						if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
+						{	
+							obstructed=true;
+							break outer;
+						}
+					}
+				}
+			if(!obstructed)
+				return true;
+			obstructed=false;
+			outer:
+				for(int k=x;k!=x+addX+addX*(radius/2);k+=addX)
+				{
+					for(int l=y-radius/2;l<=y+radius/2;l++)
+					{
+						if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
+						{	
+							obstructed=true;
+							break outer;
+						}
+					}
+				}
+			if(!obstructed)
+				return true;
+			addX=-1;
+			addY=-1;
+		}
+		return false;
+	}
 
 	private Node step(ArrayList<Node>closedList, ArrayList<Node>openList, Point start, int radius)
 	{
