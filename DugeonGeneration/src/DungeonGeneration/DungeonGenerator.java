@@ -17,12 +17,12 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 3;
+	public static final int ROOM_POOL = 10;
 	public static final int MAP_WIDTH = 120;
 	public static final int MAP_HEIGHT = 120;
 
 	public static final int MAX_ROOM_SIZE= 15;
-	public static final int MIN_ROOM_SIZE= 5;
+	public static final int MIN_ROOM_SIZE= 10;
 
 	public static final int MAX_PATH_WIDTH= 5;
 	public static final int MIN_PATH_WIDTH= 3;
@@ -82,7 +82,10 @@ public class DungeonGenerator {
 		removeCells();
 		generateRooms();
 		calculateClosestNeighbour();
+		removeUnusedCells();
 		showMap();
+		removeUnusedCells();
+
 	}
 
 
@@ -231,44 +234,21 @@ public class DungeonGenerator {
 			//System.out.print("| " + temp[0] + " from " + temp[1] + " to " +temp[2]);
 
 			//System.out.println();
-			buildPath(temp[1], temp[2], 0);
+			buildPath(temp[1], temp[2]);
 		}
 		//System.out.println(visited);
 	}
 
-	public void buildPath(int r1, int r2, int status){
-
+	public void buildPath(int r1, int r2){
+			
+		int status = 0;
+		
 		do {
-
 			Point startPos = new Point(randomShift(rooms[r1]));
 			Point endPos = new Point(randomShift(rooms[r2]));
 
-			status = createWay(startPos, endPos ,3);
+			status = createWay(startPos, endPos ,rand.randomInt(3, 5));
 		} while (status != 0);
-
-		//	
-		//		//System.out.println("Status:" + status);
-		//		switch (status){
-		//			
-		//			case 1:		//Change start point
-		//				System.out.println("Change start point");
-		//				startPos = randomShift(rooms[r1]);
-		//				status = createWay(startPos, endPos ,3);
-		//				break;
-		//				
-		//			case 2:		//Change end point
-		//				System.out.println("Change end point");
-		//				endPos = randomShift(rooms[r2]);
-		//				status = createWay(startPos, endPos ,3);
-		//				break;
-		//				
-		//			
-		//			}
-		//		status = createWay(startPos, endPos ,3);
-		//		
-		//	
-		//		
-
 	}
 
 
@@ -286,7 +266,7 @@ public class DungeonGenerator {
 			break;
 
 		case 2:
-			pos.translate(room.getSizeX()/2 + 2, 0);
+			pos.translate(room.getSizeX()/2 + 1, 0);
 			//System.out.println("Direction 2 for " + room + " :" + pos);
 			break;
 
@@ -296,13 +276,23 @@ public class DungeonGenerator {
 			break;
 
 		case 4:
-			pos.translate((-1)*room.getSizeX()/2 - 2, 0);
+			pos.translate((-1)*room.getSizeX()/2 - 1, 0);
 			//System.out.println("Direction 4 for " + room + " :" + pos);
 
 			break;
 
 		}
 		return pos;
+	}
+	
+	public void removeUnusedCells(){
+		for (int y = 0; y < MAP_HEIGHT; y++ ){
+			for (int x = 0; x < MAP_WIDTH; x++){
+				if (mapBlocks[x][y].getFieldType() == FieldType.CELL){
+					mapBlocks[x][y].setFieldType(FieldType.WALL);
+				}
+			}
+		}
 	}
 
 	public void placeDestructable(){
