@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
+import javafx.scene.text.Font;
+import world.DungeonMap;
 import world.MapElement;
 import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
@@ -24,6 +26,9 @@ public class HouseTileMapper {
 	}
 
 	public final static DungeonGeneration.FieldType[][] UpperLeftInner, UpperRightInner, LowerLeftInner, LowerRightInner, UpperLeftOuter, UpperRightOuter, LowerLeftOuter, LowerRightOuter, WallFront, WallBack, WallLeft, WallRight, DoubleCornerLeft, DoubleCornerRight, DoubleCornerCenter;
+
+	private static final GreenfootImage unknown;
+	private static final GreenfootImage unmapped;
 
 	static {
 		UpperLeftInner = new FieldType[][] { { FieldType.WALL, FieldType.WALL }, { FieldType.WALL, FieldType.WALL }, { FieldType.WALL, FieldType.GROUND } };
@@ -41,6 +46,14 @@ public class HouseTileMapper {
 		DoubleCornerLeft = new FieldType[][] { { null, FieldType.WALL, FieldType.WALL }, { FieldType.GROUND, FieldType.WALL, FieldType.WALL }, { FieldType.GROUND, FieldType.GROUND, FieldType.WALL }, { null, FieldType.GROUND, FieldType.GROUND } };
 		DoubleCornerRight = new FieldType[][] { { FieldType.WALL, FieldType.WALL, null }, { FieldType.WALL, FieldType.WALL, FieldType.GROUND }, { FieldType.WALL, FieldType.GROUND, FieldType.GROUND }, { FieldType.GROUND, FieldType.GROUND, null } };
 		DoubleCornerCenter = new FieldType[][] { { FieldType.GROUND, FieldType.WALL, FieldType.WALL, FieldType.WALL, FieldType.WALL, FieldType.WALL, FieldType.GROUND }, { FieldType.GROUND, FieldType.GROUND, FieldType.WALL, FieldType.WALL, FieldType.WALL, FieldType.GROUND, FieldType.GROUND }, { null, null, FieldType.GROUND, FieldType.GROUND, FieldType.GROUND, null, null } };
+
+		unknown = new GreenfootImage("tileset/UnknownTile.png");
+		unmapped = new GreenfootImage(DungeonMap.TILE_SIZE, DungeonMap.TILE_SIZE);
+		unmapped.setColor(Color.WHITE);
+		unmapped.fill();
+		unmapped.setColor(Color.BLACK);
+		unmapped.setFont(unmapped.getFont().deriveFont(7.0f));
+		unmapped.drawString("unmapped", 0, DungeonMap.TILE_SIZE / 2);
 	}
 
 	private ITileLoader loader = new HouseTileLoader();
@@ -321,6 +334,20 @@ public class HouseTileMapper {
 				fill(i, j);
 			}
 		}
+		for (int i = 0; i < images.length; i++) {
+			for (int j = 0; j < images[0].length; j++) {
+				if (!isKnownTileType(map[i][j])) {
+					images[i][j] = unknown;
+				}
+				if (images[i][j] == null) {
+					images[i][j] = unmapped;
+				}
+			}
+		}
+	}
+
+	private boolean isKnownTileType(MapField mapField) {
+		return mapField.getFieldType() == FieldType.WALL || mapField.getFieldType() == FieldType.GROUND;
 	}
 
 	private Collection<CircleGraph<Point>> fixMapGeometry() {

@@ -3,3 +3,4 @@
 /.gitignore
 /.settings/
 *.txt
+*.db
