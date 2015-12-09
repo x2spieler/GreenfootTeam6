@@ -17,7 +17,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 5;
+	public static final int ROOM_POOL = 3;
 	public static final int MAP_WIDTH = 120;
 	public static final int MAP_HEIGHT = 120;
 	
@@ -79,11 +79,9 @@ public class DungeonGenerator {
 	
 	public void initGen(){
 		clearMap();
-		generateRooms();
 		removeCells();
-		
-		
-		calculatePaths();
+		generateRooms();
+		calculateClosestNeighbour();
 		showMap();
 	}
 	
@@ -127,6 +125,10 @@ public class DungeonGenerator {
 			int posX = rand.randomInt(3, MAP_WIDTH - 3 - rooms[i].getSizeX());
 			int posY = rand.randomInt(3, MAP_HEIGHT - 3 - rooms[i].getSizeY());
 			
+			
+			if (randomWidth % 2 == 0 || randomHeight % 2 == 0){
+				roomFree = false;
+			}
 			rooms[i].setPosition(posX, posY);
 			
 			//Check horizontally if desired place is free
@@ -167,9 +169,6 @@ public class DungeonGenerator {
 	
 	public void removeCells(){
 		
-		
-	
-		
 		for (int y = 1; y < MAP_HEIGHT - 1; y++) {
 					
 			for(int x = 1; x < MAP_WIDTH - 1; x++) {
@@ -190,7 +189,7 @@ public class DungeonGenerator {
 			
 	}
 	
-public void calculatePaths(){
+public void calculateClosestNeighbour(){
 		
 		int distances [][] = new int [ROOM_POOL][ROOM_POOL];
 		int deltaX = 0;
@@ -224,134 +223,88 @@ public void calculatePaths(){
 					temp [1]= r1;
 					temp[2] = r2;
 					visited.add(r1);
-					
-					
 				}
 				
 				distances [r1][r2] = absDelta;
-				System.out.print(distances [r1][r2] + " ");
+				//System.out.print(distances [r1][r2] + " ");
 			}
-			System.out.print("| " + temp[0] + " from " + temp[1] + " to " +temp[2]);
+			//System.out.print("| " + temp[0] + " from " + temp[1] + " to " +temp[2]);
 			
-			System.out.println();
-			buildPath(temp[1], temp[2]);
-			
+			//System.out.println();
+			buildPath(temp[1], temp[2], 0);
 		}
-		System.out.println(visited);
+		//System.out.println(visited);
 	}
 	
-public void buildPath(int r1, int r2){
+public void buildPath(int r1, int r2, int status){
 	
+	do {
+		
+	Point startPos = new Point(randomShift(rooms[r1]));
+	Point endPos = new Point(randomShift(rooms[r2]));
 	
-	int deltaX = rooms[r1].getCenter().x -  rooms[r2].getCenter().x ;
-	int deltaY = rooms[r1].getCenter().y -  rooms[r2].getCenter().y ;
-	
-	int absDeltaX = Math.abs(deltaX);
-	int absDeltaY = Math.abs(deltaY);
-	int posX = 0;
-	int posY = 0;
-	int startOffsetX = 0;
-	int endOffsetX = 0;
-	
-	
-	if (deltaX<0){
-		startOffsetX = -rooms[r1].getSizeX()/2-2;
-		endOffsetX = rooms[r2].getSizeX()/2+2;
-	} else {
-		startOffsetX = rooms[r1].getSizeX()/2+2;
-		endOffsetX = -rooms[r2].getSizeX()/2-2;
-	}
-	
-	posX = rooms[r1].getCenter().x;
-	posY = rooms[r1].getCenter().y;
-	Point startPos = new Point(posX-startOffsetX, posY);
-	
-	posX = rooms[r2].getCenter().x;
-	posY = rooms[r2].getCenter().y;
-	Point endPos = new Point(posX-endOffsetX, posY);
+	status = createWay(startPos, endPos ,3);
 
-	createWay(startPos, endPos ,3);
+	} while (status != 0);
+	
+//	
+//		//System.out.println("Status:" + status);
+//		switch (status){
+//			
+//			case 1:		//Change start point
+//				System.out.println("Change start point");
+//				startPos = randomShift(rooms[r1]);
+//				status = createWay(startPos, endPos ,3);
+//				break;
+//				
+//			case 2:		//Change end point
+//				System.out.println("Change end point");
+//				endPos = randomShift(rooms[r2]);
+//				status = createWay(startPos, endPos ,3);
+//				break;
+//				
+//			
+//			}
+//		status = createWay(startPos, endPos ,3);
+//		
+//	
+//		
+
 	}
 	
+
 	
-	
-	
-//	public void buildPaths() {
-//			
-//			for(int r1 = 0; r1 < ROOM_POOL -1; r1++) {
-//				
-//				int buildStartOffsetX = rand.randomInt(4, (rooms[r1].getSizeX()-4));
-//				int buildStartOffsetY = rand.randomInt(4, (rooms[r1].getSizeY()-4));
-//				
-//				int buildDestinationOffsetX = rand.randomInt(4, (rooms[r1 +1].getSizeX()-4));
-//				int buildDestinationOffsetY = rand.randomInt(4, (rooms[r1 +1].getSizeY()-4));
-//				
-//				Point buildPosition = new Point(rooms[r1].getPosition().x + buildStartOffsetX,rooms[r1].getPosition().y + buildStartOffsetY);
-//				Point buildDestination = new Point(rooms[r1 +1].getPosition().x + buildDestinationOffsetX,rooms[r1 +1].getPosition().y + buildDestinationOffsetY);
-//				
-//				int deltaX = buildPosition.x - buildDestination.x;
-//				int deltaY = buildPosition.y - buildDestination.y;
-//				
-//				int absDeltaX = Math.abs(deltaX);
-//				int absDeltaY = Math.abs(deltaY);
-//			
-//				int buildStep = 0;
-//				int randomPathWidth = rand.randomInt(MIN_PATH_WIDTH, MAX_PATH_WIDTH);
-//				
-//				while(absDeltaX > 0 || absDeltaY > 0) {
-//				
-//					int minRandom = 1;
-//					int maxRandom = 2;
-//					
-//					if(absDeltaX <= 0 )
-//						minRandom = 2;
-//					if(absDeltaY <= 0)
-//						maxRandom = 1;
-//					
-//					int randomChance = rand.randomInt(minRandom, maxRandom);
-//									
-//					if(randomChance == 1) {
-//						
-//						for(int b=0;b<4;b++){
-//							for(int i=0; i < randomPathWidth; i++) {
-//								int upperBound = buildPosition.y - randomPathWidth/2;
-//								if((upperBound + i) > 1 && (upperBound + i) < MAP_HEIGHT -3 )
-//									
-//									mapBlocks[buildPosition.x + (int)Math.signum(deltaX*-1)][upperBound + i].setFieldType(FieldType.GROUND);
-//							}
-//							
-//							buildPosition.translate((int)Math.signum(deltaX*-1), 0);
-//							absDeltaX -= 1;
-//						}
-//					}
-//					else
-//					{
-//						for(int b=0;b<4;b++){
-//							for(int i=0; i < randomPathWidth; i++) {
-//								int leftBound = buildPosition.x - randomPathWidth/2;
-//								if((leftBound + i) > 1 && (leftBound + i) < MAP_WIDTH -3)
-//									mapBlocks[leftBound + i][buildPosition.y + (int)Math.signum(deltaY*-1)].setFieldType(FieldType.GROUND);
-//							}
-//							
-//							buildPosition.translate(0, (int)Math.signum(deltaY*-1));
-//							absDeltaY -= 1;
-//						}
-//					}
-//					
-//					buildStep++;
-//					
-//					//Added random Int for modulo devision, makes paths looks more random and neater 
-//					if(buildStep % (rand.randomInt(3, 5)) == 0) {
-//						randomPathWidth = rand.randomInt(MIN_PATH_WIDTH, MAX_PATH_WIDTH);
-//	
-//					}
-//				}
-//			}
-//					
-//						
-//	}
-	
-	
+	public Point randomShift(Room room){
+		
+		int direction = rand.randomInt(1,4);
+		Point pos = new Point(room.getCenter().x, room.getCenter().y);
+		
+		switch (direction){
+		
+		case 1:
+			pos.translate(0, (-1)*room.getSizeY()/2 - 1);
+			//System.out.println("Direction 4 for " + room + " :" + pos);			
+			break;
+		
+		case 2:
+			pos.translate(room.getSizeX()/2 + 2, 0);
+			//System.out.println("Direction 2 for " + room + " :" + pos);
+			break;
+			
+		case 3:
+			pos.translate(0, room.getSizeY()/2 + 1);
+			//System.out.println("Direction 3 for " + room + " :" + pos);
+			break;
+			
+		case 4:
+			pos.translate((-1)*room.getSizeX()/2 - 2, 0);
+			//System.out.println("Direction 4 for " + room + " :" + pos);
+
+			break;
+		
+		}
+		return pos;
+	}
 	
 	public void placeDestructable(){
 		Random random=new Random(mapSeed);
@@ -425,24 +378,26 @@ public void buildPath(int r1, int r2){
 		
 	}
 	
-	private void createWay(Point start, Point end, int radius)
+	private int createWay(Point start, Point end, int radius)
 	{
 		couldnNotFindWay=false;
 		endPointBlocked=false;
 		startPointBlocked=false;
+		
 		if(mapBlocks[end.x][end.y].getFieldType()!=FieldType.CELL)
 		{
 			endPointBlocked=true;
 			couldnNotFindWay=true;
 			System.out.println("End point is not a cell");
-			return;
+			
+			return 2;
 		}
 		if(mapBlocks[start.x][start.y].getFieldType()!=FieldType.CELL)
 		{
 			startPointBlocked=true;
 			couldnNotFindWay=true;
 			System.out.println("Start point is not a cell");
-			return;
+			return 1;
 		}
 		
 		ArrayList<Node>closedList=new ArrayList<Node>();
@@ -472,6 +427,7 @@ public void buildPath(int r1, int r2){
 				n=n.prev;
 			}
 		}
+		return 0;
 	}
 	
 
@@ -613,4 +569,5 @@ public void buildPath(int r1, int r2){
 			return x*100000+y;
 		}
 	}
+	
 }
