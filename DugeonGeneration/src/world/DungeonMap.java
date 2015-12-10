@@ -149,6 +149,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void setPaintOrder(Class... classes) {
+		//TODO: Need to add destructable objects here
 		Class[] args = new Class[classes.length + 5];
 		args[0] = FPS.class;
 		args[1] = MyCursor.class;
