@@ -17,8 +17,6 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-import com.sun.org.apache.xpath.internal.axes.OneStepIterator;
-
 import AI.Enemy;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
@@ -45,7 +43,6 @@ import enemies.Vampire;
 import enemies.Zombie;
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.util.Pair;
 import menu.BuyItem;
 import objects.Crate;
@@ -116,6 +113,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private DatabaseHandler dbHandler;
 
+	// TODO: Set custom image in task bar
 	// TODO: Balance gameplay
 	// TODO: Balance waves
 	// TODO: Spawn new destroyable objects after 5 rounds?
@@ -149,15 +147,16 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void setPaintOrder(Class... classes) {
-		//TODO: Need to add destructable objects here
-		Class[] args = new Class[classes.length + 5];
+		Class[] args = new Class[classes.length + 7];
 		args[0] = FPS.class;
 		args[1] = MyCursor.class;
 		args[2] = MapElement.class;
 		args[3] = Enemy.class;
 		args[4] = Weapon.class;
+		args[5] = Player.class;
+		args[6] = DestroyableObject.class;
 		for (int i = 0; i < classes.length; i++) {
-			args[i + 2] = classes[i];
+			args[i + 7] = classes[i];
 		}
 		super.setPaintOrder(args);
 	}
@@ -216,11 +215,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void startNewRound() {
 		lastTicks = System.currentTimeMillis();
 		stairsToHeavenSpawned = false;
-		
+
 		gen.placeDestructable();
 		map = gen.getMap();
 		addDestructableObjectsToWorld();
-		
+
 		if(!isInAccessibleTile(player.getGlobalX(), player.getGlobalY()))
 		{
 			Point p = getNearestAccessiblePoint(player.getGlobalX(), player.getGlobalY(), player);
