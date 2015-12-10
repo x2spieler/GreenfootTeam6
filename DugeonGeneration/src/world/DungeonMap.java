@@ -107,7 +107,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	final int BASE_SCORE_FOR_NO_DAMAGE = 100;
 	final int BASE_SCORE_FOR_IN_TIME = 100;
-	final int BASE_TIME_PER_ROUND = 120/*seconds*/* 1000/*convert to milliseconds*/;
+	final int BASE_TIME_PER_ROUND = 120/*seconds*/ * 1000/*convert to milliseconds*/;
 
 	private int round = 1;
 
@@ -187,8 +187,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 				Pair<GreenfootImage[][], MapElement[][]> p = new DungeonMapper(map).getImageForTilesetHouse();
 				tileMap = p.getKey();
 				specialTiles = p.getValue();
-				if (running)
-					paintTiles(getCameraX() - VIEWPORT_WIDTH / 2, getCameraY() - VIEWPORT_HEIGHT / 2, 0, 0);
+				paintTiles(getCameraX() - VIEWPORT_WIDTH / 2, getCameraY() - VIEWPORT_HEIGHT / 2, 0, 0);
 			} catch (IOException e) {
 				System.err.println("tileset not loaded");
 				e.printStackTrace();
@@ -220,10 +219,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		map = gen.getMap();
 		addDestructableObjectsToWorld();
 
-		if(!isInAccessibleTile(player.getGlobalX(), player.getGlobalY()))
-		{
+		if (!isInAccessibleTile(player.getGlobalX(), player.getGlobalY())) {
 			Point p = getNearestAccessiblePoint(player.getGlobalX(), player.getGlobalY(), player);
-			player.setGlobalLocation((int)p.getX(), (int)p.getY());
+			player.setGlobalLocation((int) p.getX(), (int) p.getY());
 		}
 		spawnEnemies();
 	}
@@ -237,10 +235,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		for (Object o : l.toArray()) {
 			if (o instanceof Enemy || o instanceof Bullet || o instanceof StairsToHeaven)
 				removeObject((Actor) o);
-			if(o instanceof DestroyableObject)
-			{
-				map[((DestroyableObject) o).getGlobalX()/TILE_SIZE][((DestroyableObject) o).getGlobalY()/TILE_SIZE].setFieldType(FieldType.GROUND);
-				removeObject((Actor)o);
+			if (o instanceof DestroyableObject) {
+				map[((DestroyableObject) o).getGlobalX() / TILE_SIZE][((DestroyableObject) o).getGlobalY() / TILE_SIZE]
+						.setFieldType(FieldType.GROUND);
+				removeObject((Actor) o);
 			}
 		}
 		changeToFrame(FrameType.NEXT_ROUND);
@@ -358,7 +356,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 					do {
 						x = 1 + r.nextInt(DungeonGenerator.MAP_WIDTH - 2);
 						y = 1 + r.nextInt(DungeonGenerator.MAP_HEIGHT - 2);
-					} while (!map[x + 1][y].walkable() || !map[x - 1][y].walkable() || !map[x][y + 1].walkable() || !map[x][y - 1].walkable());
+					} while (!map[x + 1][y].walkable() || !map[x - 1][y].walkable() || !map[x][y + 1].walkable()
+							|| !map[x][y - 1].walkable());
 				} while (!tryAddObject(stairs, x * TILE_SIZE, y * TILE_SIZE));
 				;
 				//TODO: Transition sch�ner machen
@@ -516,7 +515,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private GreenfootImage getImageForTile(int i, int j) {
 
-		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT) ? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
+		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT)
+				? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
 	}
 
 	@Override
