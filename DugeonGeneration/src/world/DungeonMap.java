@@ -214,12 +214,18 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	public void startNewRound() {
 		lastTicks = System.currentTimeMillis();
-		spawnEnemies();
 		stairsToHeavenSpawned = false;
 		
 		gen.placeDestructable();
 		map = gen.getMap();
 		addDestructableObjectsToWorld();
+		
+		if(!isInAccessibleTile(player.getGlobalX(), player.getGlobalY()))
+		{
+			Point p = getNearestAccessiblePoint(player.getGlobalX(), player.getGlobalY(), player);
+			player.setGlobalLocation((int)p.getX(), (int)p.getY());
+		}
+		spawnEnemies();
 	}
 
 	@SuppressWarnings("unchecked")
