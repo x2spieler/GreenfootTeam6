@@ -124,6 +124,10 @@ public class DungeonFrame extends JFrame {
 		eingeben.setBorder(null);
 		
 		JButton HighScore = new JButton("");
+		HighScore.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		HighScore.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -131,10 +135,10 @@ public class DungeonFrame extends JFrame {
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore.png")));
+				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore2.png")));
 			}
 		});
-		HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore.png")));
+		HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore2.png")));
 		HighScore.setContentAreaFilled(false);
 		HighScore.setOpaque(false);
 		HighScore.setBorder(null);
@@ -147,27 +151,26 @@ public class DungeonFrame extends JFrame {
 		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, gl_panel.createSequentialGroup()
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
 					.addGap(427)
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-							.addGroup(gl_panel.createSequentialGroup()
-								.addGap(86)
-								.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 348, GroupLayout.PREFERRED_SIZE))
-							.addGroup(gl_panel.createSequentialGroup()
-								.addGap(217)
-								.addComponent(eingeben, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE))
-							.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 423, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGap(86)
+							.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 348, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGap(217)
+							.addComponent(eingeben, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE))
+						.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 423, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_panel.createSequentialGroup()
 							.addGap(205)
 							.addComponent(textField, GroupLayout.PREFERRED_SIZE, 282, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(473, Short.MAX_VALUE))
+					.addContainerGap(282, Short.MAX_VALUE))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap(263, Short.MAX_VALUE)
+					.addContainerGap(301, Short.MAX_VALUE)
 					.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
