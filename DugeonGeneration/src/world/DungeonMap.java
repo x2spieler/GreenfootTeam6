@@ -17,6 +17,8 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
+import com.sun.org.apache.xpath.internal.axes.OneStepIterator;
+
 import AI.Enemy;
 import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
@@ -214,6 +216,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		lastTicks = System.currentTimeMillis();
 		spawnEnemies();
 		stairsToHeavenSpawned = false;
+		
+		gen.placeDestructable();
+		map = gen.getMap();
+		addDestructableObjectsToWorld();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -225,6 +231,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		for (Object o : l.toArray()) {
 			if (o instanceof Enemy || o instanceof Bullet || o instanceof StairsToHeaven)
 				removeObject((Actor) o);
+			if(o instanceof DestroyableObject)
+			{
+				map[((DestroyableObject) o).getGlobalX()/TILE_SIZE][((DestroyableObject) o).getGlobalY()/TILE_SIZE].setFieldType(FieldType.GROUND);
+				removeObject((Actor)o);
+			}
 		}
 		changeToFrame(FrameType.NEXT_ROUND);
 		ticksAtEndOfLastRound = getGreenfootTime();
@@ -260,11 +271,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		if (testing)
 			return;
 		Random r = new Random(gen.getSeed());
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 1; i++) {
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
-			//x = 0;
-			//y = 0;
+			x = 0;
+			y = 0;
 			Enemy e = null;
 			switch (r.nextInt(15)) {
 			case 0:

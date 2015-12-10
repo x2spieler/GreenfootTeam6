@@ -149,7 +149,6 @@ public class DungeonGenerator {
 	
 	
 	public void placeDestructable(){
-		Random random=new Random(mapSeed);
 		for (int i = 0; i < ROOM_POOL; i++){
 			
 			int numberOfCrates = rand.randomInt(0, 3);
