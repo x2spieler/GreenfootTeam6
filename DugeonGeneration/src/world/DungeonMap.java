@@ -275,11 +275,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		if (testing)
 			return;
 		Random r = new Random(gen.getSeed());
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 20; i++) {
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
-			x = 0;
-			y = 0;
+			//x = 0;
+			//y = 0;
 			Enemy e = null;
 			switch (r.nextInt(15)) {
 			case 0:

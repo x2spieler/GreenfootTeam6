@@ -41,8 +41,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 
 	private boolean isAttacking=false;
 	private boolean cantFindWay=false;
-	private boolean seesPlayer=false;
-	private boolean sawPlayer=false;
 	private Node currTargetNode=null;
 	private IWorldInterfaceForAI wi = null;
 	private Point lastPlayerTile=null;
@@ -53,27 +51,27 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private short walkCounter=0;
 	private boolean isPendingKill=false;
 	private int currRotation=0;
-	
+
 	protected enum ImageIndex
 	{
 		IDLE(0),
 		WALK1(1),
 		WALK2(2),
 		ATTACK(0);
-		
+
 		private int val;
-		
+
 		private ImageIndex(int val)
 		{
 			this.val=val;
 		}
-		
+
 		public int getValue()
 		{
 			return val;
 		}
 	}
-	
+
 	public Enemy()
 	{
 		super(0);
@@ -81,7 +79,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	}
 
 	protected abstract int getNumFramesChangeWalkImage();
-	
+
 	@Override
 	public int getHP() 
 	{
@@ -102,13 +100,13 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		alterImages();
 		createWeapon();
 	}
-	
+
 	/*
 	 * Can be overriden to change certain animation images.
 	 * Default implementation does nothing
 	 */
 	protected void alterImages(){}
-	
+
 	/**
 	 * @return True if this enemy has been killed and is only in the world to to his death animation
 	 */
@@ -214,7 +212,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			wi.enemyDied(this);
 		}
 	}
-	
+
 	public int getScore()
 	{
 		return value+weapon.getAdditionalValue();
@@ -224,12 +222,12 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	{
 		isAttacking=false;
 	}
-	
+
 	private GreenfootImage getCurrentImage(ImageIndex indx)
 	{
 		return images[((currRotation+45)%360)/90][indx.getValue()];
 	}
-	
+
 	@Override
 	public int getRotation()
 	{
@@ -251,13 +249,12 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 				getImage().setTransparency(transp);
 			return;
 		}
-		
+
 		super.act();
-		
+
 		if(getImage()==null)
 			setImage(getCurrentImage(ImageIndex.IDLE));
 
-		seesPlayer=isInRangeOfPlayer();
 		Point currPlayerTile=wi.getPlayerPosition();
 		currPlayerTile.x/=TILE_SIZE;
 		currPlayerTile.y/=TILE_SIZE;
@@ -265,67 +262,36 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 
 		if(currTargetNode==null)
 		{
-			if(seesPlayer)
+			int squaredDistance=squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
+			if(!isAttacking&&
+					((!weapon.isLongRangeWeapon()&&squaredDistance>REACHED_PLAYER_DISTANCE_SQUARED)
+							||(weapon.isLongRangeWeapon()&&squaredDistance>RPD_MULTIPLICATOR_LRW*REACHED_PLAYER_DISTANCE_SQUARED)))
 			{
-				int squaredDistance=squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
-				if(!isAttacking&&
-						((!weapon.isLongRangeWeapon()&&squaredDistance>REACHED_PLAYER_DISTANCE_SQUARED)
-								||(weapon.isLongRangeWeapon()&&squaredDistance>RPD_MULTIPLICATOR_LRW*REACHED_PLAYER_DISTANCE_SQUARED)))
-				{
-					currTargetNode=findPath(currTile, currPlayerTile, true);
-				}
-				else
-				{
-					if(getImage()!=getCurrentImage(ImageIndex.IDLE)&&!isAttacking)
-					{
-						setImage(getCurrentImage(ImageIndex.IDLE));
-					}
-					turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
-					currRotation=super.getRotation();
-					setRotation(0);
-					if(weapon.use())
-					{
-						isAttacking=true;
-						setImage(getCurrentImage(ImageIndex.ATTACK));
-					}	
-				}
-
+				currTargetNode=findPath(currTile, currPlayerTile, true);
 			}
 			else
 			{
-				Random random=new Random();
-				MapField[][] map=wi.getMap();
-				int x, y;
-				while(true)		//Assumes that there is always at least one tile to walk on
+				if(getImage()!=getCurrentImage(ImageIndex.IDLE)&&!isAttacking)
 				{
-					x=random.nextInt(DungeonGenerator.MAP_WIDTH);
-					y=random.nextInt(DungeonGenerator.MAP_HEIGHT);
-					if(map[x][y].walkable())
-					{
-						currTargetNode=findPath(currTile, new Point(x, y), false);
-						if(currTargetNode!=null)
-							break;
-					}	
+					setImage(getCurrentImage(ImageIndex.IDLE));
 				}
+				turnTowardsGlobalLocation(wi.getPlayerPosition().x, wi.getPlayerPosition().y);
+				currRotation=super.getRotation();
+				setRotation(0);
+				if(weapon.use())
+				{
+					isAttacking=true;
+					setImage(getCurrentImage(ImageIndex.ATTACK));
+				}	
 			}
 		}
 		else
 		{
-			if(seesPlayer&&!sawPlayer)
+			if(!currPlayerTile.equals(lastPlayerTile))
 			{
-				//Sees the player - didn't see him in the last tick
-				//We can see the player now - CHASE HIM!
+				//If the player changed his position, go to his new location
 				currTargetNode=findPath(currTile, currPlayerTile, true);
 				lastPlayerTile=currPlayerTile;
-			}
-			else if(seesPlayer)
-			{
-				if(!currPlayerTile.equals(lastPlayerTile))
-				{
-					//As long as we see him, always go straight to the player
-					currTargetNode=findPath(currTile, currPlayerTile, true);
-					lastPlayerTile=currPlayerTile;
-				}
 			}
 		}
 
@@ -343,14 +309,14 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 				//We ran into a wall and missed our target or can't reach it - just get a new target next frame
 				currTargetNode=null;
 			}
-			else if(seesPlayer&&weapon.isLongRangeWeapon()&&
+			else if(weapon.isLongRangeWeapon()&&
 					squaredDistanceToPlayer<=RPD_MULTIPLICATOR_LRW*REACHED_PLAYER_DISTANCE_SQUARED
 					&&canSee(new Point(getGlobalX(), getGlobalY()), wi.getPlayerPosition()))
 			{
 				//We have a LongRangeWeapon, we are close enough
 				currTargetNode=null;		
 			}
-			else if((seesPlayer&&currTargetNode.prev==null&&squaredDistToTarget<=REACHED_PLAYER_DISTANCE_SQUARED)		//Target is player
+			else if((currTargetNode.prev==null&&squaredDistToTarget<=REACHED_PLAYER_DISTANCE_SQUARED)		//Target is player
 					||(squaredDistToTarget<=REACHED_TARGET_DISTANCE_SQUARED))										//Target is a tile
 			{
 				currTargetNode=currTargetNode.prev;
@@ -377,7 +343,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			else
 				walkCounter++;
 		}
-		sawPlayer=seesPlayer;
 	}
 
 	/**
