@@ -1,21 +1,16 @@
 package core;
 
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class MainMenuPanel extends BackgroundPanel {
 	/**
@@ -52,7 +47,7 @@ public class MainMenuPanel extends BackgroundPanel {
 		GameStart.setContentAreaFilled(false);
 		GameStart.setOpaque(false);
 		GameStart.setBorder(null);
-
+		GameStart.addActionListener(start);
 		JButton eingeben = new JButton("");
 		eingeben.setBounds(422, 484, 215, 53);
 		eingeben.addMouseListener(new MouseAdapter() {
