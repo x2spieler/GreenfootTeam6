@@ -26,12 +26,18 @@ import javax.swing.JPopupMenu;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 import javax.swing.JMenuItem;
 import java.awt.Button;
 import java.awt.List;
+import java.awt.MediaTracker;
+
 import javax.swing.event.AncestorListener;
 import javax.swing.event.AncestorEvent;
 import javax.swing.border.BevelBorder;
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -43,8 +49,18 @@ import java.awt.SystemColor;
 import java.awt.Font;
 import javax.swing.UIManager;
 import java.awt.Color;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.JTextPane;
 
 public class DungeonFrame extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7379852013198002869L;
 	private JTextField textField;
 
 	/**
@@ -68,123 +84,85 @@ public class DungeonFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public DungeonFrame() {
-		Image image = new ImageIcon("src/images/background/background2.jpg")
+		Image image = new ImageIcon("src/images/background/Background.jpg")
 				.getImage();
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 692, 550);
-		getContentPane().setLayout(new BorderLayout(0, 0));
+		setBounds(200, 200, 1024, 768);
+		getContentPane().setLayout(null);
 		final BackgroundPanel panel = new BackgroundPanel(image);
-		final BackgroundPanel panel2 = new BackgroundPanel(image);
-		panel.setBackground(SystemColor.text);
+		panel.setBounds(0, 0, 1024, 768);
 
 		panel.setForeground(SystemColor.desktop);
 		panel.setFont(new Font("Dialog", Font.PLAIN, 5));
-		getContentPane().add(panel, BorderLayout.CENTER);
-		panel.setLayout(null);
+		getContentPane().add(panel);
 
-		Button GameStart = new Button("Game    Start");
+		JButton GameStart = new JButton();
+		GameStart.setBounds(293, 328, 423, 89);
+		GameStart.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Game-Start-white.png")));
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Game-Start.png")));
+			}
+		});
+		GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Game-Start.png")));
 		GameStart.setBackground(UIManager.getColor("Button.highlight"));
-		GameStart.setBounds(199, 171, 300, 50);
-		GameStart.setFont(new Font("Dialog", Font.PLAIN, 30));
-		panel.add(GameStart);
+		GameStart.setContentAreaFilled(false);
+		GameStart.setOpaque(false);
+		GameStart.setBorder(null);
 
-		Button Highscore = new Button("High    Score");
-		Highscore.addMouseListener(new MouseAdapter() {
+		JButton eingeben = new JButton("");
+		eingeben.setBounds(422, 484, 215, 53);
+		eingeben.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseEntered(MouseEvent e) {
+				eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/new-seed-white.png")));
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/new-seed.png")));
 			}
 		});
-		Highscore.addActionListener(new ActionListener() {
+		eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/new-seed.png")));
+		eingeben.setContentAreaFilled(false);
+		eingeben.setOpaque(false);
+		eingeben.setBorder(null);
+		
+		JButton HighScore = new JButton("");
+		HighScore.setBounds(342, 414, 348, 70);
+		HighScore.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				panel.setVisible(false);
-
 			}
 		});
-		Highscore.setActionCommand("");
-		Highscore.setFont(new Font("Dialog", Font.PLAIN, 30));
-		Highscore.setBackground(UIManager.getColor("Button.highlight"));
-		Highscore.setBounds(199, 280, 300, 50);
-		panel.add(Highscore);
-
-		textField = new JTextField();
-		textField.setBounds(199, 124, 206, 22);
-		panel.add(textField);
-		textField.setColumns(10);
-
-		Button eingeben = new Button("eingeben");
-		eingeben.setFont(new Font("Dialog", Font.BOLD, 16));
-		eingeben.setBackground(UIManager.getColor("Button.focus"));
-		eingeben.setBounds(410, 123, 121, 22);
-		panel.add(eingeben);
-
-		JPanel MenuBarPane = new JPanel();
-		MenuBarPane.setForeground(Color.WHITE);
-		getContentPane().add(MenuBarPane, BorderLayout.NORTH);
-		MenuBarPane.setLayout(new BorderLayout(0, 0));
-
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.setMargin(new Insets(2, 0, 0, 0));
-		MenuBarPane.add(menuBar);
-		menuBar.addAncestorListener(new AncestorListener() {
-			public void ancestorAdded(AncestorEvent event) {
-			}
-
-			public void ancestorMoved(AncestorEvent event) {
-			}
-
-			public void ancestorRemoved(AncestorEvent event) {
-			}
-		});
-		menuBar.setToolTipText("");
-
-		JMenu mnFile = new JMenu("file");
-		menuBar.add(mnFile);
-
-		JMenuItem mntmSave = new JMenuItem("save");
-		mnFile.add(mntmSave);
-
-		JMenu mnOpen = new JMenu("open");
-		mnFile.add(mnOpen);
-
-		JMenuItem mntmRestart = new JMenuItem("restart");
-		mnFile.add(mntmRestart);
-
-		JMenu mnEditor = new JMenu("edit");
-		menuBar.add(mnEditor);
-
-		JMenu mnAbout = new JMenu("about");
-		menuBar.add(mnAbout);
-
-		JMenuItem mntmHowToPlay = new JMenuItem("how to play");
-		mnAbout.add(mntmHowToPlay);
-		getContentPane().setFocusTraversalPolicy(
-				new FocusTraversalOnArray(new Component[] { menuBar, mnFile,
-						mntmSave, mnOpen, mntmRestart, mnEditor, mnAbout,
-						mntmHowToPlay }));
-	}
-
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-
+		HighScore.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseEntered(MouseEvent e) {
+				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/High-Score-white.png")));
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/High-Score.png")));
 			}
 		});
+		HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/High-Score.png")));
+		HighScore.setContentAreaFilled(false);
+		HighScore.setOpaque(false);
+		HighScore.setBorder(null);
+		
+		textField = new JTextField();
+		textField.setBounds(476, 543, 282, 48);
+		textField.setColumns(10);
+		textField.setOpaque(false);
+		textField.setBorder(null);
+		panel.setLayout(null);
+		panel.add(HighScore);
+		panel.add(eingeben);
+		panel.add(GameStart);
+		panel.add(textField);
+
 	}
 }
