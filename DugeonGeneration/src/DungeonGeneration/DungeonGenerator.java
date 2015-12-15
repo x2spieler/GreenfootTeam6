@@ -17,7 +17,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL =15;
+	public static final int ROOM_POOL =20;
 	public static final int MAP_WIDTH = 150;
 	public static final int MAP_HEIGHT = 150;
 
@@ -55,7 +55,12 @@ public class DungeonGenerator {
 	boolean couldnNotFindWay=false;
 	boolean startPointBlocked=false;
 	boolean endPointBlocked=false;
+
 	int unreachableRooms = 0;
+
+	
+	private Node lastWayBuffer=null;
+
 
 
 	public DungeonGenerator(DungeonMap dm)
@@ -261,15 +266,19 @@ public class DungeonGenerator {
 		int temp [] = new int [3]; //[distance, from, to]
 		int status = 0;
 		boolean found = false;
+		boolean build = true;
+		//int status = 0;
+		int counter=0;
 
-		visited.add(0);
+		
 
 		for (int r0 = 0; r0 < ROOM_POOL; r0++){
 			
 			temp [0] = Integer.MAX_VALUE;
+			int rad=rand.randomInt(3, 5);
+
 			
-			
-			for (int r1 = 1; r1 != r0 && r1 < ROOM_POOL; r1++){
+			for (int r1 = 0; r1 != r0 && r1 < ROOM_POOL; r1++){
 
 
 				//calculate closest neighbor from r0
@@ -281,7 +290,7 @@ public class DungeonGenerator {
 				delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
 				absDelta = (int)Math.round(Math.abs(delta));
 				
-				if (absDelta < temp[0] && !ignored.contains(r1) && canBuild(r0,r1)){
+				if (absDelta < temp[0] && !ignored.contains(r1) && canBuildPath(r0, r1, rad)){
 						temp[0] = absDelta;
 						temp[1] = r0;
 						temp[2] = r1;
@@ -289,7 +298,11 @@ public class DungeonGenerator {
 						
 				}
 					ignored.add(temp[1]);
-					ignored.add(temp[2]);	
+					//ignored.add(temp[2]);	
+					
+					if (canBuildPath(r0, r1, rad)){
+						createBufferedWay(rad);
+					}
 			}
 			
 			
@@ -300,92 +313,35 @@ public class DungeonGenerator {
 		
 	}
 				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
 
-//				
-//				if (absDelta < temp[0] && visited.indexOf(r2) < 0 && visited.indexOf(r1) < 0 ){
-//					temp [0]= absDelta;
-//					temp [1]= r1;
-//					temp[2] = r2;
-//					//visited.add(r1);
-//				}
-//
-//				distances [r1][r2] = absDelta;
-//				//System.out.print(distances [r1][r2] + " ");
-//			}
-//			//System.out.print("| " + temp[0] + " from " + temp[1] + " to " +temp[2]);
-//
-//			//System.out.println();
-//			status = buildPath(temp[1], temp[2]);
-//			if (status == 0){
-//				visited.add(r1);
-//				System.out.println("visited:" + visited);
-//			} else {
-//				
-		
+	public boolean canBuildPath(int r0, int r1, int rad){
 
-	public boolean buildPath(int r1, int r2){
-
-		boolean build = true;
-		int status = 0;
+		boolean found = false;
 		int counter=0;
+		
 		do {
-			Point startPos = new Point(randomShift(rooms[r1]));
-			Point endPos = new Point(randomShift(rooms[r2]));
-			rooms[r1].setStartingPoint(startPos);
-			rooms[r2].setEndPoint(endPos);
-			int randomPathWidth =  rand.randomInt(3, 5);
+			Point startPos = new Point(randomShift(rooms[r0]));
+			Point endPos = new Point(randomShift(rooms[r1]));
+
+			rooms[r0].setStartingPoint(startPos);
+			rooms[r1].setEndPoint(endPos);
 			
-			if (canBuild(startPos, endPos, randomPathWidth)){
-				createWay(startPos, endPos, randomPathWidth);
+			
+			
+			
+			if(bufferWay(startPos, endPos ,rad)){
+				found = true;
 			}
-			
+
 			if(counter++==32)
 			{
-				System.out.println("FORCE BREAK");
-//				rooms[r1].hasStartingPoint = false;
-//				//rooms[r2].hasStartingPoint = false;
-//
-//				//rooms[r1].hasEndPoint = false;
-				//rooms[r2].hasEndPoint = false;
-				return !build;
-				
-
+				//System.out.println("FORCE BREAK");
+				return false;
 			}
-		} while (status != 0);
-		return build;
+				
+			} while (!found);	
+
+			return true;
 	}
 
 
@@ -503,8 +459,9 @@ public class DungeonGenerator {
 		System.out.println("\n Map Seed: " + mapSeed);
 
 	}
+	
 
-	private int createWay(Point start, Point end, int radius)
+	private boolean bufferWay(Point start, Point end, int radius)
 	{
 		couldnNotFindWay=false;
 		endPointBlocked=false;
@@ -513,17 +470,27 @@ public class DungeonGenerator {
 		{
 			endPointBlocked=true;
 			couldnNotFindWay=true;
+
 			//System.out.println("Can't leave end point");
 
-			return 2;
+			lastWayBuffer=null;
+			//System.out.println("Can't leave end point");
+
+
+			return false;
 		}
 		if(!canLeavePosition(start.x, start.y, radius))
 		{
 			startPointBlocked=true;
 			
 			couldnNotFindWay=true;
+
 			//System.out.println("Can't leave start point");
-			return 1;
+
+			lastWayBuffer=null;
+			//System.out.println("Can't leave start point");
+			return false;
+
 		}
 		int shiftX=0;
 		int shiftY=0;
@@ -548,22 +515,29 @@ public class DungeonGenerator {
 		}
 		if(endNode!=null)
 		{
-			Node n=endNode;
-			while(n.prev!=null)
-			{
-				int x=n.x;
-				int y=n.y;
-				for(int i=x-radius/2;i<=x+radius/2;i++)
-				{
-					for(int j=y-radius/2;j<=y+radius/2;j++)
-					{
-						mapBlocks[i][j].setFieldType(FieldType.GROUND);
-					}
-				}
-				n=n.prev;
-			}
+			lastWayBuffer=endNode;
+			return true;
 		}
-		return 0;
+		return false;
+	}
+	
+	private void createBufferedWay(int radius)
+	{
+		Node n=lastWayBuffer;
+		while(n.prev!=null)
+		{
+			int x=n.x;
+			int y=n.y;
+			for(int i=x-radius/2;i<=x+radius/2;i++)
+			{
+				for(int j=y-radius/2;j<=y+radius/2;j++)
+				{
+					mapBlocks[i][j].setFieldType(FieldType.GROUND);
+				}
+			}
+			n=n.prev;
+		}
+		lastWayBuffer=null;
 	}
 
 	private boolean canLeavePosition(int x, int y, int radius)
@@ -742,6 +716,92 @@ public class DungeonGenerator {
 						break;
 					
 				}
+//				for(int spLength=1;spLength<=MIN_SUB_PATHS_LENGTH;spLength++)
+//				{
+//					x=closest.x+spLength*addX;	
+//					y=closest.y+spLength*addY;
+//					boolean isTarget=(x==start.x&&y==start.y);
+//					//if(isTarget)
+//					//{
+//					//	break;
+//					//}
+//						
+//					if(x<0||y<0||x>=mapBlocks.length||y>=mapBlocks[0].length)
+//						continue;
+//					if(addY!=0)
+//					{
+//						boolean valid=true;
+//						for(int l=y;l!=y+addY+(isTarget ? 0 : addY*(radius/2+SPACE_NEXT_TO_PATH));l+=addY)
+//						{
+//							for(int k=x-radius/2-SPACE_NEXT_TO_PATH;k<=x+radius/2+SPACE_NEXT_TO_PATH;k++)
+//							{
+//								if(k<0||k>=mapBlocks.length)
+//									continue outerFor;
+//								if(l<0||l>=mapBlocks[0].length)
+//									continue outerFor;
+//								if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
+//								{	
+//									valid=false;
+//								}
+//							}
+//						}
+//						if(!valid&&!isTarget)
+//							continue outerFor;
+//					}
+//					else
+//					{
+//						boolean valid=true;
+//						for(int k=x;k!=x+addX+(isTarget ? 0 : addX*(radius/2+SPACE_NEXT_TO_PATH));k+=addX)
+//						{
+//							for(int l=y-radius/2-SPACE_NEXT_TO_PATH;l<=y+radius/2+SPACE_NEXT_TO_PATH;l++)
+//							{
+//								if(l<0||l>=mapBlocks[0].length)
+//									continue outerFor;
+//								if(k<0||k>=mapBlocks.length)
+//									continue outerFor;
+//								if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
+//								{	
+//									valid=false;
+//								}
+//							}
+//						}
+//						if(!valid&&!isTarget)
+//							continue outerFor;
+//					}
+//				}
+//				Node prevNode=closest;
+//				for(int spLength=1;spLength<=MIN_SUB_PATHS_LENGTH;spLength++)
+//				{
+//					x=closest.x+spLength*addX;	
+//					y=closest.y+spLength*addY;
+//					//boolean isTarget=(x==start.x&&y==start.y);
+//					Node currNode=new Node(manhattanDistance(start, x,y)+closest.movementCost+spLength*1,closest.movementCost+spLength*1, x,y, prevNode);
+//					//prevNode=currNode;
+//					//if(isTarget||spLength==MIN_SUB_PATHS_LENGTH)
+//					//{
+//						if(!closedList.contains(currNode))
+//						{
+//							int indx=openList.indexOf(currNode);
+//							if(indx==-1)
+//							{
+//								openList.add(currNode);
+//							}
+//							else
+//							{
+//								Node inList=openList.get(indx);
+//								if(currNode.cost<=inList.cost)
+//								{
+//									inList.cost=currNode.cost;
+//									inList.prev=currNode.prev;
+//									inList.movementCost=currNode.movementCost;
+//								}
+//							}
+//						//}
+//					}
+//					//if(isTarget)
+//						//break;
+//					
+//				}
 
 			}
 
