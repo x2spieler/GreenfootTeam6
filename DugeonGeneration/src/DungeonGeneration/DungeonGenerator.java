@@ -17,7 +17,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL =20;
+	public static final int ROOM_POOL =15;
 	public static final int MAP_WIDTH = 150;
 	public static final int MAP_HEIGHT = 150;
 
@@ -27,14 +27,19 @@ public class DungeonGenerator {
 
 	public static final int MAX_PATH_WIDTH= 5;
 	public static final int MIN_PATH_WIDTH= 3;
+
 	public static final int MAP_BORDER = 15;
+
+	
+	private final int SPACE_NEXT_TO_PATH=2;
+
 
 	private MapField[][] mapBlocks = new MapField[MAP_WIDTH][MAP_HEIGHT];
 
 	private Room[] rooms = new Room[ROOM_POOL];
 	
 	ArrayList<Integer> visited = new ArrayList<Integer>();
-	ArrayList<Integer> removed = new ArrayList<Integer>();
+	ArrayList<Integer> ignored = new ArrayList<Integer>();
 
 
 	private int mapSeed = 0;
@@ -252,52 +257,100 @@ public class DungeonGenerator {
 		int absDelta = 0;
 		int temp [] = new int [3]; //[distance, from, to]
 		int status = 0;
+		boolean found = false;
 
+		visited.add(0);
 
-		for (int r1 = 0; r1 < ROOM_POOL; r1++){
+		for (int r0 = 0; r0 < ROOM_POOL; r0++){
+			
 			temp [0] = Integer.MAX_VALUE;
 			
-			for (int r2 = r1+1; r2 < ROOM_POOL; r2++){
+			
+			for (int r1 = 0; r1 != r0 && r1 < ROOM_POOL; r1++){
 
 
-				//calculate upper half distance matrix
-				deltaX = rooms[r1].getCenter().x - rooms[r2].getCenter().x;
-				deltaY = rooms[r1].getCenter().y - rooms[r2].getCenter().y;
+				//calculate closest neighbor from r0
+				deltaX = rooms[r0].getCenter().x - rooms[r1].getCenter().x;
+				deltaY = rooms[r0].getCenter().y - rooms[r1].getCenter().y;
 				absDeltaX = Math.abs(deltaX);
 				absDeltaY = Math.abs(deltaY);
 
 				delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
 				absDelta = (int)Math.round(Math.abs(delta));
-
-				//distances[r1].equals(visited.indexOf(r1));
-
-				if (absDelta < temp[0] && visited.indexOf(r2) < 0 && visited.indexOf(r1) < 0 ){
-					temp [0]= absDelta;
-					temp [1]= r1;
-					temp[2] = r2;
-					visited.add(r1);
-				}
-
-				distances [r1][r2] = absDelta;
-				//System.out.print(distances [r1][r2] + " ");
-			}
-			//System.out.print("| " + temp[0] + " from " + temp[1] + " to " +temp[2]);
-
-			//System.out.println();
-			status = buildPath(temp[1], temp[2]);
-			if (status == 0){
-				visited.add(r1);
-				System.out.println("visited:" + visited);
-			} else {
 				
+				if (absDelta < temp[0] && !ignored.contains(r1) && buildPath(r0,r1)){
+						temp[0] = absDelta;
+						temp[1] = r0;
+						temp[2] = r1;
+				}
+					
 			}
-
-		}
-		//System.out.println(visited);
+			
+		 
+			System.out.println("build path from " + temp[1] + " to " + temp[2] + "!" );
+			}
+		
 	}
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
 
-	public int buildPath(int r1, int r2){
+//				
+//				if (absDelta < temp[0] && visited.indexOf(r2) < 0 && visited.indexOf(r1) < 0 ){
+//					temp [0]= absDelta;
+//					temp [1]= r1;
+//					temp[2] = r2;
+//					//visited.add(r1);
+//				}
+//
+//				distances [r1][r2] = absDelta;
+//				//System.out.print(distances [r1][r2] + " ");
+//			}
+//			//System.out.print("| " + temp[0] + " from " + temp[1] + " to " +temp[2]);
+//
+//			//System.out.println();
+//			status = buildPath(temp[1], temp[2]);
+//			if (status == 0){
+//				visited.add(r1);
+//				System.out.println("visited:" + visited);
+//			} else {
+//				
+		
 
+	public boolean buildPath(int r1, int r2){
+
+		boolean build = true;
 		int status = 0;
 		int counter=0;
 		do {
@@ -309,17 +362,17 @@ public class DungeonGenerator {
 			if(counter++==32)
 			{
 				System.out.println("FORCE BREAK");
-				rooms[r1].hasStartingPoint = false;
-				//rooms[r2].hasStartingPoint = false;
-
-				//rooms[r1].hasEndPoint = false;
-				rooms[r2].hasEndPoint = false;
-				return 1;
+//				rooms[r1].hasStartingPoint = false;
+//				//rooms[r2].hasStartingPoint = false;
+//
+//				//rooms[r1].hasEndPoint = false;
+				//rooms[r2].hasEndPoint = false;
+				return !build;
 				
 
 			}
 		} while (status != 0);
-		return 0;
+		return build;
 	}
 
 
@@ -592,29 +645,49 @@ public class DungeonGenerator {
 				Node currNode=new Node(manhattanDistance(start, x,y)+closest.movementCost+1,closest.movementCost+1, x,y, closest);
 				if(addY!=0)
 				{
-					for(int l=y;l!=y+addY+(isTarget ? 0 : addY*(radius/2));l+=addY)
+					boolean contStart=false;
+					boolean valid=true;
+					for(int l=y;l!=y+addY+(isTarget ? 0 : addY*(radius/2+SPACE_NEXT_TO_PATH));l+=addY)
 					{
-						for(int k=x-radius/2;k<=x+radius/2;k++)
+						for(int k=x-radius/2-SPACE_NEXT_TO_PATH;k<=x+radius/2+SPACE_NEXT_TO_PATH;k++)
 						{
+							if(k<0||k>=mapBlocks.length)
+								continue outerFor;
+							if(l<0||l>=mapBlocks[0].length)
+								continue outerFor;
 							if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
 							{	
-								continue outerFor;
+								valid=false;
 							}
+							if(k==start.x&&l==start.y)
+								contStart=true;
 						}
 					}
+					if(!valid&&!contStart)
+						continue outerFor;
 				}
 				else
 				{
-					for(int k=x;k!=x+addX+(isTarget ? 0 : addX*(radius/2));k+=addX)
+					boolean contStart=false;
+					boolean valid=true;
+					for(int k=x;k!=x+addX+(isTarget ? 0 : addX*(radius/2+SPACE_NEXT_TO_PATH));k+=addX)
 					{
-						for(int l=y-radius/2;l<=y+radius/2;l++)
+						for(int l=y-radius/2-SPACE_NEXT_TO_PATH;l<=y+radius/2+SPACE_NEXT_TO_PATH;l++)
 						{
+							if(l<0||l>=mapBlocks[0].length)
+								continue outerFor;
+							if(k<0||k>=mapBlocks.length)
+								continue outerFor;
 							if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
 							{	
-								continue outerFor;
+								valid=false;
 							}
+							if(k==start.x&&l==start.y)
+								contStart=true;
 						}
 					}
+					if(!valid&&!contStart)
+						continue outerFor;
 				}
 				if(!closedList.contains(currNode))
 				{
