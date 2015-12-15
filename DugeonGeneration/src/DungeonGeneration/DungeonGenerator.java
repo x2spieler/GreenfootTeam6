@@ -135,7 +135,7 @@ public class DungeonGenerator {
 
 	//Populates the "rooms" array with random sized rectangular rooms. 
 	public void generateRooms() {
-
+		//TODO: Roompool runtersetzen laut yannik
 		int attempts = 0;
 
 		for(int i = 0; i < ROOM_POOL && attempts < ROOM_POOL*20; i++) {
