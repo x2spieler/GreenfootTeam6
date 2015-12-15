@@ -92,7 +92,8 @@ public class GodFrame {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		frame.pack();
 		frame.setLocation(screenSize.width / 2 - frame.getWidth() / 2, screenSize.height / 2 - frame.getHeight() / 2);
-		frame.getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK), "activate_testing_mode01");
+		frame.getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK),
+				"activate_testing_mode01");
 		frame.getRootPane().getActionMap().put("activate_testing_mode01", new TestingModeActivator());
 		frame.setTitle("Super awesome window title");
 	}
@@ -189,20 +190,29 @@ public class GodFrame {
 		entryPanel.setLayout(new GridLayout(0, 1));
 		int horizontalSpace = 20;
 		//TODO find a smart way to get the Icon from the weapon it belongs to
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_AXE, new GreenfootImage("enemies/weapons/axe/axe0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_HAMMER, new GreenfootImage("enemies/weapons/hammer/hammer0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SPEAR, new GreenfootImage("enemies/weapons/spear/spear0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CROSSBOW, new GreenfootImage("enemies/weapons/crossbow/crossbow0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SWORD, new GreenfootImage("enemies/weapons/sword/sword.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_NINJA_STAR, new GreenfootImage("enemies/weapons/ninja_star/ninja_star0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.BULLET_CROSSBOW_ARROW, new GreenfootImage("enemies/bullets/crossbow_arrow.png"), 30, 100, world));
-		entryPanel.add(new ShopEntry(BuyItem.BULLET_NINJA_STAR, new GreenfootImage("enemies/bullets/ninja_star.png"), 30, 100, world));
+		entryPanel.add(
+				new ShopEntry(BuyItem.WEAPON_AXE, new GreenfootImage("enemies/weapons/axe/axe0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_HAMMER, new GreenfootImage("enemies/weapons/hammer/hammer0.png"),
+				30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SPEAR, new GreenfootImage("enemies/weapons/spear/spear0.png"), 30,
+				1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CROSSBOW,
+				new GreenfootImage("enemies/weapons/crossbow/crossbow0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SWORD, new GreenfootImage("enemies/weapons/sword/sword.png"), 30, 1,
+				world));
+		entryPanel.add(new ShopEntry(BuyItem.WEAPON_NINJA_STAR,
+				new GreenfootImage("enemies/weapons/ninja_star/ninja_star0.png"), 30, 1, world));
+		entryPanel.add(new ShopEntry(BuyItem.BULLET_CROSSBOW_ARROW,
+				new GreenfootImage("enemies/bullets/crossbow_arrow.png"), 30, 100, world));
+		entryPanel.add(new ShopEntry(BuyItem.BULLET_NINJA_STAR, new GreenfootImage("enemies/bullets/ninja_star.png"),
+				30, 100, world));
 		entryPanel.add(new ShopEntry(BuyItem.MEDI_PACK, new GreenfootImage("medi_pack.png"), 30, 1, world));
 
 		JScrollPane scrollPane = new JScrollPane(entryPanel);
 		int scrollY = 100;
 		int scrollHeight = 520;
-		scrollPane.setBounds(new Rectangle(horizontalSpace, scrollY, panelSize.width - 2 * horizontalSpace, scrollHeight));
+		scrollPane.setBounds(
+				new Rectangle(horizontalSpace, scrollY, panelSize.width - 2 * horizontalSpace, scrollHeight));
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		panel.add(scrollPane);
 
@@ -231,7 +241,8 @@ public class GodFrame {
 		JButton resume = new JButton();
 		int buttonWidth = 150;
 		int buttonHeight = 40;
-		resume.setBounds(panelSize.width - 2 * buttonWidth, panelSize.height - buttonHeight - 50, buttonWidth, buttonHeight);
+		resume.setBounds(panelSize.width - 2 * buttonWidth, panelSize.height - buttonHeight - 50, buttonWidth,
+				buttonHeight);
 		resume.setText("Next round");
 		resume.addActionListener((ActionEvent e) -> {
 			world.startNewRound();
@@ -269,52 +280,58 @@ public class GodFrame {
 	}
 
 	public void buildMainMenuGui() {
-		JPanel panel = new JPanel();
-		panel.setLayout(null);
-		panel.setPreferredSize(getPrefSize(panel));
-		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		Dimension panelSize = panel.getPreferredSize();
-		// /////CODE FOR MAIN MENU GOES HERE
-
-		JLabel startLabel = new JLabel("Start a new game");
-		startLabel.setBounds(0, 100, panelSize.width, 50);
-		startLabel.setFont(new Font("", Font.BOLD, 24));
-		startLabel.setHorizontalAlignment(JLabel.CENTER);
-		panel.add(startLabel);
-
-		JButton start = new JButton();
-		int buttonWidth = 150;
-		int buttonHeight = 40;
-		start.setBounds(panelSize.width / 2 - buttonWidth / 2, panelSize.height / 2 - 60, buttonWidth, buttonHeight);
-		start.setText("Start");
-		start.addActionListener((ActionEvent e) -> {
+		MainMenuPanel panel = new MainMenuPanel((ActionEvent e) -> {
 			try {
 				changeToFrame(FrameType.VIEWPORT);
-				String sd=seedTF.getText();
-				int seed=(sd.equals("") ? new Random().nextInt() : Integer.parseInt(sd));
-				world.startNewGame(seed);
+				world.startNewGame(Integer.valueOf(seedTF.getText()));
 				seedTF.setText("" + new Random().nextInt()); // Already set seed for the next game
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-		});
-		panel.add(start);
+		} , null);
+		seedTF = panel.getSeedTF();
+		seedTF.setText("" + new Random().nextInt());
+		panel.setPreferredSize(getPrefSize(panel));
 
-		JLabel seedLabel = new JLabel("Seed:");
-		int lWidth = 100;
-		int lHeight = 50;
-		int space = 20;
-		seedLabel.setBounds(panelSize.width / 2 - lWidth - space, panelSize.height / 2 + 150 - lHeight / 2, lWidth, lHeight);
-		seedLabel.setHorizontalAlignment(JLabel.RIGHT);
-		panel.add(seedLabel);
-
-		seedTF = new JTextField("" + new Random().nextInt());
-		int tfWidth = 100;
-		int tfHeight = 24;
-		seedTF.setBounds(panelSize.width / 2 + space, panelSize.height / 2 + 150 - tfHeight / 2, tfWidth, tfHeight);
-		panel.add(seedTF);
-		// /////
-
+		//		panel.setLayout(null);
+		//		panel.setPreferredSize(getPrefSize(panel));
+		//		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		//		Dimension panelSize = panel.getPreferredSize();
+		//		// /////CODE FOR MAIN MENU GOES HERE
+		//
+		//		JLabel startLabel = new JLabel("Start a new game");
+		//		startLabel.setBounds(0, 100, panelSize.width, 50);
+		//		startLabel.setFont(new Font("", Font.BOLD, 24));
+		//		startLabel.setHorizontalAlignment(JLabel.CENTER);
+		//		panel.add(startLabel);
+		//
+		//		JButton start = new JButton();
+		//		int buttonWidth = 150;
+		//		int buttonHeight = 40;
+		//		start.setBounds(panelSize.width / 2 - buttonWidth / 2, panelSize.height / 2 - 60, buttonWidth, buttonHeight);
+		//		start.setText("Start");
+		//		start.addActionListener((ActionEvent e) -> {
+		//			changeToFrame(FrameType.VIEWPORT);
+		//			world.startNewGame(Integer.valueOf(seedTF.getText()));
+		//			seedTF.setText("" + new Random().nextInt()); // Already set seed for the next game
+		//		});
+		//		panel.add(start);
+		//
+		//		JLabel seedLabel = new JLabel("Seed:");
+		//		int lWidth = 100;
+		//		int lHeight = 50;
+		//		int space = 20;
+		//		seedLabel.setBounds(panelSize.width / 2 - lWidth - space, panelSize.height / 2 + 150 - lHeight / 2, lWidth,
+		//				lHeight);
+		//		seedLabel.setHorizontalAlignment(JLabel.RIGHT);
+		//		panel.add(seedLabel);
+		//
+		//		int tfWidth = 100;
+		//		int tfHeight = 24;
+		//		seedTF.setBounds(panelSize.width / 2 + space, panelSize.height / 2 + 150 - tfHeight / 2, tfWidth, tfHeight);
+		//		panel.add(seedTF);
+		//		// /////
+		//
 		JScrollPane outer = new JScrollPane(panel);
 		outer.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -492,7 +509,8 @@ public class GodFrame {
 		Object[] jl = buffPanels.values().toArray();
 		int MAX_BUFFS_NEXT_OTHER = 2;
 		for (int i = startIndex; i < buffPanels.size(); i++) {
-			((BuffPanel) jl[i]).setLocation(LABEL_X_START + (i % MAX_BUFFS_NEXT_OTHER) * SPACE_BETWEEN_LABELS, LABEL_Y_START + (i / MAX_BUFFS_NEXT_OTHER) * LABEL_HEIGHT);
+			((BuffPanel) jl[i]).setLocation(LABEL_X_START + (i % MAX_BUFFS_NEXT_OTHER) * SPACE_BETWEEN_LABELS,
+					LABEL_Y_START + (i / MAX_BUFFS_NEXT_OTHER) * LABEL_HEIGHT);
 		}
 	}
 
@@ -576,6 +594,7 @@ public class GodFrame {
 		private Runnable run = () -> toggleNotification();
 		ExecutorService ex = Executors.newSingleThreadExecutor();
 		private Future<? extends Object> task;
+
 		{
 			testingModeNotifier.setVisible(true);
 			testingModeNotifier.setEnabled(true);
@@ -647,9 +666,5 @@ public class GodFrame {
 		@Override
 		public void setEnabled(boolean arg0) {
 		}
-	}
-
-	public JScrollPane getViewPortPane() {
-		return viewPortPane;
 	}
 }
