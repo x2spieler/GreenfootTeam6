@@ -44,6 +44,8 @@ public class DungeonGenerator {
 	boolean couldnNotFindWay=false;
 	boolean startPointBlocked=false;
 	boolean endPointBlocked=false;
+	
+	private Node lastWayBuffer=null;
 
 
 	public DungeonGenerator(DungeonMap dm)
@@ -249,7 +251,9 @@ public class DungeonGenerator {
 		do {
 			Point startPos = new Point(randomShift(rooms[r1]));
 			Point endPos = new Point(randomShift(rooms[r2]));
-			status = createWay(startPos, endPos ,rand.randomInt(3, 5));
+			int rad=rand.randomInt(3, 5);
+			if(bufferWay(startPos, endPos ,rad))
+				createBufferedWay(rad);
 			if(counter++==32)
 			{
 				System.out.println("FORCE BREAK");
@@ -373,8 +377,9 @@ public class DungeonGenerator {
 		System.out.println("\n Map Seed: " + mapSeed);
 
 	}
+	
 
-	private int createWay(Point start, Point end, int radius)
+	private boolean bufferWay(Point start, Point end, int radius)
 	{
 		couldnNotFindWay=false;
 		endPointBlocked=false;
@@ -383,16 +388,18 @@ public class DungeonGenerator {
 		{
 			endPointBlocked=true;
 			couldnNotFindWay=true;
+			lastWayBuffer=null;
 			System.out.println("Can't leave end point");
 
-			return 2;
+			return false;
 		}
 		if(!canLeavePosition(start.x, start.y, radius))
 		{
 			startPointBlocked=true;
 			couldnNotFindWay=true;
+			lastWayBuffer=null;
 			System.out.println("Can't leave start point");
-			return 1;
+			return false;
 		}
 		int shiftX=0;
 		int shiftY=0;
@@ -417,22 +424,29 @@ public class DungeonGenerator {
 		}
 		if(endNode!=null)
 		{
-			Node n=endNode;
-			while(n.prev!=null)
-			{
-				int x=n.x;
-				int y=n.y;
-				for(int i=x-radius/2;i<=x+radius/2;i++)
-				{
-					for(int j=y-radius/2;j<=y+radius/2;j++)
-					{
-						mapBlocks[i][j].setFieldType(FieldType.GROUND);
-					}
-				}
-				n=n.prev;
-			}
+			lastWayBuffer=endNode;
+			return true;
 		}
-		return 0;
+		return false;
+	}
+	
+	private void createBufferedWay(int radius)
+	{
+		Node n=lastWayBuffer;
+		while(n.prev!=null)
+		{
+			int x=n.x;
+			int y=n.y;
+			for(int i=x-radius/2;i<=x+radius/2;i++)
+			{
+				for(int j=y-radius/2;j<=y+radius/2;j++)
+				{
+					mapBlocks[i][j].setFieldType(FieldType.GROUND);
+				}
+			}
+			n=n.prev;
+		}
+		lastWayBuffer=null;
 	}
 
 	private boolean canLeavePosition(int x, int y, int radius)
@@ -610,6 +624,92 @@ public class DungeonGenerator {
 						break;
 					
 				}
+//				for(int spLength=1;spLength<=MIN_SUB_PATHS_LENGTH;spLength++)
+//				{
+//					x=closest.x+spLength*addX;	
+//					y=closest.y+spLength*addY;
+//					boolean isTarget=(x==start.x&&y==start.y);
+//					//if(isTarget)
+//					//{
+//					//	break;
+//					//}
+//						
+//					if(x<0||y<0||x>=mapBlocks.length||y>=mapBlocks[0].length)
+//						continue;
+//					if(addY!=0)
+//					{
+//						boolean valid=true;
+//						for(int l=y;l!=y+addY+(isTarget ? 0 : addY*(radius/2+SPACE_NEXT_TO_PATH));l+=addY)
+//						{
+//							for(int k=x-radius/2-SPACE_NEXT_TO_PATH;k<=x+radius/2+SPACE_NEXT_TO_PATH;k++)
+//							{
+//								if(k<0||k>=mapBlocks.length)
+//									continue outerFor;
+//								if(l<0||l>=mapBlocks[0].length)
+//									continue outerFor;
+//								if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
+//								{	
+//									valid=false;
+//								}
+//							}
+//						}
+//						if(!valid&&!isTarget)
+//							continue outerFor;
+//					}
+//					else
+//					{
+//						boolean valid=true;
+//						for(int k=x;k!=x+addX+(isTarget ? 0 : addX*(radius/2+SPACE_NEXT_TO_PATH));k+=addX)
+//						{
+//							for(int l=y-radius/2-SPACE_NEXT_TO_PATH;l<=y+radius/2+SPACE_NEXT_TO_PATH;l++)
+//							{
+//								if(l<0||l>=mapBlocks[0].length)
+//									continue outerFor;
+//								if(k<0||k>=mapBlocks.length)
+//									continue outerFor;
+//								if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
+//								{	
+//									valid=false;
+//								}
+//							}
+//						}
+//						if(!valid&&!isTarget)
+//							continue outerFor;
+//					}
+//				}
+//				Node prevNode=closest;
+//				for(int spLength=1;spLength<=MIN_SUB_PATHS_LENGTH;spLength++)
+//				{
+//					x=closest.x+spLength*addX;	
+//					y=closest.y+spLength*addY;
+//					//boolean isTarget=(x==start.x&&y==start.y);
+//					Node currNode=new Node(manhattanDistance(start, x,y)+closest.movementCost+spLength*1,closest.movementCost+spLength*1, x,y, prevNode);
+//					//prevNode=currNode;
+//					//if(isTarget||spLength==MIN_SUB_PATHS_LENGTH)
+//					//{
+//						if(!closedList.contains(currNode))
+//						{
+//							int indx=openList.indexOf(currNode);
+//							if(indx==-1)
+//							{
+//								openList.add(currNode);
+//							}
+//							else
+//							{
+//								Node inList=openList.get(indx);
+//								if(currNode.cost<=inList.cost)
+//								{
+//									inList.cost=currNode.cost;
+//									inList.prev=currNode.prev;
+//									inList.movementCost=currNode.movementCost;
+//								}
+//							}
+//						//}
+//					}
+//					//if(isTarget)
+//						//break;
+//					
+//				}
 
 			}
 
