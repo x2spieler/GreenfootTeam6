@@ -41,7 +41,7 @@ public class Player extends DeltaMover implements IDamageable {
 	private int currHP = -1;
 	private int mediPacks = 0;
 
-	private int score = 1000000;
+	private int score = 0;
 
 	private ArrayList<Buff> activeBuffs;
 	private HashMap<BuffType, Double> activeWeaponBuffs;
