@@ -28,11 +28,14 @@ public class DungeonGenerator {
 	public static final int MAX_PATH_WIDTH= 5;
 	public static final int MIN_PATH_WIDTH= 3;
 
+<<<<<<< HEAD
 
 	public static final int MAP_BORDER = 15;
 
 	
 
+=======
+>>>>>>> branch 'DifferentDungeonGenerationApproach' of https://github.com/x2spieler/GreenfootTeam6.git
 	private final int SPACE_NEXT_TO_PATH=3;
 	private final int MIN_SUB_PATHS_LENGTH=3;
 
@@ -624,21 +627,16 @@ public class DungeonGenerator {
 				//2. Loop: -1, 0
 				//3. Loop: 0, 1l
 				//4. Loop: 0, -1
+				subPathLengthFor:
 				for(int spLength=1;spLength<=MIN_SUB_PATHS_LENGTH;spLength++)
 				{
 					x=closest.x+spLength*addX;	
 					y=closest.y+spLength*addY;
 					boolean isTarget=(x==start.x&&y==start.y);
-					if(isTarget)
-					{
-						break;
-					}
-						
 					if(x<0||y<0||x>=mapBlocks.length||y>=mapBlocks[0].length)
 						continue;
 					if(addY!=0)
 					{
-						boolean contStart=false;
 						boolean valid=true;
 						for(int l=y;l!=y+addY+(isTarget ? 0 : addY*(radius/2+SPACE_NEXT_TO_PATH));l+=addY)
 						{
@@ -652,16 +650,15 @@ public class DungeonGenerator {
 								{	
 									valid=false;
 								}
-								if(k==start.x&&l==start.y)
-									contStart=true;
 							}
+							if(x==start.x&&l==start.y&&valid)
+								break subPathLengthFor;
 						}
-						if(!valid&&!contStart)
+						if(!valid&&!isTarget)
 							continue outerFor;
 					}
 					else
 					{
-						boolean contStart=false;
 						boolean valid=true;
 						for(int k=x;k!=x+addX+(isTarget ? 0 : addX*(radius/2+SPACE_NEXT_TO_PATH));k+=addX)
 						{
@@ -675,11 +672,11 @@ public class DungeonGenerator {
 								{	
 									valid=false;
 								}
-								if(k==start.x&&l==start.y)
-									contStart=true;
 							}
+							if(k==start.x&&y==start.y&&valid)
+								break subPathLengthFor;
 						}
-						if(!valid&&!contStart)
+						if(!valid&&!isTarget)
 							continue outerFor;
 					}
 				}
@@ -713,95 +710,12 @@ public class DungeonGenerator {
 						}
 					}
 					if(isTarget)
+					{
 						break;
+					}
+					
 					
 				}
-//				for(int spLength=1;spLength<=MIN_SUB_PATHS_LENGTH;spLength++)
-//				{
-//					x=closest.x+spLength*addX;	
-//					y=closest.y+spLength*addY;
-//					boolean isTarget=(x==start.x&&y==start.y);
-//					//if(isTarget)
-//					//{
-//					//	break;
-//					//}
-//						
-//					if(x<0||y<0||x>=mapBlocks.length||y>=mapBlocks[0].length)
-//						continue;
-//					if(addY!=0)
-//					{
-//						boolean valid=true;
-//						for(int l=y;l!=y+addY+(isTarget ? 0 : addY*(radius/2+SPACE_NEXT_TO_PATH));l+=addY)
-//						{
-//							for(int k=x-radius/2-SPACE_NEXT_TO_PATH;k<=x+radius/2+SPACE_NEXT_TO_PATH;k++)
-//							{
-//								if(k<0||k>=mapBlocks.length)
-//									continue outerFor;
-//								if(l<0||l>=mapBlocks[0].length)
-//									continue outerFor;
-//								if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
-//								{	
-//									valid=false;
-//								}
-//							}
-//						}
-//						if(!valid&&!isTarget)
-//							continue outerFor;
-//					}
-//					else
-//					{
-//						boolean valid=true;
-//						for(int k=x;k!=x+addX+(isTarget ? 0 : addX*(radius/2+SPACE_NEXT_TO_PATH));k+=addX)
-//						{
-//							for(int l=y-radius/2-SPACE_NEXT_TO_PATH;l<=y+radius/2+SPACE_NEXT_TO_PATH;l++)
-//							{
-//								if(l<0||l>=mapBlocks[0].length)
-//									continue outerFor;
-//								if(k<0||k>=mapBlocks.length)
-//									continue outerFor;
-//								if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
-//								{	
-//									valid=false;
-//								}
-//							}
-//						}
-//						if(!valid&&!isTarget)
-//							continue outerFor;
-//					}
-//				}
-//				Node prevNode=closest;
-//				for(int spLength=1;spLength<=MIN_SUB_PATHS_LENGTH;spLength++)
-//				{
-//					x=closest.x+spLength*addX;	
-//					y=closest.y+spLength*addY;
-//					//boolean isTarget=(x==start.x&&y==start.y);
-//					Node currNode=new Node(manhattanDistance(start, x,y)+closest.movementCost+spLength*1,closest.movementCost+spLength*1, x,y, prevNode);
-//					//prevNode=currNode;
-//					//if(isTarget||spLength==MIN_SUB_PATHS_LENGTH)
-//					//{
-//						if(!closedList.contains(currNode))
-//						{
-//							int indx=openList.indexOf(currNode);
-//							if(indx==-1)
-//							{
-//								openList.add(currNode);
-//							}
-//							else
-//							{
-//								Node inList=openList.get(indx);
-//								if(currNode.cost<=inList.cost)
-//								{
-//									inList.cost=currNode.cost;
-//									inList.prev=currNode.prev;
-//									inList.movementCost=currNode.movementCost;
-//								}
-//							}
-//						//}
-//					}
-//					//if(isTarget)
-//						//break;
-//					
-//				}
 
 			}
 
