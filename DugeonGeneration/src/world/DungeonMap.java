@@ -72,6 +72,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public static final int VIEWPORT_WIDTH = 1024;
 	public static final int VIEWPORT_HEIGHT = 768;
 	public static final int TILE_SIZE = 32;
+	private final int STAIR_SPAWN_RADIUS=15;
 	public static final Point PLAYER_START_POS = new Point(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2);
 	private static final int viewportXTiles = (VIEWPORT_WIDTH / TILE_SIZE);
 	private static final int viewportYTiles = (VIEWPORT_HEIGHT / TILE_SIZE);
@@ -352,14 +353,23 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 				StairsToHeaven stairs = new StairsToHeaven();
 				int x = 0;
 				int y = 0;
+				
 				do {
 					do {
-						x = 1 + r.nextInt(DungeonGenerator.MAP_WIDTH - 2);
-						y = 1 + r.nextInt(DungeonGenerator.MAP_HEIGHT - 2);
-					} while (!map[x + 1][y].walkable() || !map[x - 1][y].walkable() || !map[x][y + 1].walkable()
+						int xAdd=2 + r.nextInt(STAIR_SPAWN_RADIUS-2);
+						if(r.nextBoolean())
+							xAdd*=-1;
+						x = player.getGlobalX()/TILE_SIZE+xAdd;
+						int yAdd=2 + r.nextInt(STAIR_SPAWN_RADIUS-2);
+						if(r.nextBoolean())
+							yAdd*=-1;
+						y = player.getGlobalY()/TILE_SIZE+yAdd;
+					} while (x<0||y<0||x>=getMap().length||y>=getMap()[0].length||
+							!map[x][y].walkable() ||!map[x + 1][y].walkable() 
+							|| !map[x - 1][y].walkable() || !map[x][y + 1].walkable()
 							|| !map[x][y - 1].walkable());
 				} while (!tryAddObject(stairs, x * TILE_SIZE, y * TILE_SIZE));
-				;
+				
 				//TODO: Transition sch�ner machen
 			}
 		}
