@@ -26,6 +26,8 @@ public class DungeonGenerator {
 
 	public static final int MAX_PATH_WIDTH= 5;
 	public static final int MIN_PATH_WIDTH= 3;
+	
+	private final int SPACE_NEXT_TO_PATH=2;
 
 	private MapField[][] mapBlocks = new MapField[MAP_WIDTH][MAP_HEIGHT];
 
@@ -523,29 +525,49 @@ public class DungeonGenerator {
 				Node currNode=new Node(manhattanDistance(start, x,y)+closest.movementCost+1,closest.movementCost+1, x,y, closest);
 				if(addY!=0)
 				{
-					for(int l=y;l!=y+addY+(isTarget ? 0 : addY*(radius/2));l+=addY)
+					boolean contStart=false;
+					boolean valid=true;
+					for(int l=y;l!=y+addY+(isTarget ? 0 : addY*(radius/2+SPACE_NEXT_TO_PATH));l+=addY)
 					{
-						for(int k=x-radius/2;k<=x+radius/2;k++)
+						for(int k=x-radius/2-SPACE_NEXT_TO_PATH;k<=x+radius/2+SPACE_NEXT_TO_PATH;k++)
 						{
+							if(k<0||k>=mapBlocks.length)
+								continue outerFor;
+							if(l<0||l>=mapBlocks[0].length)
+								continue outerFor;
 							if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
 							{	
-								continue outerFor;
+								valid=false;
 							}
+							if(k==start.x&&l==start.y)
+								contStart=true;
 						}
 					}
+					if(!valid&&!contStart)
+						continue outerFor;
 				}
 				else
 				{
-					for(int k=x;k!=x+addX+(isTarget ? 0 : addX*(radius/2));k+=addX)
+					boolean contStart=false;
+					boolean valid=true;
+					for(int k=x;k!=x+addX+(isTarget ? 0 : addX*(radius/2+SPACE_NEXT_TO_PATH));k+=addX)
 					{
-						for(int l=y-radius/2;l<=y+radius/2;l++)
+						for(int l=y-radius/2-SPACE_NEXT_TO_PATH;l<=y+radius/2+SPACE_NEXT_TO_PATH;l++)
 						{
+							if(l<0||l>=mapBlocks[0].length)
+								continue outerFor;
+							if(k<0||k>=mapBlocks.length)
+								continue outerFor;
 							if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
 							{	
-								continue outerFor;
+								valid=false;
 							}
+							if(k==start.x&&l==start.y)
+								contStart=true;
 						}
 					}
+					if(!valid&&!contStart)
+						continue outerFor;
 				}
 				if(!closedList.contains(currNode))
 				{
