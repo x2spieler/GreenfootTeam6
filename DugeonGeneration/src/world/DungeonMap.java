@@ -117,7 +117,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	// TODO: Set custom image in task bar
 	// TODO: Balance gameplay
 	// TODO: Balance waves
-	// TODO: Spawn new destroyable objects after 5 rounds?
 
 	public DungeonMap() {
 		super(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 1, fullWidth, fullHeight);
@@ -369,8 +368,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 							|| !map[x - 1][y].walkable() || !map[x][y + 1].walkable()
 							|| !map[x][y - 1].walkable());
 				} while (!tryAddObject(stairs, x * TILE_SIZE, y * TILE_SIZE));
-				
-				//TODO: Transition sch�ner machen
 			}
 		}
 	}

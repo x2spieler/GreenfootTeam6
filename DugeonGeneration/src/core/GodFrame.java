@@ -290,10 +290,11 @@ public class GodFrame {
 		start.addActionListener((ActionEvent e) -> {
 			try {
 				changeToFrame(FrameType.VIEWPORT);
-				world.startNewGame(Integer.valueOf(seedTF.getText()));
+				String sd=seedTF.getText();
+				int seed=(sd.equals("") ? new Random().nextInt() : Integer.parseInt(sd));
+				world.startNewGame(seed);
 				seedTF.setText("" + new Random().nextInt()); // Already set seed for the next game
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
