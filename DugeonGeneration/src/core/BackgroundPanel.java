@@ -9,7 +9,7 @@ public class BackgroundPanel extends JPanel {
      */  
     private static final long serialVersionUID = -6352788025440244338L;  
       
-    private Image image = null;  
+    protected Image image = null;  
   
     public BackgroundPanel(Image image) {  
         this.image = image;  

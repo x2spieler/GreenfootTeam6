@@ -84,53 +84,56 @@ public class DungeonFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public DungeonFrame() {
-		Image image = new ImageIcon("src/images/background/background.png")
+		Image image = new ImageIcon("src/images/background/Background.jpg")
 				.getImage();
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(200, 200, 1331, 750);
+		setBounds(200, 200, 1024, 768);
 		getContentPane().setLayout(null);
 		final BackgroundPanel panel = new BackgroundPanel(image);
-		panel.setBounds(0, 0, 1387, 750);
+		panel.setBounds(0, 0, 1024, 768);
 
 		panel.setForeground(SystemColor.desktop);
 		panel.setFont(new Font("Dialog", Font.PLAIN, 5));
 		getContentPane().add(panel);
 
 		JButton GameStart = new JButton();
+		GameStart.setBounds(293, 328, 423, 89);
 		GameStart.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/StartGame_white.png")));
+				GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Game-Start-white.png")));
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Startgame.png")));
+				GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Game-Start.png")));
 			}
 		});
-		GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Startgame.png")));
+		GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Game-Start.png")));
 		GameStart.setBackground(UIManager.getColor("Button.highlight"));
 		GameStart.setContentAreaFilled(false);
 		GameStart.setOpaque(false);
 		GameStart.setBorder(null);
 
 		JButton eingeben = new JButton("");
+		eingeben.setBounds(422, 484, 215, 53);
 		eingeben.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/eingeben_white.png")));
+				eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/new-seed-white.png")));
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Eingeben.png")));
+				eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/new-seed.png")));
 			}
 		});
-		eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Eingeben.png")));
+		eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/new-seed.png")));
 		eingeben.setContentAreaFilled(false);
 		eingeben.setOpaque(false);
 		eingeben.setBorder(null);
 		
 		JButton HighScore = new JButton("");
+		HighScore.setBounds(342, 414, 348, 70);
 		HighScore.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -138,61 +141,28 @@ public class DungeonFrame extends JFrame {
 		HighScore.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore_white.png")));
+				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/High-Score-white.png")));
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore.png")));
+				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/High-Score.png")));
 			}
 		});
-		HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore.png")));
+		HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/High-Score.png")));
 		HighScore.setContentAreaFilled(false);
 		HighScore.setOpaque(false);
 		HighScore.setBorder(null);
 		
 		textField = new JTextField();
+		textField.setBounds(476, 543, 282, 48);
 		textField.setColumns(10);
 		textField.setOpaque(false);
 		textField.setBorder(null);
-		
-	
-		
-		
-		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(153)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(86)
-							.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 348, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(217)
-							.addComponent(eingeben, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE))
-						.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 423, GroupLayout.PREFERRED_SIZE)
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(205)
-							.addComponent(textField, GroupLayout.PREFERRED_SIZE, 282, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
-					.addContainerGap(34, Short.MAX_VALUE)
-					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)))
-					.addGap(18)
-					.addComponent(textField, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(eingeben)
-					.addGap(194))
-		);
-		panel.setLayout(gl_panel);
+		panel.setLayout(null);
+		panel.add(HighScore);
+		panel.add(eingeben);
+		panel.add(GameStart);
+		panel.add(textField);
 
 	}
 }
