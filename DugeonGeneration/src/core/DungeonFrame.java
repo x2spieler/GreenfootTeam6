@@ -26,12 +26,18 @@ import javax.swing.JPopupMenu;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 import javax.swing.JMenuItem;
 import java.awt.Button;
 import java.awt.List;
+import java.awt.MediaTracker;
+
 import javax.swing.event.AncestorListener;
 import javax.swing.event.AncestorEvent;
 import javax.swing.border.BevelBorder;
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -47,6 +53,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.JTextPane;
 
 public class DungeonFrame extends JFrame {
@@ -135,10 +142,10 @@ public class DungeonFrame extends JFrame {
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore2.png")));
+				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore.png")));
 			}
 		});
-		HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore2.png")));
+		HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Highscore.png")));
 		HighScore.setContentAreaFilled(false);
 		HighScore.setOpaque(false);
 		HighScore.setBorder(null);
@@ -148,12 +155,15 @@ public class DungeonFrame extends JFrame {
 		textField.setOpaque(false);
 		textField.setBorder(null);
 		
+	
+		
 		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(427)
+					.addGap(153)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel.createSequentialGroup()
 							.addGap(86)
@@ -165,15 +175,17 @@ public class DungeonFrame extends JFrame {
 						.addGroup(gl_panel.createSequentialGroup()
 							.addGap(205)
 							.addComponent(textField, GroupLayout.PREFERRED_SIZE, 282, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(282, Short.MAX_VALUE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap(301, Short.MAX_VALUE)
-					.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
+					.addContainerGap(34, Short.MAX_VALUE)
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addComponent(GameStart, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(HighScore, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)))
 					.addGap(18)
 					.addComponent(textField, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
