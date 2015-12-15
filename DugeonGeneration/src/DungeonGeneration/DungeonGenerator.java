@@ -288,24 +288,26 @@ public class DungeonGenerator {
 				delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
 				absDelta = (int)Math.round(Math.abs(delta));
 				
-				if (absDelta < temp[0] && !ignored.contains(r1) && canBuildPath(r0, r1, rad)){
+				if (absDelta < temp[0] && !visited.contains(r1) && canBuildPath(r0, r1, rad)){
 						temp[0] = absDelta;
 						temp[1] = r0;
 						temp[2] = r1;
 						
 						
 				}
-					ignored.add(temp[1]);
+					
 					//ignored.add(temp[2]);	
 					
 					if (canBuildPath(r0, r1, rad)){
 						createBufferedWay(rad);
+						visited.add(temp[1]);
+						System.out.println("build path from " + temp[1] + " to " + temp[2] + "!" );
 					}
 			}
 			
 			
 		 
-			System.out.println("build path from " + temp[1] + " to " + temp[2] + "!" );
+			
 			
 		}
 		
