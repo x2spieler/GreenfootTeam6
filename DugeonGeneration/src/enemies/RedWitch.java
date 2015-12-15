@@ -9,7 +9,6 @@ public class RedWitch extends Enemy
 		setSpeed(175);
 		value = 1;
 		hp = 1;
-		viewRangeSquared = 32*32*10*10;
 		enemyName="red_witch";
 		allowedWeapons=new String[]{"love_wand"};
 	}

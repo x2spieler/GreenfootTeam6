@@ -9,7 +9,6 @@ public class PurpleDemon extends Enemy
 		setSpeed(175);
 		value = 1;
 		hp = 1;
-		viewRangeSquared = 32*32*10*10;
 		enemyName="purple_demon";
 		allowedWeapons=new String[]{"acid_bubbles"};
 	}

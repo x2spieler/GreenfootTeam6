@@ -9,7 +9,6 @@ public class BlueFlower extends Enemy
 		setSpeed(175);
 		value = 1;
 		hp = 1;
-		viewRangeSquared = 32*32*10*10;
 		enemyName="blue_flower";
 		allowedWeapons=new String[]{"leaf_thrower"};
 	}

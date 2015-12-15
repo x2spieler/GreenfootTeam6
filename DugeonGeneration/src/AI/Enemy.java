@@ -3,7 +3,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
-import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
@@ -34,7 +33,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	protected Weapon weapon = null;
 	protected int value = -1;
 	protected int hp = -1;
-	protected int viewRangeSquared = -1;		//In Pixels, not tiles
+	
 	protected String enemyName="";
 	protected GreenfootImage[][] images;
 	protected String[] allowedWeapons;
@@ -188,14 +187,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 		}
 		if(weapon!=null)
 			getWorld().addObject(weapon, 0, 0);
-	}
-
-	private boolean isInRangeOfPlayer()	
-	{
-		Point p=wi.getPlayerPosition();
-		double xDist=getGlobalX()-p.x;
-		double yDist=getGlobalY()-p.y;
-		return ((xDist*xDist)+(yDist*yDist))<viewRangeSquared;
 	}
 
 	@Override
