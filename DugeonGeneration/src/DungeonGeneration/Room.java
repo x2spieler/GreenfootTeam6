@@ -9,6 +9,12 @@ public class Room {
 
 	private Point pos = new Point();
 	private Point center = new Point();
+	
+	public boolean hasStartingPoint = false;
+	public boolean hasEndPoint = false;
+	Point startPos = new Point();
+	Point endPos = new Point();
+
 
 	public Room (int sizeX, int sizeY) {
 
@@ -27,6 +33,25 @@ public class Room {
 
 	}
 
+	public boolean hasStartingPoint(){
+		return hasStartingPoint;
+	}
+	
+	public void setStartingPoint(Point startPos){
+		startPos.setLocation(startPos);
+		hasStartingPoint = true;
+
+	}
+	
+	public void setEndPoint(Point exitPos){
+		endPos.setLocation(endPos);
+		hasEndPoint = true;
+	}
+	
+	public boolean hasEndPoint(){
+		return hasEndPoint;
+	}
+	
 	public void setPosition(Point pos) {
 
 		this.pos = new Point(pos.x, pos.y);

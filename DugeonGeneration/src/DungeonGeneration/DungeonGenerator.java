@@ -17,19 +17,25 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 10;
-	public static final int MAP_WIDTH = 120;
-	public static final int MAP_HEIGHT = 120;
+	public static final int ROOM_POOL =20;
+	public static final int MAP_WIDTH = 150;
+	public static final int MAP_HEIGHT = 150;
 
 	public static final int MAX_ROOM_SIZE= 15;
 	public static final int MIN_ROOM_SIZE= 10;
+	public static final int ROOM_BORDER = 5;
 
 	public static final int MAX_PATH_WIDTH= 5;
 	public static final int MIN_PATH_WIDTH= 3;
+	public static final int MAP_BORDER = 15;
 
 	private MapField[][] mapBlocks = new MapField[MAP_WIDTH][MAP_HEIGHT];
 
 	private Room[] rooms = new Room[ROOM_POOL];
+	
+	ArrayList<Integer> visited = new ArrayList<Integer>();
+	ArrayList<Integer> removed = new ArrayList<Integer>();
+
 
 	private int mapSeed = 0;
 
@@ -41,6 +47,7 @@ public class DungeonGenerator {
 	boolean couldnNotFindWay=false;
 	boolean startPointBlocked=false;
 	boolean endPointBlocked=false;
+	int unreachableRooms = 0;
 
 
 	public DungeonGenerator(DungeonMap dm)
@@ -83,8 +90,9 @@ public class DungeonGenerator {
 		generateRooms();
 		calculateClosestNeighbour();
 		removeUnusedCells();
+		removeUnreachable();
 		showMap();
-		removeUnusedCells();
+		
 	}
 
 
@@ -124,8 +132,8 @@ public class DungeonGenerator {
 			rooms[i] = new Room(randomWidth, randomHeight);
 
 			boolean roomFree = true;
-			int posX = rand.randomInt(3, MAP_WIDTH - 3 - rooms[i].getSizeX());
-			int posY = rand.randomInt(3, MAP_HEIGHT - 3 - rooms[i].getSizeY());
+			int posX = rand.randomInt(MAP_BORDER, MAP_WIDTH - MAP_BORDER - rooms[i].getSizeX());
+			int posY = rand.randomInt(MAP_BORDER, MAP_HEIGHT - MAP_BORDER - rooms[i].getSizeY());
 
 
 			if (randomWidth % 2 == 0 || randomHeight % 2 == 0){
@@ -134,9 +142,9 @@ public class DungeonGenerator {
 			rooms[i].setPosition(posX, posY);
 
 			//Check horizontally if desired place is free
-			for (int y=-1; y<rooms[i].getSizeY()+1 && roomFree; y++ ){ 
+			for (int y=-ROOM_BORDER; y<rooms[i].getSizeY()+ROOM_BORDER && roomFree; y++ ){ 
 
-				for (int x=-1; x<rooms[i].getSizeX()+1 && roomFree; x++ ) {
+				for (int x=-ROOM_BORDER; x<rooms[i].getSizeX()+ROOM_BORDER && roomFree; x++ ) {
 
 					//prevents going outOfBounds
 					if (rooms[i].getPosition().x + x > MAP_WIDTH || rooms[i].getPosition().y + y > MAP_HEIGHT)
@@ -190,7 +198,49 @@ public class DungeonGenerator {
 
 
 	}
+	//TODO: r+1 not always correct
+	//TODO: check if room is near to a path, then keep it
+	
+	
+	
+	public void removeUnreachable(){
+		//boolean found = false;
+		int sizeX = 0;
+		int sizeY = 0;
+		Point pos = new Point();
+		
+		for (int r = 0; r < ROOM_POOL; r++){
+			
+			if ((!rooms[r].hasEndPoint() && !rooms[r].hasStartingPoint())){
+				//found = true;
+				System.out.println(r);
+				sizeX = rooms[r].getSizeX();
+				sizeY = rooms[r].getSizeY();
+				pos.setLocation(rooms[r].getPosition());
+				
+				for (int y = 0; y< sizeY; y++){
+					for (int x = 0; x< sizeX; x++){
+						
+						mapBlocks[x+pos.x][y+pos.y].setFieldType(FieldType.CENTER);
+						
+					}
 
+				}
+				
+				System.out.println("Removed room: " + (r));
+				
+			}
+		}
+	}
+			
+		
+		//TODO: Remove thin walls
+		
+
+	
+		
+			
+	
 	public void calculateClosestNeighbour(){
 
 		int distances [][] = new int [ROOM_POOL][ROOM_POOL];
@@ -201,11 +251,12 @@ public class DungeonGenerator {
 		double delta = 0;
 		int absDelta = 0;
 		int temp [] = new int [3]; //[distance, from, to]
-		ArrayList<Integer> visited = new ArrayList<Integer>();
+		int status = 0;
 
 
-		for (int r1 = 0; r1 < ROOM_POOL-1; r1++){
-			temp [0] = 300;
+		for (int r1 = 0; r1 < ROOM_POOL; r1++){
+			temp [0] = Integer.MAX_VALUE;
+			
 			for (int r2 = r1+1; r2 < ROOM_POOL; r2++){
 
 
@@ -233,26 +284,42 @@ public class DungeonGenerator {
 			//System.out.print("| " + temp[0] + " from " + temp[1] + " to " +temp[2]);
 
 			//System.out.println();
-			buildPath(temp[1], temp[2]);
+			status = buildPath(temp[1], temp[2]);
+			if (status == 0){
+				visited.add(r1);
+				System.out.println("visited:" + visited);
+			} else {
+				
+			}
 
 		}
 		//System.out.println(visited);
 	}
 
-	public void buildPath(int r1, int r2){
+	public int buildPath(int r1, int r2){
 
 		int status = 0;
 		int counter=0;
 		do {
 			Point startPos = new Point(randomShift(rooms[r1]));
 			Point endPos = new Point(randomShift(rooms[r2]));
+			rooms[r1].setStartingPoint(startPos);
+			rooms[r2].setEndPoint(endPos);
 			status = createWay(startPos, endPos ,rand.randomInt(3, 5));
 			if(counter++==32)
 			{
 				System.out.println("FORCE BREAK");
-				break;
+				rooms[r1].hasStartingPoint = false;
+				//rooms[r2].hasStartingPoint = false;
+
+				//rooms[r1].hasEndPoint = false;
+				rooms[r2].hasEndPoint = false;
+				return 1;
+				
+
 			}
 		} while (status != 0);
+		return 0;
 	}
 
 
@@ -380,15 +447,16 @@ public class DungeonGenerator {
 		{
 			endPointBlocked=true;
 			couldnNotFindWay=true;
-			System.out.println("Can't leave end point");
+			//System.out.println("Can't leave end point");
 
 			return 2;
 		}
 		if(!canLeavePosition(start.x, start.y, radius))
 		{
 			startPointBlocked=true;
+			
 			couldnNotFindWay=true;
-			System.out.println("Can't leave start point");
+			//System.out.println("Can't leave start point");
 			return 1;
 		}
 		int shiftX=0;
@@ -479,7 +547,8 @@ public class DungeonGenerator {
 		if(openList.size()==0)
 		{
 			couldnNotFindWay=true;
-			System.out.println("Couldn't find a way");
+			//System.out.println("Couldn't find a way");
+			//
 			return null;
 		}
 		Node closest=openList.get(0);
