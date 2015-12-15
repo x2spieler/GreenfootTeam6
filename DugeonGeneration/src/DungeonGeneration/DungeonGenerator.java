@@ -28,14 +28,13 @@ public class DungeonGenerator {
 	public static final int MAX_PATH_WIDTH= 5;
 	public static final int MIN_PATH_WIDTH= 3;
 
-<<<<<<< HEAD
+
 
 	public static final int MAP_BORDER = 15;
 
 	
 
-=======
->>>>>>> branch 'DifferentDungeonGenerationApproach' of https://github.com/x2spieler/GreenfootTeam6.git
+
 	private final int SPACE_NEXT_TO_PATH=3;
 	private final int MIN_SUB_PATHS_LENGTH=3;
 
@@ -106,7 +105,7 @@ public class DungeonGenerator {
 		generateRooms();
 		calculateClosestNeighbour();
 		removeUnusedCells();
-		removeUnreachable();
+		
 		showMap();
 		
 	}
@@ -219,7 +218,7 @@ public class DungeonGenerator {
 	
 	
 	
-	public void removeUnreachable(){
+	public void removeUnreachable(Room r0){
 		//boolean found = false;
 		int sizeX = 0;
 		int sizeY = 0;
@@ -227,7 +226,7 @@ public class DungeonGenerator {
 		
 		for (int r = 0; r < ROOM_POOL; r++){
 			
-			if ((!rooms[r].hasEndPoint() && !rooms[r].hasStartingPoint())){
+			
 				//found = true;
 				System.out.println(r);
 				sizeX = rooms[r].getSizeX();
@@ -247,7 +246,7 @@ public class DungeonGenerator {
 				
 			}
 		}
-	}
+	
 			
 		
 		//TODO: Remove thin walls
@@ -267,11 +266,7 @@ public class DungeonGenerator {
 		double delta = 0;
 		int absDelta = 0;
 		int temp [] = new int [3]; //[distance, from, to]
-		int status = 0;
-		boolean found = false;
-		boolean build = true;
-		//int status = 0;
-		int counter=0;
+	
 
 		
 
@@ -312,7 +307,7 @@ public class DungeonGenerator {
 		 
 			System.out.println("build path from " + temp[1] + " to " + temp[2] + "!" );
 			
-			}
+		}
 		
 	}
 				
@@ -326,8 +321,7 @@ public class DungeonGenerator {
 			Point startPos = new Point(randomShift(rooms[r0]));
 			Point endPos = new Point(randomShift(rooms[r1]));
 
-			rooms[r0].setStartingPoint(startPos);
-			rooms[r1].setEndPoint(endPos);
+			
 			
 			
 			
