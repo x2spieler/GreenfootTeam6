@@ -28,10 +28,13 @@ public class DungeonGenerator {
 	public static final int MAX_PATH_WIDTH= 5;
 	public static final int MIN_PATH_WIDTH= 3;
 
+
 	public static final int MAP_BORDER = 15;
 
 	
-	private final int SPACE_NEXT_TO_PATH=2;
+
+	private final int SPACE_NEXT_TO_PATH=3;
+	private final int MIN_SUB_PATHS_LENGTH=3;
 
 
 	private MapField[][] mapBlocks = new MapField[MAP_WIDTH][MAP_HEIGHT];
@@ -248,7 +251,7 @@ public class DungeonGenerator {
 	
 	public void calculateClosestNeighbour(){
 
-		int distances [][] = new int [ROOM_POOL][ROOM_POOL];
+		
 		int deltaX = 0;
 		int deltaY = 0;
 		int absDeltaX = 0;
@@ -266,7 +269,7 @@ public class DungeonGenerator {
 			temp [0] = Integer.MAX_VALUE;
 			
 			
-			for (int r1 = 0; r1 != r0 && r1 < ROOM_POOL; r1++){
+			for (int r1 = 1; r1 != r0 && r1 < ROOM_POOL; r1++){
 
 
 				//calculate closest neighbor from r0
@@ -278,16 +281,21 @@ public class DungeonGenerator {
 				delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
 				absDelta = (int)Math.round(Math.abs(delta));
 				
-				if (absDelta < temp[0] && !ignored.contains(r1) && buildPath(r0,r1)){
+				if (absDelta < temp[0] && !ignored.contains(r1) && canBuild(r0,r1)){
 						temp[0] = absDelta;
 						temp[1] = r0;
 						temp[2] = r1;
+						
+						
 				}
-					
+					ignored.add(temp[1]);
+					ignored.add(temp[2]);	
 			}
+			
 			
 		 
 			System.out.println("build path from " + temp[1] + " to " + temp[2] + "!" );
+			
 			}
 		
 	}
@@ -358,7 +366,12 @@ public class DungeonGenerator {
 			Point endPos = new Point(randomShift(rooms[r2]));
 			rooms[r1].setStartingPoint(startPos);
 			rooms[r2].setEndPoint(endPos);
-			status = createWay(startPos, endPos ,rand.randomInt(3, 5));
+			int randomPathWidth =  rand.randomInt(3, 5);
+			
+			if (canBuild(startPos, endPos, randomPathWidth)){
+				createWay(startPos, endPos, randomPathWidth);
+			}
+			
 			if(counter++==32)
 			{
 				System.out.println("FORCE BREAK");
@@ -637,76 +650,99 @@ public class DungeonGenerator {
 				//2. Loop: -1, 0
 				//3. Loop: 0, 1l
 				//4. Loop: 0, -1
-				x=closest.x+addX;	
-				y=closest.y+addY;
-				boolean isTarget=(x==start.x&&y==start.y);
-				if(x<0||y<0||x>=mapBlocks.length||y>=mapBlocks[0].length)
-					continue;
-				Node currNode=new Node(manhattanDistance(start, x,y)+closest.movementCost+1,closest.movementCost+1, x,y, closest);
-				if(addY!=0)
+				for(int spLength=1;spLength<=MIN_SUB_PATHS_LENGTH;spLength++)
 				{
-					boolean contStart=false;
-					boolean valid=true;
-					for(int l=y;l!=y+addY+(isTarget ? 0 : addY*(radius/2+SPACE_NEXT_TO_PATH));l+=addY)
+					x=closest.x+spLength*addX;	
+					y=closest.y+spLength*addY;
+					boolean isTarget=(x==start.x&&y==start.y);
+					if(isTarget)
 					{
-						for(int k=x-radius/2-SPACE_NEXT_TO_PATH;k<=x+radius/2+SPACE_NEXT_TO_PATH;k++)
-						{
-							if(k<0||k>=mapBlocks.length)
-								continue outerFor;
-							if(l<0||l>=mapBlocks[0].length)
-								continue outerFor;
-							if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
-							{	
-								valid=false;
-							}
-							if(k==start.x&&l==start.y)
-								contStart=true;
-						}
+						break;
 					}
-					if(!valid&&!contStart)
-						continue outerFor;
-				}
-				else
-				{
-					boolean contStart=false;
-					boolean valid=true;
-					for(int k=x;k!=x+addX+(isTarget ? 0 : addX*(radius/2+SPACE_NEXT_TO_PATH));k+=addX)
+						
+					if(x<0||y<0||x>=mapBlocks.length||y>=mapBlocks[0].length)
+						continue;
+					if(addY!=0)
 					{
-						for(int l=y-radius/2-SPACE_NEXT_TO_PATH;l<=y+radius/2+SPACE_NEXT_TO_PATH;l++)
+						boolean contStart=false;
+						boolean valid=true;
+						for(int l=y;l!=y+addY+(isTarget ? 0 : addY*(radius/2+SPACE_NEXT_TO_PATH));l+=addY)
 						{
-							if(l<0||l>=mapBlocks[0].length)
-								continue outerFor;
-							if(k<0||k>=mapBlocks.length)
-								continue outerFor;
-							if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
-							{	
-								valid=false;
+							for(int k=x-radius/2-SPACE_NEXT_TO_PATH;k<=x+radius/2+SPACE_NEXT_TO_PATH;k++)
+							{
+								if(k<0||k>=mapBlocks.length)
+									continue outerFor;
+								if(l<0||l>=mapBlocks[0].length)
+									continue outerFor;
+								if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
+								{	
+									valid=false;
+								}
+								if(k==start.x&&l==start.y)
+									contStart=true;
 							}
-							if(k==start.x&&l==start.y)
-								contStart=true;
 						}
-					}
-					if(!valid&&!contStart)
-						continue outerFor;
-				}
-				if(!closedList.contains(currNode))
-				{
-					int indx=openList.indexOf(currNode);
-					if(indx==-1)
-					{
-						openList.add(currNode);
+						if(!valid&&!contStart)
+							continue outerFor;
 					}
 					else
 					{
-						Node inList=openList.get(indx);
-						if(currNode.cost<=inList.cost)
+						boolean contStart=false;
+						boolean valid=true;
+						for(int k=x;k!=x+addX+(isTarget ? 0 : addX*(radius/2+SPACE_NEXT_TO_PATH));k+=addX)
 						{
-							inList.cost=currNode.cost;
-							inList.prev=currNode.prev;
-							inList.movementCost=currNode.movementCost;
+							for(int l=y-radius/2-SPACE_NEXT_TO_PATH;l<=y+radius/2+SPACE_NEXT_TO_PATH;l++)
+							{
+								if(l<0||l>=mapBlocks[0].length)
+									continue outerFor;
+								if(k<0||k>=mapBlocks.length)
+									continue outerFor;
+								if(mapBlocks[k][l].getFieldType()!=FieldType.CELL)
+								{	
+									valid=false;
+								}
+								if(k==start.x&&l==start.y)
+									contStart=true;
+							}
 						}
+						if(!valid&&!contStart)
+							continue outerFor;
 					}
 				}
+				Node prevNode=closest;
+				for(int spLength=1;spLength<=MIN_SUB_PATHS_LENGTH;spLength++)
+				{
+					x=closest.x+spLength*addX;	
+					y=closest.y+spLength*addY;
+					boolean isTarget=(x==start.x&&y==start.y);
+					Node currNode=new Node(manhattanDistance(start, x,y)+closest.movementCost+spLength*1,closest.movementCost+spLength*1, x,y, prevNode);
+					prevNode=currNode;
+					if(isTarget||spLength==MIN_SUB_PATHS_LENGTH)
+					{
+						if(!closedList.contains(currNode))
+						{
+							int indx=openList.indexOf(currNode);
+							if(indx==-1)
+							{
+								openList.add(currNode);
+							}
+							else
+							{
+								Node inList=openList.get(indx);
+								if(currNode.cost<=inList.cost)
+								{
+									inList.cost=currNode.cost;
+									inList.prev=currNode.prev;
+									inList.movementCost=currNode.movementCost;
+								}
+							}
+						}
+					}
+					if(isTarget)
+						break;
+					
+				}
+
 			}
 
 		openList.remove(closest);

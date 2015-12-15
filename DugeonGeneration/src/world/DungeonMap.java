@@ -299,7 +299,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 					while(!map[x+1][y].walkable()||!map[x-1][y].walkable()||!map[x][y+1].walkable()||!map[x][y-1].walkable());
 				}
 				while(!tryAddObject(stairs ,x*TILE_SIZE, y*TILE_SIZE));;
-				//TODO: Transition schöner machen
+				//TODO: Transition schï¿½ner machen
 			}
 		}
 	}
