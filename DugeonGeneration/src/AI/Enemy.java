@@ -3,8 +3,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.sun.xml.internal.ws.policy.PolicyIntersector;
-
 import DungeonGeneration.MapField;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
@@ -341,29 +339,29 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	private void updatePathToPlayer(Point end)
 	{
 		Node n=currTargetNode;
-		outerWhile:
-			while((n=n.prev)!=null)
-			{
-				Node p=n.prev;
-				if(p==null)
-					break;
-				for(int i=0;i<12;i++)
-				{
-					if(p.prev==null)
-						break outerWhile;
-					p=p.prev;
-				}
-			}
-		if(n!=null)
+		Node shortestDistance=null;
+		int minDist=Integer.MAX_VALUE;
+		int limit=8+new Random().nextInt(6);
+		while((n=n.prev)!=null)
 		{
-			Point start=new Point(n.x/TILE_SIZE, n.y/TILE_SIZE);
-			if(manhattanDistance(start, end.x, end.y)>12) 
+			int manDist=(int)manhattanDistance(n.x/TILE_SIZE, n.y/TILE_SIZE, end.x, end.y);
+			if(manDist<minDist)
+			{
+				minDist=manDist;
+				shortestDistance=n;
+
+			}
+		}
+		if(shortestDistance!=null)
+		{
+			Point start=new Point(shortestDistance.x/TILE_SIZE, shortestDistance.y/TILE_SIZE);
+			if(manhattanDistance(start, end.x, end.y)>limit) 
 				currTargetNode=findPath(new Point(getGlobalX()/TILE_SIZE, getGlobalY()/TILE_SIZE), end, true);
 			else 
-				n.prev=findPath(start, end, true);
-			
+				shortestDistance.prev=findPath(start, end, true);
+
 		}
-			
+
 	}
 
 	/**
@@ -512,6 +510,12 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	{
 		return Math.abs(start.x-x)+Math.abs(start.y-y);
 	}
+
+	private double manhattanDistance(int x2, int y2, int x, int y)
+	{
+		return Math.abs(x2-x)+Math.abs(y2-y);
+	}
+
 
 	class Node
 	{
