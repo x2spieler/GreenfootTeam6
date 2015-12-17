@@ -3,6 +3,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.sun.xml.internal.ws.policy.PolicyIntersector;
+
 import DungeonGeneration.MapField;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
@@ -33,7 +35,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 	protected Weapon weapon = null;
 	protected int value = -1;
 	protected int hp = -1;
-	
+
 	protected String enemyName="";
 	protected GreenfootImage[][] images;
 	protected String[] allowedWeapons;
@@ -281,7 +283,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			if(!currPlayerTile.equals(lastPlayerTile))
 			{
 				//If the player changed his position, go to his new location
-				currTargetNode=findPath(currTile, currPlayerTile, true);
+				updatePathToPlayer(currPlayerTile);
 				lastPlayerTile=currPlayerTile;
 			}
 		}
@@ -334,6 +336,34 @@ public abstract class Enemy extends DeltaMover implements IDamageable
 			else
 				walkCounter++;
 		}
+	}
+
+	private void updatePathToPlayer(Point end)
+	{
+		Node n=currTargetNode;
+		outerWhile:
+			while((n=n.prev)!=null)
+			{
+				Node p=n.prev;
+				if(p==null)
+					break;
+				for(int i=0;i<12;i++)
+				{
+					if(p.prev==null)
+						break outerWhile;
+					p=p.prev;
+				}
+			}
+		if(n!=null)
+		{
+			Point start=new Point(n.x/TILE_SIZE, n.y/TILE_SIZE);
+			if(manhattanDistance(start, end.x, end.y)>12) 
+				currTargetNode=findPath(new Point(getGlobalX()/TILE_SIZE, getGlobalY()/TILE_SIZE), end, true);
+			else 
+				n.prev=findPath(start, end, true);
+			
+		}
+			
 	}
 
 	/**

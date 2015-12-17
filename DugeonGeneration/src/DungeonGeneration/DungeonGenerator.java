@@ -3,12 +3,7 @@ package DungeonGeneration;
 //import greenfoot.World;
 
 import java.awt.Point;
-import java.util.Random;
 
-import objects.Crate;
-import objects.DestroyableObject;
-import objects.Grave;
-import objects.Vase;
 import world.DungeonMap;
 
 public class DungeonGenerator {
@@ -32,18 +27,13 @@ public class DungeonGenerator {
 	MegaRandom rand;
 	MegaRandom randomSeed;
 	
-	private DungeonMap dm = null;
-	
 
-	
-	
 	public DungeonGenerator(DungeonMap dm)
 	{
 		randomSeed = new MegaRandom();
 		mapSeed = randomSeed.randomInt(0, Integer.MAX_VALUE-1);
 		rand=new MegaRandom(mapSeed);
 		
-		this.dm = dm;
 		initGen();
 	}
 	
@@ -51,7 +41,6 @@ public class DungeonGenerator {
 	{
 		mapSeed = seed;
 		rand=new MegaRandom(mapSeed);
-		this.dm = dm;
 		initGen();
 
 	}
