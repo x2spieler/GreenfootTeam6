@@ -6,8 +6,8 @@ package DungeonGeneration;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
-
 
 import objects.Crate;
 import objects.DestroyableObject;
@@ -481,6 +481,110 @@ public class DungeonGenerator {
 
 	}
 	
+	private ArrayList<HashSet<Room>> getConnectedRooms()
+	{
+		ArrayList<HashSet<Room>> connected=new ArrayList<>();
+		HashSet<Room> used=new HashSet<>(); 
+		while(used.size()<usedRooms)
+		{
+			Room currRoom=null;
+			for(Room r:rooms)
+			{
+				if(!used.contains(r))
+				{
+					currRoom=r;
+					break;
+				}
+			}
+			HashSet<Room> currNet=new HashSet<>();
+			currNet.add(currRoom);
+			for(Room r:rooms)
+			{
+				if(r!=currRoom&&areConnected(r.getCenter(), currRoom.getCenter()))
+				{
+					currNet.add(r);
+					used.add(r);
+				}
+			}
+			connected.add(currNet);
+		}
+		return connected;
+	}
+	
+	private boolean areConnected(Point p1, Point p2)
+	{
+		ArrayList<Node>closedList=new ArrayList<Node>();
+		ArrayList<Node>openList=new ArrayList<Node>();
+
+		openList.add(new Node(manhattanDistance(p1, p2.x, p2.y),0, p2.x, p2.y, null));
+
+		while(true)
+		{
+			if(openList.size()==0)
+			{
+				return false;
+			}
+			Node closest=openList.get(0);
+			for(Node node:openList)
+			{
+				if(node.cost<closest.cost)
+				{
+					closest=node;
+				}
+			}
+
+			if(closest.x==p1.x&&closest.y==p1.y)
+			{
+				return true;
+			}
+			int x=-1,y=-1;
+			int addX=1;
+			int addY=0;
+			for(int i=0;i<4;i++)
+			{
+				if(i==1||i==3)
+				{
+					addX*=-1;
+					addY*=-1;
+				}
+				if(i==2)
+				{
+					addX=0;
+					addY=1;
+				}
+				//1. Loop: 1 , 0
+				//2. Loop: -1, 0
+				//3. Loop: 0, 1l
+				//4. Loop: 0, -1
+				x=closest.x+addX;	
+				y=closest.y+addY;
+				if(x<0||y<0||x>=mapBlocks.length||y>=mapBlocks[0].length)
+					continue;
+				Node currNode=new Node(manhattanDistance(p1, x,y)+closest.movementCost+1,closest.movementCost+1, x,y, closest);
+				if(mapBlocks[x][y].getFieldType()==FieldType.RESERVED&&!closedList.contains(currNode))
+				{
+					int indx=openList.indexOf(currNode);
+					if(indx==-1)
+					{
+						openList.add(currNode);
+					}
+					else
+					{
+						Node inList=openList.get(indx);
+						if(currNode.cost<=inList.cost)
+						{
+							inList.cost=currNode.cost;
+							inList.prev=currNode.prev;
+							inList.movementCost=currNode.movementCost;
+						}
+					}
+				}
+			}
+
+			openList.remove(closest);
+			closedList.add(closest);
+		}
+	}
 
 	private boolean bufferWay(Point start, Point end, int radius)
 	{
@@ -543,9 +647,14 @@ public class DungeonGenerator {
 		return false;
 	}
 	
-	private void createBufferedWay(int radius)
+	private void reserveBufferedWay(int radius)
 	{
-		Node n=lastWayBuffer;
+		createWay(radius, FieldType.RESERVED, lastWayBuffer);
+	}
+	
+	private void createWay(int radius, FieldType ft, Node startNode)
+	{
+		Node n=startNode;
 		while(n.prev!=null)
 		{
 			int x=n.x;
@@ -554,7 +663,7 @@ public class DungeonGenerator {
 			{
 				for(int j=y-radius/2;j<=y+radius/2;j++)
 				{
-					mapBlocks[i][j].setFieldType(FieldType.GROUND);
+					mapBlocks[i][j].setFieldType(ft);
 				}
 			}
 			n=n.prev;
