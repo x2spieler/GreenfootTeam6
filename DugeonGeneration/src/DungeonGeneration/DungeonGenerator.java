@@ -6,11 +6,8 @@ package DungeonGeneration;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
-
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 import objects.Crate;
 import objects.DestroyableObject;
@@ -500,8 +497,9 @@ public class DungeonGenerator {
 			}
 			HashSet<Room> currNet=new HashSet<>();
 			currNet.add(currRoom);
-			for(Room r:rooms)
+			for(int i=0;i<usedRooms;i++)
 			{
+				Room r=rooms[i];
 				if(r!=currRoom&&areConnected(r.getCenter(), currRoom.getCenter()))
 				{
 					currNet.add(r);
