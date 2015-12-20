@@ -17,7 +17,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 200;
+	public static final int ROOM_POOL = 2;
 	public static int usedRooms = ROOM_POOL;
 	
 	public static final int MAP_WIDTH = 150;
@@ -105,7 +105,7 @@ public class DungeonGenerator {
 		clearMap();
 		//removeCells();
 		generateRooms();
-		//calculateClosestNeighbour();
+		calculateClosestNeighbour();
 		//removeUnusedCells();
 		
 		showMap();
@@ -138,7 +138,6 @@ public class DungeonGenerator {
 	//Populates the "rooms" array with random sized rectangular rooms. 
 	public void generateRooms() {
 		
-		//TODO: Roompool runtersetzen laut yannik
 		int attempts = 0;
 
 		for(int i = 0; i < ROOM_POOL; i++) {
@@ -213,49 +212,6 @@ public class DungeonGenerator {
 			}
 
 
-
-	
-	//TODO: r+1 not always correct
-	//TODO: check if room is near to a path, then keep it
-	
-	
-	
-	public void removeUnreachable(Room r){
-		//boolean found = false;
-		int sizeX = 0;
-		int sizeY = 0;
-		Point pos = new Point(r.getPosition());
-		
-		
-			
-			
-				//found = true;
-				System.out.println(r);
-				sizeX = r.getSizeX();
-				sizeY = r.getSizeY();
-				//pos.setLocation(r.getPosition());
-				
-				for (int y = 0; y< sizeY; y++){
-					for (int x = 0; x< sizeX; x++){
-						
-						mapBlocks[x+pos.x][y+pos.y].setFieldType(FieldType.CENTER);
-						
-					}
-
-				}
-				
-				System.out.println("Removed room: " + (r));
-				
-			}
-
-	
-			
-		
-		//TODO: Remove thin walls
-		
-
-	
-		
 			
 	
 	public void calculateClosestNeighbour(){
@@ -271,10 +227,7 @@ public class DungeonGenerator {
 		boolean found = false;
 	
 
-		//visited.add(0);
-
-		//for (int r0 = 0; r0 < ; r0++){
-			
+					
 			
 			temp [0] = Integer.MAX_VALUE;
 			//int rad=rand.randomInt(3, 5);
@@ -301,7 +254,11 @@ public class DungeonGenerator {
 						delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
 						absDelta = (int)Math.round(Math.abs(delta));
 						
-						if (absDelta < temp[0] && !visited.contains(r) && canBuildPath(activeRoom, r, rad)){
+						
+						Point startPos = new Point(randomShift(rooms[temp[1]]));
+						Point endPos = new Point(randomShift(rooms[temp[2]]));
+						
+						if (absDelta < temp[0] && !visited.contains(r) && bufferWay(startPos, endPos, rad)){
 								
 							temp[0] = absDelta;
 							temp[1] = activeRoom;
@@ -309,10 +266,10 @@ public class DungeonGenerator {
 								
 						}
 					
-					//ignored.add(temp[2]);	
+						
 					
-						if (canBuildPath(temp[1], temp[2], rad)){
-							createBufferedWay(rad);
+						if (bufferWay(startPos, endPos, rad)){
+							//bufferWay();
 							System.out.println("build path from " + temp[1] + " to " + temp[2] + " with radius " + rad + "!" );
 							
 							//if (!visited.contains(temp[1])){
@@ -480,6 +437,9 @@ public class DungeonGenerator {
 		System.out.println("\n Map Seed: " + mapSeed);
 
 	}
+	
+	
+	//TODO: New methods
 	
 	private ArrayList<HashSet<Room>> getConnectedRooms()
 	{
@@ -671,6 +631,11 @@ public class DungeonGenerator {
 		lastWayBuffer=null;
 	}
 
+	
+
+	
+	
+	
 	private boolean canLeavePosition(int x, int y, int radius)
 	{
 		int addX=1;
