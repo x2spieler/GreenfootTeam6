@@ -105,7 +105,7 @@ public class DungeonGenerator {
 		clearMap();
 		//removeCells();
 		generateRooms();
-		calculateClosestNeighbour();
+		connectClosestRooms();
 		//removeUnusedCells();
 		
 		showMap();
@@ -211,7 +211,58 @@ public class DungeonGenerator {
 				}
 			}
 
+	
+	
+	/*
+	 * 
+	Private ArrayList<HashSet<Room>> getConnectedRooms()
+	Private boolean areConnected(Point p1, Point p2)
+	
+	private boolean bufferWay(Point start, Point end, int radius)
+	
+	private void reserveBufferedWay(int radius)
+	
+	private void createWay(int radius, FieldType ft, Node startNode)
+	  
+	 */
 
+	public void connectClosestRooms(){
+		
+		Point startPos = new Point();
+		Point endPos = new Point();
+		boolean found = false;
+		
+		int attempts = 0;
+		int rad = 3;
+		
+		for (int r0 = 0; r0 < usedRooms; r0++){
+			
+			attempts = 0;
+			
+			for (int r1 = r0 + 1; r1!=r0 && r1 < usedRooms && attempts++ < 20; r1++){
+				
+				startPos.setLocation(randomShift(rooms[r0]));
+				endPos.setLocation(randomShift(rooms[r1]));
+				System.out.println("room: " + r0 + "Start: " + startPos + " endPos: " + endPos);
+					
+				if (bufferWay(startPos, endPos, rad)){
+					
+					reserveBufferedWay(rad);
+					System.out.println("triggered");				
+		
+				} else if (attempts >= 20){
+					break;
+				} else {
+					r1--;
+				}
+				
+				
+			}
+		}
+		
+		//System.out.println(getConnectedRooms());
+		
+	}
 			
 	
 	public void calculateClosestNeighbour(){
