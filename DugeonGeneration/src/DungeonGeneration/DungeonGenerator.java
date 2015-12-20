@@ -17,7 +17,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 2;
+	public static final int ROOM_POOL = 3;
 	public static int usedRooms = ROOM_POOL;
 	
 	public static final int MAP_WIDTH = 150;
@@ -233,21 +233,23 @@ public class DungeonGenerator {
 			//int rad=rand.randomInt(3, 5);
 			int rad = 3;
 
+			visited.add(0);
 			
-			int activeRoom = 0;
 			
 			//while (found < usedRooms){
 			
 				
-				for (int r = 0; r < usedRooms; r++){
+				for (int r0 = 0; r0 < usedRooms; r0++){
+					for (int r1 = 0; r1!=r0 && r1 < usedRooms; r1++){
+
 //TODO: 
 					//while (!found){
 						found = false;
 					//if (r != activeRoom){
 						
 					
-						deltaX = rooms[activeRoom].getCenter().x - rooms[r].getCenter().x;
-						deltaY = rooms[activeRoom].getCenter().y - rooms[r].getCenter().y;
+						deltaX = rooms[r1].getCenter().x - rooms[r0].getCenter().x;
+						deltaY = rooms[r1].getCenter().y - rooms[r0].getCenter().y;
 						absDeltaX = Math.abs(deltaX);
 						absDeltaY = Math.abs(deltaY);
 		
@@ -258,11 +260,11 @@ public class DungeonGenerator {
 						Point startPos = new Point(randomShift(rooms[temp[1]]));
 						Point endPos = new Point(randomShift(rooms[temp[2]]));
 						
-						if (absDelta < temp[0] && !visited.contains(r) && bufferWay(startPos, endPos, rad)){
+						if (absDelta < temp[0] && !visited.contains(r0)){
 								
 							temp[0] = absDelta;
-							temp[1] = activeRoom;
-							temp[2] = (r);
+							temp[1] = r0;
+							temp[2] = r1;
 								
 						}
 					
@@ -273,25 +275,17 @@ public class DungeonGenerator {
 							System.out.println("build path from " + temp[1] + " to " + temp[2] + " with radius " + rad + "!" );
 							
 							//if (!visited.contains(temp[1])){
-								visited.add(temp[1]);
-								found = true;
+							reserveBufferedWay(rad);
+							visited.add(temp[1]);
+							found = true;
 							//}
-							activeRoom = r;
 						}
 					}
 			//	}
 				System.out.println(visited);
 				}
+			}
 			
-	//}
-//				}	
-
-//		 
-//
-//			
-//	}
-//				
-
 	public boolean canBuildPath(int r0, int r1, int rad){
 
 		boolean found = false;
@@ -300,11 +294,6 @@ public class DungeonGenerator {
 		do {
 			Point startPos = new Point(randomShift(rooms[r0]));
 			Point endPos = new Point(randomShift(rooms[r1]));
-
-			
-			
-			
-			
 			
 			if(bufferWay(startPos, endPos ,rad)){
 				found = true;
