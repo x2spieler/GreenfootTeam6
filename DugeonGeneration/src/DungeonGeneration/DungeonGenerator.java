@@ -6,8 +6,11 @@ package DungeonGeneration;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
+
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 import objects.Crate;
 import objects.DestroyableObject;
@@ -17,7 +20,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 3;
+	public static final int ROOM_POOL = 15;
 	public static int usedRooms = ROOM_POOL;
 	
 	public static final int MAP_WIDTH = 150;
@@ -109,7 +112,6 @@ public class DungeonGenerator {
 		//removeUnusedCells();
 		
 		showMap();
-		
 	}
 
 
@@ -260,7 +262,7 @@ public class DungeonGenerator {
 			}
 		}
 		
-		//System.out.println(getConnectedRooms());
+		System.out.println(getConnectedRooms());
 		
 	}
 			
@@ -507,6 +509,7 @@ public class DungeonGenerator {
 				}
 			}
 			connected.add(currNet);
+			used.add(currRoom);
 		}
 		return connected;
 	}
@@ -561,7 +564,7 @@ public class DungeonGenerator {
 				if(x<0||y<0||x>=mapBlocks.length||y>=mapBlocks[0].length)
 					continue;
 				Node currNode=new Node(manhattanDistance(p1, x,y)+closest.movementCost+1,closest.movementCost+1, x,y, closest);
-				if(mapBlocks[x][y].getFieldType()==FieldType.RESERVED&&!closedList.contains(currNode))
+				if((mapBlocks[x][y].getFieldType()==FieldType.RESERVED||mapBlocks[x][y].getFieldType()==FieldType.CENTER)&&!closedList.contains(currNode))
 				{
 					int indx=openList.indexOf(currNode);
 					if(indx==-1)
