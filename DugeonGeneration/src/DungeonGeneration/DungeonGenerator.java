@@ -230,9 +230,53 @@ public class DungeonGenerator {
 		Point startPos = new Point();
 		Point endPos = new Point();
 		boolean found = false;
+		int deltaX = 0;
+		int deltaY = 0;
+		int absDeltaX = 0;
+		int absDeltaY = 0;
+		double delta = 0;
+		int absDelta = 0;
+		int temp = 0;
+		
+		int [][] distances  = new int [usedRooms][usedRooms];
+		
+		
 		
 		int attempts = 0;
 		int rad = 3;
+		
+		for (int r0 = 0; r0 < usedRooms; r0++){
+			for (int r1 = 0; r1 < usedRooms; r1++){
+
+		
+				deltaX = rooms[r1].getCenter().x - rooms[r0].getCenter().x;
+				deltaY = rooms[r1].getCenter().y - rooms[r0].getCenter().y;
+				absDeltaX = Math.abs(deltaX);
+				absDeltaY = Math.abs(deltaY);
+		
+				delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
+				absDelta = (int)Math.round(Math.abs(delta));
+				System.out.println(absDelta);
+
+		
+				if (absDelta < distances [r0][r1]){
+					temp = distances [r0][r1];
+					distances [r0][r1] = absDelta;
+					distances [r0][r1+1] = temp;
+				}
+				
+				
+			} 
+			
+		}
+		for (int y = 0; y<usedRooms; y++){
+			for (int x = 0; x < usedRooms; x++){
+			
+				System.out.print(distances[x][y]);			
+			}
+			System.out.println();
+		}
+		
 		
 		for (int r0 = 0; r0 < usedRooms; r0++){
 			
