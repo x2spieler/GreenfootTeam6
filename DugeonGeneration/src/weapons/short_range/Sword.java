@@ -16,8 +16,8 @@ public class Sword extends ShortRangeWeapon {
 		this.owner = owner;
 		reloadTimeInMS = 750;
 		additionalValue = 1;
-		ticksPerAnimImg = 3;
-		anim_frame_count = 6;
+		ticksPerAnimImg = 1;
+		anim_frame_count = 11;
 		weaponOffsetToPlayer = new Point2D.Double(DungeonMap.TILE_SIZE, DungeonMap.TILE_SIZE / 3);
 		default_anim_frame = 5;
 		icon = new GreenfootImage("enemies/weapons/sword/sword.png");
@@ -25,6 +25,6 @@ public class Sword extends ShortRangeWeapon {
 
 	@Override
 	protected int getAnimFrameCount() {
-		return 6;
+		return 11;
 	}
 }
