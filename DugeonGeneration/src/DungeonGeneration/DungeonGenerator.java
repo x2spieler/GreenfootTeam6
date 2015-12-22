@@ -17,7 +17,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 15;
+	public static final int ROOM_POOL = 40;
 	public static int usedRooms = ROOM_POOL;
 	
 	public static final int MAP_WIDTH = 150;
@@ -25,14 +25,14 @@ public class DungeonGenerator {
 
 	public static final int MAX_ROOM_SIZE= 15;
 	public static final int MIN_ROOM_SIZE= 10;
-	public static final int ROOM_BORDER = 5;
+	public static final int ROOM_BORDER = 10;
 
 	public static final int MAX_PATH_WIDTH= 5;
 	public static final int MIN_PATH_WIDTH= 3;
 
 
 
-	public static final int MAP_BORDER = 15;
+	public static final int MAP_BORDER = ROOM_BORDER + 2;
 
 	
 
@@ -42,6 +42,8 @@ public class DungeonGenerator {
 
 
 	private MapField[][] mapBlocks = new MapField[MAP_WIDTH][MAP_HEIGHT];
+	int [][] distances  = new int [usedRooms][usedRooms];
+
 
 	private Room[] rooms = new Room[ROOM_POOL];
 	
@@ -236,9 +238,11 @@ public class DungeonGenerator {
 		int absDeltaY = 0;
 		double delta = 0;
 		int absDelta = 0;
-		int temp = 0;
-		
-		int [][] distances  = new int [usedRooms][usedRooms];
+		int buildFirst[] = new int [3];
+		int buildSecond[] = new int [3];
+
+		int first = Integer.MAX_VALUE;
+		int second = Integer.MAX_VALUE;
 		
 		
 		
@@ -246,7 +250,7 @@ public class DungeonGenerator {
 		int rad = 3;
 		
 		for (int r0 = 0; r0 < usedRooms; r0++){
-			for (int r1 = 0; r1 < usedRooms; r1++){
+			for (int r1 = 1;r1!=r0 && r1 < usedRooms; r1++){
 
 		
 				deltaX = rooms[r1].getCenter().x - rooms[r0].getCenter().x;
@@ -256,129 +260,98 @@ public class DungeonGenerator {
 		
 				delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
 				absDelta = (int)Math.round(Math.abs(delta));
-				System.out.println(absDelta);
+				//System.out.println(absDelta);
 
-		
-				if (absDelta < distances [r0][r1]){
-					temp = distances [r0][r1];
-					distances [r0][r1] = absDelta;
-					distances [r0][r1+1] = temp;
+				if (absDelta < second){
+					second = absDelta;
+					
+					if (absDelta < first){
+						second = first;
+						first = absDelta;
+					
+						buildFirst[0] = first;
+						buildFirst [1] = r0;
+						buildFirst[2] = r1;
+					}
 				}
+				
+				
+				buildSecond[0] = second;
+				buildSecond [1] = r0;
+				buildSecond[2] = r1;
+				
+				
 				
 				
 			} 
-			
-		}
-		for (int y = 0; y<usedRooms; y++){
-			for (int x = 0; x < usedRooms; x++){
-			
-				System.out.print(distances[x][y]);			
-			}
-			System.out.println();
-		}
-		
-		
-		for (int r0 = 0; r0 < usedRooms; r0++){
-			
-			attempts = 0;
-			
-			for (int r1 = r0 + 1; r1!=r0 && r1 < usedRooms && attempts++ < 20; r1++){
+//			System.out.println("Room: " + r0 + " First: " + first + " Second: " + second);
+//			System.out.println("First from: "  + buildFirst[1] + "to: " + buildFirst[2] + "with delta:" + buildFirst[0]);
+//			System.out.println("Second from: "  + buildSecond[1] + "to: " + buildSecond[2] + "with delta:" + buildSecond[0]);
+//			System.out.println();
+
+			while (attempts++ <= 20){
+				startPos.setLocation(randomShift(buildFirst[1]));
+				endPos.setLocation(randomShift(buildFirst[2]));
 				
-				startPos.setLocation(randomShift(rooms[r0]));
-				endPos.setLocation(randomShift(rooms[r1]));
-				System.out.println("room: " + r0 + "Start: " + startPos + " endPos: " + endPos);
-					
 				if (bufferWay(startPos, endPos, rad)){
 					
 					reserveBufferedWay(rad);
-					System.out.println("triggered");				
-		
-				} else if (attempts >= 20){
-					break;
-				} else {
-					r1--;
+				
 				}
-				
-				
 			}
+//			attempts = 0;
+//			
+//			while (attempts++ <= 20){
+//				startPos.setLocation(randomShift(buildSecond[1]));
+//				endPos.setLocation(randomShift(buildSecond[2]));
+//				
+//				if (bufferWay(startPos, endPos, rad)){
+//					
+//					reserveBufferedWay(rad);
+//				
+//				}
+//			}
+			
+			attempts = 0;
+			first = Integer.MAX_VALUE;
+			second = Integer.MAX_VALUE;
 		}
 		
-		System.out.println(getConnectedRooms());
 		
-	}
-			
 	
-	public void calculateClosestNeighbour(){
+		for (int r0 = 0; r0 < usedRooms; r0++){
+			for (int r1 = 0; r1!=r0 && r1 < usedRooms; r1++){
 
-		
-		int deltaX = 0;
-		int deltaY = 0;
-		int absDeltaX = 0;
-		int absDeltaY = 0;
-		double delta = 0;
-		int absDelta = 0;
-		int temp [] = new int [3]; //[distance, from, to]
-		boolean found = false;
-	
-
-					
-			
-			temp [0] = Integer.MAX_VALUE;
-			//int rad=rand.randomInt(3, 5);
-			int rad = 3;
-
-			visited.add(0);
-			
-			
-			//while (found < usedRooms){
-			
+				//System.out.println("trying " + r0 + " with " + r1);
 				
-				for (int r0 = 0; r0 < usedRooms; r0++){
-					for (int r1 = 0; r1!=r0 && r1 < usedRooms; r1++){
+				deltaX = rooms[r1].getCenter().x - rooms[r0].getCenter().x;
+				deltaY = rooms[r1].getCenter().y - rooms[r0].getCenter().y;
+				absDeltaX = Math.abs(deltaX);
+				absDeltaY = Math.abs(deltaY);
 
-//TODO: 
-					//while (!found){
-						found = false;
-					//if (r != activeRoom){
-						
+				delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
+				absDelta = (int)Math.round(Math.abs(delta));
+				
+				while (attempts++<50){
+					startPos.setLocation(randomShift(r0));
+					endPos.setLocation(randomShift(r1));
 					
-						deltaX = rooms[r1].getCenter().x - rooms[r0].getCenter().x;
-						deltaY = rooms[r1].getCenter().y - rooms[r0].getCenter().y;
-						absDeltaX = Math.abs(deltaX);
-						absDeltaY = Math.abs(deltaY);
-		
-						delta = Math.sqrt((absDeltaX*absDeltaX)+(absDeltaY*absDeltaY));
-						absDelta = (int)Math.round(Math.abs(delta));
-						
-						
-						Point startPos = new Point(randomShift(rooms[temp[1]]));
-						Point endPos = new Point(randomShift(rooms[temp[2]]));
-						
-						if (absDelta < temp[0] && !visited.contains(r0)){
-								
-							temp[0] = absDelta;
-							temp[1] = r0;
-							temp[2] = r1;
-								
-						}
-					
-						
-					
-						if (bufferWay(startPos, endPos, rad)){
-							//bufferWay();
-							System.out.println("build path from " + temp[1] + " to " + temp[2] + " with radius " + rad + "!" );
-							
-							//if (!visited.contains(temp[1])){
-							reserveBufferedWay(rad);
-							visited.add(temp[1]);
-							found = true;
-							//}
-						}
+					System.out.println("tried: " + attempts);
+
+				
+					if (bufferWay(startPos, endPos, rad)){
+						System.out.println("tried2: " + attempts);
+						reserveBufferedWay(rad);
 					}
-			//	}
-				System.out.println(visited);
 				}
 			}
+			attempts = 0;
+		
+	}
+		for(HashSet<Room> hs:getConnectedRooms())
+			System.out.println(hs.size());	
+	}
+
 			
 	public boolean canBuildPath(int r0, int r1, int rad){
 
@@ -386,8 +359,8 @@ public class DungeonGenerator {
 		int counter=0;
 		
 		do {
-			Point startPos = new Point(randomShift(rooms[r0]));
-			Point endPos = new Point(randomShift(rooms[r1]));
+//			Point startPos = new Point(randomShift(rooms[r0]));
+//			Point endPos = new Point(randomShift(rooms[r1]));
 			
 			if(bufferWay(startPos, endPos ,rad)){
 				found = true;
@@ -406,30 +379,30 @@ public class DungeonGenerator {
 
 
 
-	public Point randomShift(Room room){
+	public Point randomShift(int room){
 
 		int direction = rand.randomInt(1,4);
-		Point pos = new Point(room.getCenter().x, room.getCenter().y);
+		Point pos = new Point(rooms[room].getCenter().x, rooms[room].getCenter().y);
 
 		switch (direction){
 
 		case 1:
-			pos.translate(0, (-1)*room.getSizeY()/2 - 1);
+			pos.translate(0, (-1)*rooms[room].getSizeY()/2 - 1);
 			//System.out.println("Direction 4 for " + room + " :" + pos);			
 			break;
 
 		case 2:
-			pos.translate(room.getSizeX()/2 + 1, 0);
+			pos.translate(rooms[room].getSizeX()/2 + 1, 0);
 			//System.out.println("Direction 2 for " + room + " :" + pos);
 			break;
 
 		case 3:
-			pos.translate(0, room.getSizeY()/2 + 1);
+			pos.translate(0, rooms[room].getSizeY()/2 + 1);
 			//System.out.println("Direction 3 for " + room + " :" + pos);
 			break;
 
 		case 4:
-			pos.translate((-1)*room.getSizeX()/2 - 1, 0);
+			pos.translate((-1)*rooms[room].getSizeX()/2 - 1, 0);
 			//System.out.println("Direction 4 for " + room + " :" + pos);
 
 			break;
