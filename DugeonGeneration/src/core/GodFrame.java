@@ -13,7 +13,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Random;
@@ -480,7 +479,7 @@ public class GodFrame {
 	private ImageIcon loadHUDImageIcon(String name) {
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new File("src/images/hud/" + name));
+			img = ImageIO.read(getClass().getClassLoader().getResource("images/hud/" + name));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -488,13 +487,13 @@ public class GodFrame {
 	}
 
 	private BufferedImage loadHUDBufferedImage(String name) {
-		return loadImage("src/images/hud/" + name);
+		return loadImage("images/hud/" + name);
 	}
 
 	private BufferedImage loadImage(String path) {
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new File(path));
+			img = ImageIO.read(getClass().getClassLoader().getResource(path));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

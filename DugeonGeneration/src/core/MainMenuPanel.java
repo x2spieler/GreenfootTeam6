@@ -20,7 +20,8 @@ public class MainMenuPanel extends BackgroundPanel {
 	private final Random random = new Random();
 
 	public MainMenuPanel(final ActionListener start, final ActionListener highscore) {
-		super(new ImageIcon("src/images/background/Background.jpg").getImage());
+		super(new ImageIcon(DungeonFrame.class.getClassLoader().getResource("images/background/Background.jpg"))
+				.getImage());
 		setBounds(200, 200, 1024, 768);
 		setLayout(null);
 		final BackgroundPanel panel = new BackgroundPanel(image);
