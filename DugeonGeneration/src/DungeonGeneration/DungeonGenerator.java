@@ -109,8 +109,9 @@ public class DungeonGenerator {
 		//removeCells();
 		generateRooms();
 		connectClosestRooms();
-		//removeUnusedCells();
-		
+		removeSmallerSets();
+		convertCells();
+		placeDestructable();
 		showMap();
 	}
 
@@ -137,6 +138,22 @@ public class DungeonGenerator {
 		}
 	}
 
+	public void convertCells(){
+
+		for(int y = 1; y < MAP_HEIGHT-1; y++) {
+
+			for(int x = 1; x < MAP_WIDTH-1; x++) {
+
+				if (mapBlocks[x][y].getFieldType() == FieldType.CELL){
+					mapBlocks[x][y].setFieldType(FieldType.WALL);
+				} else {
+					mapBlocks[x][y].setFieldType(FieldType.GROUND);
+				}
+
+			}
+		}
+	}
+	
 	//Populates the "rooms" array with random sized rectangular rooms. 
 	public void generateRooms() {
 		
@@ -215,24 +232,28 @@ public class DungeonGenerator {
 
 	
 	
-	/*
-	 * 
-	Private ArrayList<HashSet<Room>> getConnectedRooms()
-	Private boolean areConnected(Point p1, Point p2)
-	
-	private boolean bufferWay(Point start, Point end, int radius)
-	
-	private void reserveBufferedWay(int radius)
-	
-	private void createWay(int radius, FieldType ft, Node startNode)
-	  
-	 */
+	public void removeSmallerSets(){
+		if(getConnectedRooms().size() > 1){
+			//int keep = 0;
+			
+//			for(HashSet<Room> hs:getConnectedRooms()){
+//				
+//			
+//			}
+			System.out.println("Too many networks!!!");
+		}
+		
+		
+		
+				
+		
+	}
 
 	public void connectClosestRooms(){
 		
 		Point startPos = new Point();
 		Point endPos = new Point();
-		boolean found = false;
+		
 		int deltaX = 0;
 		int deltaY = 0;
 		int absDeltaX = 0;
@@ -240,14 +261,9 @@ public class DungeonGenerator {
 		double delta = 0;
 		int absDelta = 0;
 		int buildFirst[] = new int [3];
-		int buildSecond[] = new int [3];
 
 		int first = Integer.MAX_VALUE;
-		int second = Integer.MAX_VALUE;
 		
-		
-		
-		int attempts = 0;
 		int rad = 3;
 		
 		for (int r0 = 0; r0 < usedRooms; r0++){
@@ -263,28 +279,16 @@ public class DungeonGenerator {
 				absDelta = (int)Math.round(Math.abs(delta));
 				//System.out.println(absDelta);
 
-				if (absDelta < second){
-					second = absDelta;
-					
-					if (absDelta < first){
-						second = first;
+				if (absDelta < first){
+						
 						first = absDelta;
 					
 						buildFirst[0] = first;
 						buildFirst [1] = r0;
 						buildFirst[2] = r1;
-					}
 				}
-				
-				
-				buildSecond[0] = second;
-				buildSecond [1] = r0;
-				buildSecond[2] = r1;
-				
-				
-				
-				
-			} 
+			}
+			 
 
 			first:
 				for (int s = 0; s < 4;s++){
@@ -296,7 +300,7 @@ public class DungeonGenerator {
 						//System.out.println("tried: " + );
 	
 						BufferWayWrapper bwr=bufferWay(startPos, endPos, rad);
-						if(bwr.succesful){						
+						if(bwr.succesful && bwr.length < 40){						
 							reserveBufferedWay(rad);
 							break first;
 						}
@@ -305,40 +309,12 @@ public class DungeonGenerator {
 					}
 				}
 			
-//			second:
-//				for (int s = 0; s < 4;s++){
-//					for (int e = 0; e < 4; e++){
-//
-//						startPos.setLocation(randomShift(buildFirst [1], s));
-//						endPos.setLocation(randomShift(buildFirst[2], e));
-//						
-//						//System.out.println("tried: " + );
-//	
-//					
-//						if(bufferWay(startPos, endPos, rad)){						
-//							reserveBufferedWay(rad);
-//							break second;
-//						}
-//					
-//						
-//					}
-//				}
-//			attempts = 0;
-//			
-//			while (attempts++ <= 20){
-//				startPos.setLocation(randomShift(buildSecond[1]));
-//				endPos.setLocation(randomShift(buildSecond[2]));
-//				
-//				if (bufferWay(startPos, endPos, rad)){
-//					
-//					reserveBufferedWay(rad);
-//				
-//				}
-//			}
+//TODO: prevent circles
+//TODO: remove smaller hashsets			
 			
-			attempts = 0;
+		
 			first = Integer.MAX_VALUE;
-			second = Integer.MAX_VALUE;
+			
 		}
 		
 		
@@ -366,7 +342,7 @@ public class DungeonGenerator {
 					//System.out.println("tried: " + );
 					
 				BufferWayWrapper bwr=bufferWay(startPos, endPos, rad);
-					if(bwr.succesful){						
+					if(bwr.succesful && bwr.length < 50){						
 						reserveBufferedWay(rad);
 						break outerfor;
 					}
@@ -375,13 +351,9 @@ public class DungeonGenerator {
 				}
 			}
 		}
-			attempts = 0;
-		
-	
-		
+			
 	}
-		for(HashSet<Room> hs:getConnectedRooms())
-			System.out.println(hs.size());	
+		
 	}
 
 			
@@ -421,15 +393,7 @@ public class DungeonGenerator {
 		return pos;
 	}
 
-	public void removeUnusedCells(){
-		for (int y = 0; y < MAP_HEIGHT; y++ ){
-			for (int x = 0; x < MAP_WIDTH; x++){
-				if (mapBlocks[x][y].getFieldType() == FieldType.CELL){
-					mapBlocks[x][y].setFieldType(FieldType.WALL);
-				}
-			}
-		}
-	}
+	
 
 	public void placeDestructable(){
 		Random random=new Random(mapSeed);
@@ -438,8 +402,8 @@ public class DungeonGenerator {
 			int numberOfCrates = rand.randomInt(0, 3);
 
 			for (int j=0; j<numberOfCrates;j++){
-				int randomOffsetX = rand.randomInt(0, rooms[i].getSizeX()-1);
-				int randomOffsetY = rand.randomInt(0, rooms[i].getSizeY()-1);
+				int randomOffsetX = rand.randomInt(1, rooms[i].getSizeX()-1);
+				int randomOffsetY = rand.randomInt(1, rooms[i].getSizeY()-1);
 
 				int posX = rooms[i].getPosition().x + randomOffsetX;
 				int posY = rooms[i].getPosition().y + randomOffsetY;
