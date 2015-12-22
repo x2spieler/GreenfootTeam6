@@ -5,6 +5,7 @@ package DungeonGeneration;
 //Branching
 
 import java.awt.Point;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
@@ -294,8 +295,8 @@ public class DungeonGenerator {
 						
 						//System.out.println("tried: " + );
 	
-					
-						if(bufferWay(startPos, endPos, rad)){						
+						BufferWayWrapper bwr=bufferWay(startPos, endPos, rad);
+						if(bwr.succesful){						
 							reserveBufferedWay(rad);
 							break first;
 						}
@@ -363,9 +364,9 @@ public class DungeonGenerator {
 					endPos.setLocation(randomShift(r1, e));
 					
 					//System.out.println("tried: " + );
-
-				
-					if(bufferWay(startPos, endPos, rad)){						
+					
+				BufferWayWrapper bwr=bufferWay(startPos, endPos, rad);
+					if(bwr.succesful){						
 						reserveBufferedWay(rad);
 						break outerfor;
 					}
@@ -613,8 +614,10 @@ public class DungeonGenerator {
 		}
 	}
 
-	private boolean bufferWay(Point start, Point end, int radius)
+	private BufferWayWrapper bufferWay(Point start, Point end, int radius)
 	{
+		BufferWayWrapper bwr=new BufferWayWrapper();
+		
 		couldnNotFindWay=false;
 		endPointBlocked=false;
 		startPointBlocked=false;
@@ -629,7 +632,7 @@ public class DungeonGenerator {
 			//System.out.println("Can't leave end point");
 
 
-			return false;
+			return bwr;
 		}
 		if(!canLeavePosition(start.x, start.y, radius))
 		{
@@ -641,7 +644,7 @@ public class DungeonGenerator {
 
 			lastWayBuffer=null;
 			//System.out.println("Can't leave start point");
-			return false;
+			return bwr;
 
 		}
 		int shiftX=0;
@@ -668,10 +671,17 @@ public class DungeonGenerator {
 		if(endNode!=null)
 		{
 			lastWayBuffer=endNode;
-			return true;
+			bwr.start=endNode;
+			bwr.succesful=true;
+			int count=0;
+			Node n=endNode;
+			while((n=n.prev)!=null)
+				count++;
+			bwr.length=count;
+			return bwr;
 		}
 		lastWayBuffer=null;
-		return false;
+		return bwr;
 	}
 	
 	private void reserveBufferedWay(int radius)
@@ -931,6 +941,13 @@ public class DungeonGenerator {
 		public int hashCode() {
 			return x*100000+y;
 		}
+	}
+	
+	class BufferWayWrapper
+	{
+		Node start=null;
+		int length=-1;
+		boolean succesful=false;
 	}
 
 }
