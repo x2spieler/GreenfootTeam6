@@ -1,14 +1,15 @@
 package weapons.short_range;
 
-import greenfoot.GreenfootImage;
-
 import java.awt.geom.Point2D;
 
+import greenfoot.GreenfootImage;
 import scrollWorld.ScrollActor;
 import weapons.abstracts.ShortRangeWeapon;
 import world.DungeonMap;
 
 public class Sword extends ShortRangeWeapon {
+	private static final int FRAME_COUNT = 12;
+
 	public Sword(ScrollActor owner) {
 		damage = 2000;
 		weaponName = "sword";
@@ -17,14 +18,14 @@ public class Sword extends ShortRangeWeapon {
 		reloadTimeInMS = 750;
 		additionalValue = 1;
 		ticksPerAnimImg = 1;
-		anim_frame_count = 11;
+		anim_frame_count = FRAME_COUNT;
 		weaponOffsetToPlayer = new Point2D.Double(DungeonMap.TILE_SIZE, DungeonMap.TILE_SIZE / 3);
-		default_anim_frame = 5;
+		default_anim_frame = FRAME_COUNT - 1;
 		icon = new GreenfootImage("enemies/weapons/sword/sword.png");
 	}
 
 	@Override
 	protected int getAnimFrameCount() {
-		return 11;
+		return FRAME_COUNT;
 	}
 }
