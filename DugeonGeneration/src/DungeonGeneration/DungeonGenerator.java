@@ -8,6 +8,7 @@ import java.awt.Point;
 import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
 
 import objects.Crate;
@@ -48,9 +49,7 @@ public class DungeonGenerator {
 
 	private Room[] rooms = new Room[ROOM_POOL];
 	
-	ArrayList<Integer> visited = new ArrayList<Integer>();
-	ArrayList<Integer> ignored = new ArrayList<Integer>();
-
+	
 
 	private int mapSeed = 0;
 
@@ -63,7 +62,7 @@ public class DungeonGenerator {
 	boolean startPointBlocked=false;
 	boolean endPointBlocked=false;
 
-	int unreachableRooms = 0;
+
 
 	
 	private Node lastWayBuffer=null;
@@ -109,7 +108,7 @@ public class DungeonGenerator {
 		//removeCells();
 		generateRooms();
 		connectClosestRooms();
-		removeSmallerSets();
+		//removeSmallerSets();
 		convertCells();
 		placeDestructable();
 		showMap();
@@ -233,19 +232,11 @@ public class DungeonGenerator {
 	
 	
 	public void removeSmallerSets(){
-		if(getConnectedRooms().size() > 1){
-			//int keep = 0;
+		
 			
-//			for(HashSet<Room> hs:getConnectedRooms()){
-//				
-//			
-//			}
-			System.out.println("Too many networks!!!");
-		}
-		
-		
-		
-				
+					System.out.println(getConnectedRooms().get(1));
+					
+//					System.out.println("Too many networks!!!");
 		
 	}
 
