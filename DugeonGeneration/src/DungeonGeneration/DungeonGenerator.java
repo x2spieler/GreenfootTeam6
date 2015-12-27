@@ -108,7 +108,7 @@ public class DungeonGenerator {
 		//removeCells();
 		generateRooms();
 		connectClosestRooms();
-		//removeSmallerSets();
+		connectSeparatedNetworks();
 		convertCells();
 		placeDestructable();
 		showMap();
@@ -231,15 +231,55 @@ public class DungeonGenerator {
 
 	
 	
-	public void removeSmallerSets(){
+	public void connectSeparatedNetworks(){
 		
+		if (getConnectedRooms().size() > 1){
+			System.out.println("More than one Network!!!");
+			System.out.println("Anzahl Netzwerke: " + getConnectedRooms().size());
+			Point startPos = new Point();
+			Point endPos = new Point();
 			
-					System.out.println(getConnectedRooms().get(1));
-					
-//					System.out.println("Too many networks!!!");
-		
-	}
 
+			for (HashSet<Room> hs1:getConnectedRooms()){
+				for (HashSet<Room> hs2:getConnectedRooms()){
+
+					if (hs1!=hs2){
+						for (int r0 = 0; r0 < hs1.size(); r0++){
+							for (int r1 = 0; r1!=r0 && r1 < hs2.size(); r1++){
+								
+								first:
+									for (int s = 0; s < 4;s++){
+										for (int e = 0; e < 4; e++){
+
+											startPos.setLocation(randomShift(r0, s));
+											endPos.setLocation(randomShift(r1, e));
+											
+											//System.out.println("tried: " + );
+						
+											BufferWayWrapper bwr=bufferWay(startPos, endPos, 3);
+											if(bwr.succesful){						
+												reserveBufferedWay(3);
+												break first;
+											}
+										
+											
+										}
+									}
+								
+								
+							}
+
+					
+						
+						}
+					}
+				}
+				
+			}
+		}
+	}
+												
+		
 	public void connectClosestRooms(){
 		
 		Point startPos = new Point();
@@ -384,6 +424,37 @@ public class DungeonGenerator {
 		return pos;
 	}
 
+public Point randomShift(Room r, int direction){
+
+		
+		Point pos = new Point(r.getCenter().x, r.getCenter().y);
+
+		switch (direction){
+
+		case 1:
+			pos.translate(0, (-1)*r.getSizeY()/2 - 1);
+			//System.out.println("Direction 4 for " + room + " :" + pos);			
+			break;
+
+		case 2:
+			pos.translate(r.getSizeX()/2 + 1, 0);
+			//System.out.println("Direction 2 for " + room + " :" + pos);
+			break;
+
+		case 3:
+			pos.translate(0, r.getSizeY()/2 + 1);
+			//System.out.println("Direction 3 for " + room + " :" + pos);
+			break;
+
+		case 4:
+			pos.translate((-1)*r.getSizeX()/2 - 1, 0);
+			//System.out.println("Direction 4 for " + room + " :" + pos);
+
+			break;
+
+		}
+		return pos;
+	}
 	
 
 	public void placeDestructable(){
