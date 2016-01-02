@@ -74,7 +74,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 
 	@Override
 	public int getHP() {
-		return -1;
+		return hp;
 	}
 
 	@Override
