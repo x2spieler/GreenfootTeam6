@@ -1,7 +1,7 @@
 package world.mapping;
 
-import world.MapElement;
 import greenfoot.GreenfootImage;
+import world.MapElement;
 
 @SuppressWarnings("rawtypes")
 public class TileBlock implements ITileBlock {
@@ -30,15 +30,15 @@ public class TileBlock implements ITileBlock {
 	}
 
 	public boolean transcribe(int x, int y, GreenfootImage[][] map, MapElement[][] specials) {
-		if (x < 0 || x + this.x >= map.length || y < 0 || y + this.y >= map[0].length)
+		if (x < 0 || x + this.x > map.length || y < 0 || y + this.y > map[0].length)
 			return false;
-		for (int i = 0; i < this.y; i++) {
-			for (int j = 0; j < this.x; j++) {
+		for (int j = 0; j < this.x; j++) {
+			for (int i = 0; i < this.y; i++) {
 				if (block[j][i] == null)
 					continue;
 				if (map[x + j][y + i] == null)
 					map[x + j][y + i] = block[j][i].getTileImage();
-				if (specials != null && specials[x + i][y + j] == null && block[j][i].getSpecial() != null) {
+				if (specials != null && specials[x + j][y + i] == null && block[j][i].getSpecial() != null) {
 					specials[x + j][y + i] = new MapElement(block[j][i].getSpecial());
 				}
 			}
