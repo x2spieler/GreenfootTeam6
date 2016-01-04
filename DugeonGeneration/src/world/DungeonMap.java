@@ -130,7 +130,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	public void startNewGame(int seed) {
-		generateNewMap(601719146);
+		generateNewMap(814734298);
 		new Thread(() -> {
 			try {
 				Pair<GreenfootImage[][], MapElement[][]> p = new DungeonMapper(map).getImageForTilesetHouse();

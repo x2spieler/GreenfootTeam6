@@ -19,15 +19,15 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 40;
+	public static final int ROOM_POOL = 40; //TODO: Set to ~14 rooms
 	public static int usedRooms = ROOM_POOL;
 	
 	public static final int MAP_WIDTH = 150;
 	public static final int MAP_HEIGHT = 150;
 
 	public static final int MAX_ROOM_SIZE= 15;
-	public static final int MIN_ROOM_SIZE= 10;
-	public static final int ROOM_BORDER = 13;
+	public static final int MIN_ROOM_SIZE= 15;
+	public static final int ROOM_BORDER = 10;		//13
 
 	public static final int MAX_PATH_WIDTH= 5;
 	public static final int MIN_PATH_WIDTH= 3;
@@ -108,7 +108,7 @@ public class DungeonGenerator {
 		//removeCells();
 		generateRooms();
 		connectClosestRooms();
-		connectSeparatedNetworks();
+		//connectSeparatedNetworks();
 		convertCells();
 		placeDestructable();
 		showMap();
@@ -231,53 +231,137 @@ public class DungeonGenerator {
 
 	
 	
-	public void connectSeparatedNetworks(){
+//	public void connectSeparatedNetworks(){
+//		
+//		//TODO: Check if all networks got connected, if not abort game
+//		
+//		if (getConnectedRooms().size() > 1){
+//			System.out.println("More than one network!!!");
+//			System.out.println("# of networks: " + getConnectedRooms().size());
+//			Point startPos = new Point();
+//			Point endPos = new Point();
+//			int connected = 0;
+//			
+//
+//			for (HashSet<Room> hs1:getConnectedRooms()){
+//				for (HashSet<Room> hs2:getConnectedRooms()){
+//
+//					if (hs1!=hs2){
+//						for (int r0 = 0; r0 < hs1.size(); r0++){
+//							for (int r1 = 0; r1!=r0 && r1 < hs2.size(); r1++){
+//								
+//								first:
+//									for (int s = 0; s < 4;s++){
+//										for (int e = 0; e < 4; e++){
+//
+//											startPos.setLocation(randomShift(r0, s));
+//											endPos.setLocation(randomShift(r1, e));
+//											
+//											//System.out.println("tried: " + );
+//						
+//											BufferWayWrapper bwr=bufferWay(startPos, endPos, 3);
+//											if(bwr.succesful){						
+//												reserveBufferedWay(3);
+//												hs1.addAll(hs2);
+//												connected++;
+//												break first;
+//											}
+//										
+//											
+//										}
+//									}
+//								
+//								
+//							}
+//
+//					
+//						
+//						}
+//					}
+//				}
+//				
+//			}
+//		}
+//	}
+
+	
+	
+	
+public void connectSeparatedNetworks(){
+		
+		//TODO: Check if all networks got connected, if not abort game
 		
 		if (getConnectedRooms().size() > 1){
-			System.out.println("More than one Network!!!");
-			System.out.println("Anzahl Netzwerke: " + getConnectedRooms().size());
+			System.out.println("More than one network!!!");
+			System.out.println("# of networks: " + getConnectedRooms().size());
 			Point startPos = new Point();
 			Point endPos = new Point();
+			int connected = 0;
 			
-
+			first:
 			for (HashSet<Room> hs1:getConnectedRooms()){
-				for (HashSet<Room> hs2:getConnectedRooms()){
+				
 
-					if (hs1!=hs2){
-						for (int r0 = 0; r0 < hs1.size(); r0++){
-							for (int r1 = 0; r1!=r0 && r1 < hs2.size(); r1++){
+				for (HashSet<Room> hs2:getConnectedRooms()){
+				
+					
+					if(hs1!=hs2){
+						
+						for (Room r1:hs1){
+							for (Room r2:hs2){
 								
-								first:
+
+								
+								if(r1!=r2){
+
 									for (int s = 0; s < 4;s++){
 										for (int e = 0; e < 4; e++){
 
-											startPos.setLocation(randomShift(r0, s));
-											endPos.setLocation(randomShift(r1, e));
+											startPos.setLocation(randomShift(r1, s));
+											endPos.setLocation(randomShift(r2, e));
 											
 											//System.out.println("tried: " + );
 						
 											BufferWayWrapper bwr=bufferWay(startPos, endPos, 3);
 											if(bwr.succesful){						
 												reserveBufferedWay(3);
+												//hs1.addAll(hs2);
+												System.out.println("Connected " + r1 + " & " + r2);
+												connected++;
 												break first;
 											}
 										
 											
 										}
 									}
-								
-								
+								}
+							
 							}
-
-					
-						
 						}
 					}
 				}
-				
 			}
+			
+			if (connected >= getConnectedRooms().size()-1){
+				System.out.println("Connected succesfully");
+			}
+			
 		}
-	}
+}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 												
 		
 	public void connectClosestRooms(){
@@ -325,13 +409,13 @@ public class DungeonGenerator {
 				for (int s = 0; s < 4;s++){
 					for (int e = 0; e < 4; e++){
 
-						startPos.setLocation(randomShift(buildFirst [1], s));
-						endPos.setLocation(randomShift(buildFirst[2], e));
+						startPos.setLocation(randomShift(rooms[buildFirst [1]], s));
+						endPos.setLocation(randomShift(rooms[buildFirst[2]], e));
 						
 						//System.out.println("tried: " + );
 	
 						BufferWayWrapper bwr=bufferWay(startPos, endPos, rad);
-						if(bwr.succesful && bwr.length < 40){						
+						if(bwr.succesful && bwr.length < 40){						//40
 							reserveBufferedWay(rad);
 							break first;
 						}
@@ -339,10 +423,7 @@ public class DungeonGenerator {
 						
 					}
 				}
-			
-//TODO: prevent circles
-//TODO: remove smaller hashsets			
-			
+
 		
 			first = Integer.MAX_VALUE;
 			
@@ -367,13 +448,13 @@ public class DungeonGenerator {
 				for (int s = 0; s < 4;s++){
 					for (int e = 0; e < 4; e++){
 
-					startPos.setLocation(randomShift(r0, s));
-					endPos.setLocation(randomShift(r1, e));
+					startPos.setLocation(randomShift(rooms[r0], s));
+					endPos.setLocation(randomShift(rooms[r1], e));
 					
 					//System.out.println("tried: " + );
 					
 				BufferWayWrapper bwr=bufferWay(startPos, endPos, rad);
-					if(bwr.succesful && bwr.length < 50){						
+					if(bwr.succesful && bwr.length < 50){						//50
 						reserveBufferedWay(rad);
 						break outerfor;
 					}
@@ -392,40 +473,10 @@ public class DungeonGenerator {
 	
 
 
-	public Point randomShift(int room, int direction){
+	public Point randomShift(Room r, int shift){
 
-		
-		Point pos = new Point(rooms[room].getCenter().x, rooms[room].getCenter().y);
-
-		switch (direction){
-
-		case 1:
-			pos.translate(0, (-1)*rooms[room].getSizeY()/2 - 1);
-			//System.out.println("Direction 4 for " + room + " :" + pos);			
-			break;
-
-		case 2:
-			pos.translate(rooms[room].getSizeX()/2 + 1, 0);
-			//System.out.println("Direction 2 for " + room + " :" + pos);
-			break;
-
-		case 3:
-			pos.translate(0, rooms[room].getSizeY()/2 + 1);
-			//System.out.println("Direction 3 for " + room + " :" + pos);
-			break;
-
-		case 4:
-			pos.translate((-1)*rooms[room].getSizeX()/2 - 1, 0);
-			//System.out.println("Direction 4 for " + room + " :" + pos);
-
-			break;
-
-		}
-		return pos;
-	}
-
-public Point randomShift(Room r, int direction){
-
+		int direction = shift;sss
+		//TODO: Add shifting seed
 		
 		Point pos = new Point(r.getCenter().x, r.getCenter().y);
 
@@ -455,6 +506,7 @@ public Point randomShift(Room r, int direction){
 		}
 		return pos;
 	}
+
 	
 
 	public void placeDestructable(){
