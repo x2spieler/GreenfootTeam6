@@ -100,6 +100,7 @@ public class GodFrame {
 				"activate_testing_mode01");
 		frame.getRootPane().getActionMap().put("activate_testing_mode01", new TestingModeActivator());
 		frame.setTitle("Collosseum of Death (working title)");
+		frame.setIconImage(new ImageIcon(MainMenuPanel.class.getResource("/images/taskbarLogo.png")).getImage());
 	}
 
 	public void addScrollListener(MouseWheelListener listener) {
