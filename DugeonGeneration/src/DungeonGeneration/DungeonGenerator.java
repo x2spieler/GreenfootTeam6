@@ -72,6 +72,7 @@ public class DungeonGenerator {
 
 	public DungeonGenerator(DungeonMap dm, int seed) {
 		mapSeed = seed;
+		mapSeed=-301470960;
 		rand = new MegaRandom(mapSeed);
 		this.dm = dm;
 		initGen();

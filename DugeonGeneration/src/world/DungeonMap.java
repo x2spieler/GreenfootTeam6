@@ -263,6 +263,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		numAliveEnemies = 0;
 		enemiesSpawned = false;
 	}
+	
+	public int getSeed()
+	{
+		return gen.getSeed();
+	}
 
 	private void spawnEnemies() {
 		if (testing)
