@@ -1,5 +1,10 @@
 package DungeonGeneration;
 
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
+
 //import greenfoot.World;
 
 //Branching
@@ -11,6 +16,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 
+import greenfoot.Actor;
 import objects.Crate;
 import objects.DestroyableObject;
 import objects.Grave;

@@ -23,6 +23,8 @@ public interface IWorldInterfaceForAI
 	public int getTileSize();
 	
 	public double getFPS();
+	
+	public int getSeed();
 }
 
 

@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
+import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.MapField;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
@@ -40,6 +41,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 
 	private boolean isAttacking = false;
 	private boolean cantFindWay = false;
+	private boolean couldNotFindWay=false;
 	private Node currTargetNode = null;
 	private IWorldInterfaceForAI wi = null;
 	private Point lastPlayerTile = null;
@@ -232,6 +234,22 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 			int squaredDistance = squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
 			if (!isAttacking && ((!weapon.isLongRangeWeapon() && squaredDistance > REACHED_PLAYER_DISTANCE_SQUARED) || (weapon.isLongRangeWeapon() && squaredDistance > RPD_MULTIPLICATOR_LRW * REACHED_PLAYER_DISTANCE_SQUARED))) {
 				currTargetNode = findPath(currTile, currPlayerTile, true);
+				if(couldNotFindWay)
+				{
+					//Once more were spawned in a room that is not connected to any other room *Sigh*
+					//Get us another location that is not that anti-social [i.e. get a location that is connected to the rest of the map]
+					MapField[][] mf=wi.getMap();
+					Random r = new Random(wi.getSeed());
+					int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
+					int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
+					while(!mf[x][y].walkable())
+					{
+						x = r.nextInt(DungeonGenerator.MAP_WIDTH);
+						y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
+					}
+					setGlobalLocation(x*TILE_SIZE+TILE_SIZE/2, y*TILE_SIZE+TILE_SIZE/2);
+					couldNotFindWay=false;
+				}
 			} else {
 				if (getImage() != getCurrentImage(ImageIndex.IDLE) && !isAttacking) {
 					setImage(getCurrentImage(ImageIndex.IDLE));
@@ -346,6 +364,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 		ArrayList<Node> openList = new ArrayList<Node>();
 
 		MapField[][] map = wi.getMap();
+		couldNotFindWay=false;
 
 		openList.add(new Node(manhattanDistance(start, end.x, end.y), 0, end.x, end.y, null));
 
@@ -354,7 +373,9 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 			endNode = step(closedList, openList, map, start);
 			if (cantFindWay || !map[end.x][end.y].walkable() || !map[start.x][start.y].walkable()) {
 				cantFindWay = false;
-				throw new IllegalStateException("Couldn't find a way");
+				System.out.println("Couldn't find a way");
+				couldNotFindWay=true;
+				return null;
 			}
 		}
 		if (endNode != null) {
