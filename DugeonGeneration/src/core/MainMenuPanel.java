@@ -20,7 +20,7 @@ public class MainMenuPanel extends BackgroundPanel {
 	private final Random random = new Random();
 
 	public MainMenuPanel(final ActionListener start, final ActionListener highscore) {
-		super(new ImageIcon("src/images/background/Background.jpg").getImage());
+		super(new ImageIcon(MainMenuPanel.class.getClassLoader().getResource("images/background/Background.jpg")).getImage());
 		setBounds(200, 200, 1024, 768);
 		setLayout(null);
 		final BackgroundPanel panel = new BackgroundPanel(image);
@@ -35,16 +35,15 @@ public class MainMenuPanel extends BackgroundPanel {
 		GameStart.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				GameStart.setIcon(
-						new ImageIcon(DungeonFrame.class.getResource("/images/background/Game-Start-white.png")));
+				GameStart.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/Game-Start-white.png")));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Game-Start.png")));
+				GameStart.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/Game-Start.png")));
 			}
 		});
-		GameStart.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/Game-Start.png")));
+		GameStart.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/Game-Start.png")));
 		GameStart.setBackground(UIManager.getColor("Button.highlight"));
 		GameStart.setContentAreaFilled(false);
 		GameStart.setOpaque(false);
@@ -55,16 +54,15 @@ public class MainMenuPanel extends BackgroundPanel {
 		eingeben.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				eingeben.setIcon(
-						new ImageIcon(DungeonFrame.class.getResource("/images/background/new-seed-white.png")));
+				eingeben.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/new-seed-white.png")));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/new-seed.png")));
+				eingeben.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/new-seed.png")));
 			}
 		});
-		eingeben.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/new-seed.png")));
+		eingeben.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/new-seed.png")));
 		eingeben.setContentAreaFilled(false);
 		eingeben.setOpaque(false);
 		eingeben.setBorder(null);
@@ -78,16 +76,15 @@ public class MainMenuPanel extends BackgroundPanel {
 		HighScore.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				HighScore.setIcon(
-						new ImageIcon(DungeonFrame.class.getResource("/images/background/High-Score-white.png")));
+				HighScore.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/High-Score-white.png")));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/High-Score.png")));
+				HighScore.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/High-Score.png")));
 			}
 		});
-		HighScore.setIcon(new ImageIcon(DungeonFrame.class.getResource("/images/background/High-Score.png")));
+		HighScore.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/High-Score.png")));
 		HighScore.setContentAreaFilled(false);
 		HighScore.setOpaque(false);
 		HighScore.setBorder(null);

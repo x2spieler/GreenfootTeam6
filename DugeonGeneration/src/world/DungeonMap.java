@@ -22,7 +22,6 @@ import AI.IWorldInterfaceForAI;
 import DungeonGeneration.DungeonGenerator;
 import DungeonGeneration.FieldType;
 import DungeonGeneration.MapField;
-import camera.MyCursor;
 import core.FrameType;
 import core.GodFrame;
 import database.DatabaseHandler;
@@ -45,11 +44,8 @@ import greenfoot.Actor;
 import greenfoot.GreenfootImage;
 import javafx.util.Pair;
 import menu.BuyItem;
-import objects.Crate;
 import objects.DestroyableObject;
-import objects.Grave;
 import objects.StairsToHeaven;
-import objects.Vase;
 import player.BuffType;
 import player.DungeonMover;
 import player.Player;
@@ -72,7 +68,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public static final int VIEWPORT_WIDTH = 1024;
 	public static final int VIEWPORT_HEIGHT = 768;
 	public static final int TILE_SIZE = 32;
-	private final int STAIR_SPAWN_RADIUS=15;
+	private final int STAIR_SPAWN_RADIUS = 15;
 	public static final Point PLAYER_START_POS = new Point(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2);
 	private static final int viewportXTiles = (VIEWPORT_WIDTH / TILE_SIZE);
 	private static final int viewportYTiles = (VIEWPORT_HEIGHT / TILE_SIZE);
@@ -108,7 +104,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	final int BASE_SCORE_FOR_NO_DAMAGE = 100;
 	final int BASE_SCORE_FOR_IN_TIME = 100;
-	final int BASE_TIME_PER_ROUND = 120/*seconds*/ * 1000/*convert to milliseconds*/;
+	final int BASE_TIME_PER_ROUND = 120/*seconds*/* 1000/*convert to milliseconds*/;
 
 	private int round = 1;
 
@@ -147,16 +143,15 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void setPaintOrder(Class... classes) {
-		Class[] args = new Class[classes.length + 7];
+		Class[] args = new Class[classes.length + 6];
 		args[0] = FPS.class;
-		args[1] = MyCursor.class;
-		args[2] = MapElement.class;
-		args[3] = Enemy.class;
-		args[4] = Weapon.class;
-		args[5] = Player.class;
-		args[6] = DestroyableObject.class;
+		args[1] = MapElement.class;
+		args[2] = Enemy.class;
+		args[3] = Weapon.class;
+		args[4] = Player.class;
+		args[5] = DestroyableObject.class;
 		for (int i = 0; i < classes.length; i++) {
-			args[i + 7] = classes[i];
+			args[i + 6] = classes[i];
 		}
 		super.setPaintOrder(args);
 	}
@@ -197,7 +192,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		setPlayer(new Player(100));
 		lastTicks = System.currentTimeMillis();
 		greenfootTime = 0;
-		addObject(fps, 100, 20);
+		if (testing)
+			addObject(fps, 100, 20);
 		spawnEnemies();
 		log("Seed: " + seed);
 		round = 1;
@@ -216,8 +212,6 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		stairsToHeavenSpawned = false;
 
 		gen.placeDestructable();
-		map = gen.getMap();
-		addDestructableObjectsToWorld();
 
 		if (!isInAccessibleTile(player.getGlobalX(), player.getGlobalY())) {
 			Point p = getNearestAccessiblePoint(player.getGlobalX(), player.getGlobalY(), player);
@@ -236,8 +230,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			if (o instanceof Enemy || o instanceof Bullet || o instanceof StairsToHeaven)
 				removeObject((Actor) o);
 			if (o instanceof DestroyableObject) {
-				map[((DestroyableObject) o).getGlobalX() / TILE_SIZE][((DestroyableObject) o).getGlobalY() / TILE_SIZE]
-						.setFieldType(FieldType.GROUND);
+				map[((DestroyableObject) o).getGlobalX() / TILE_SIZE][((DestroyableObject) o).getGlobalY() / TILE_SIZE].setFieldType(FieldType.GROUND);
 				removeObject((Actor) o);
 			}
 		}
@@ -352,21 +345,18 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 				StairsToHeaven stairs = new StairsToHeaven();
 				int x = 0;
 				int y = 0;
-				
+
 				do {
 					do {
-						int xAdd=2 + r.nextInt(STAIR_SPAWN_RADIUS-2);
-						if(r.nextBoolean())
-							xAdd*=-1;
-						x = player.getGlobalX()/TILE_SIZE+xAdd;
-						int yAdd=2 + r.nextInt(STAIR_SPAWN_RADIUS-2);
-						if(r.nextBoolean())
-							yAdd*=-1;
-						y = player.getGlobalY()/TILE_SIZE+yAdd;
-					} while (x<0||y<0||x>=getMap().length||y>=getMap()[0].length||
-							!map[x][y].walkable() ||!map[x + 1][y].walkable() 
-							|| !map[x - 1][y].walkable() || !map[x][y + 1].walkable()
-							|| !map[x][y - 1].walkable());
+						int xAdd = 2 + r.nextInt(STAIR_SPAWN_RADIUS - 2);
+						if (r.nextBoolean())
+							xAdd *= -1;
+						x = player.getGlobalX() / TILE_SIZE + xAdd;
+						int yAdd = 2 + r.nextInt(STAIR_SPAWN_RADIUS - 2);
+						if (r.nextBoolean())
+							yAdd *= -1;
+						y = player.getGlobalY() / TILE_SIZE + yAdd;
+					} while (x < 0 || y < 0 || x >= getMap().length || y >= getMap()[0].length || !map[x][y].walkable() || !map[x + 1][y].walkable() || !map[x - 1][y].walkable() || !map[x][y + 1].walkable() || !map[x][y - 1].walkable());
 				} while (!tryAddObject(stairs, x * TILE_SIZE, y * TILE_SIZE));
 			}
 		}
@@ -423,27 +413,25 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private final void generateNewMap(int seed) {
 		gen = new DungeonGenerator(this, seed);
-		map = gen.getMap();
-		addDestructableObjectsToWorld();
 	}
 
-	private void addDestructableObjectsToWorld() {
-		Random random = new Random(gen.getSeed());
-		for (int x = 0; x < map.length; x++) {
-			for (int y = 0; y < map[0].length; y++) {
-				if (map[x][y].getFieldType() == FieldType.DESTRUCTABLE) {
-					DestroyableObject dO = null;
-					if (random.nextBoolean())
-						dO = new Crate(100, new Point(x, y), gen);
-					else if (random.nextBoolean())
-						dO = new Vase(100, new Point(x, y), gen);
-					else
-						dO = new Grave(100, new Point(x, y), gen);
-					addObject(dO, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
-				}
-			}
-		}
-	}
+	//	private void addDestructableObjectsToWorld() {
+	//		Random random = new Random(gen.getSeed());
+	//		for (int x = 0; x < map.length; x++) {
+	//			for (int y = 0; y < map[0].length; y++) {
+	//				if (map[x][y].getFieldType() == FieldType.DESTRUCTABLE) {
+	//					DestroyableObject dO = null;
+	//					if (random.nextBoolean())
+	//						dO = new Crate(100, new Point(x, y), gen);
+	//					else if (random.nextBoolean())
+	//						dO = new Vase(100, new Point(x, y), gen);
+	//					else
+	//						dO = new Grave(100, new Point(x, y), gen);
+	//					addObject(dO, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
+	//				}
+	//			}
+	//		}
+	//	}
 
 	//TODO find out why some directions cause more calls to drawImage than others.
 	private void paintTiles(final int x, final int y, final int deltax, final int deltay) {
@@ -522,8 +510,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private GreenfootImage getImageForTile(int i, int j) {
 
-		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT)
-				? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
+		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT) ? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
 	}
 
 	@Override
@@ -775,5 +762,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	public void stopped() {
 		running = false;
 		super.stopped();
+	}
+
+	public void setMap(MapField[][] mapBlocks) {
+		map = mapBlocks;
 	}
 }

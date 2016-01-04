@@ -52,6 +52,15 @@ public class MapField {
 			case WALL:
 				isWalkable = false;
 				break;
+			case CELL:
+				isWalkable = false;
+				break;
+			case RESERVED:
+				isWalkable = true;
+				break;
+			case CENTER:
+				isWalkable = true;
+				break;
 			
 			}	
 	}
