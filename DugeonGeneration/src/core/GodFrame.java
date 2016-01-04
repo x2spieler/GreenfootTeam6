@@ -73,7 +73,7 @@ public class GodFrame {
 	private final int LABEL_HEIGHT = 80;
 	private final int SPACE_BETWEEN_LABELS = 40;
 	private final int LABEL_X_START = 10;
-	private final int LABEL_Y_START = 280;
+	private final int LABEL_Y_START = 225;
 	private JTextField seedTF;
 
 	public GodFrame(JFrame frame, DungeonMap world) {
@@ -377,7 +377,7 @@ public class GodFrame {
 		ImageIcon bg = loadHUDImageIcon("health_bar_bg.png");
 		healthBackgroundLabel.setIcon(bg);
 		int posX = 10;
-		int posY = 75;
+		int posY = 15;
 		healthBackgroundLabel.setBounds(posX, posY, bg.getIconWidth(), bg.getIconHeight());
 		viewportPanel.add(healthBackgroundLabel);
 
@@ -461,7 +461,7 @@ public class GodFrame {
 		img = loadHUDBufferedImage("seed_bg.png");
 		seedBackground.setIcon(new ImageIcon(img));
 		posX = viewportPanel.getWidth() - 5 - img.getWidth();
-		posY = 5;
+		posY = 15;
 		seedBackground.setBounds(posX, posY, img.getWidth(), img.getHeight());
 		viewportPanel.add(seedBackground);
 

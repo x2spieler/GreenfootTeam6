@@ -1,17 +1,15 @@
 package DungeonGeneration;
 
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
+
 //import greenfoot.World;
 
 //Branching
 
 import greenfoot.Actor;
-
-import java.awt.Point;
-import java.nio.Buffer;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
-
 import objects.Crate;
 import objects.DestroyableObject;
 import objects.Grave;
@@ -72,7 +70,6 @@ public class DungeonGenerator {
 
 	public DungeonGenerator(DungeonMap dm, int seed) {
 		mapSeed = seed;
-		mapSeed=-301470960;
 		rand = new MegaRandom(mapSeed);
 		this.dm = dm;
 		initGen();
