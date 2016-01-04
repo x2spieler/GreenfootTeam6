@@ -7,7 +7,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
-import java.awt.TextField;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -72,6 +71,7 @@ public class GodFrame {
 	private JLabel hsScoreInfo=null;
 	private BufferedImage healthBarImage = null;
 	private DungeonMap world;
+	private MainMenuPanel mainMenuPanel=null;
 
 	private LinkedHashMap<String, BuffPanel> buffPanels;
 	private final int LABEL_HEIGHT = 80;
@@ -99,7 +99,7 @@ public class GodFrame {
 		frame.getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK),
 				"activate_testing_mode01");
 		frame.getRootPane().getActionMap().put("activate_testing_mode01", new TestingModeActivator());
-		frame.setTitle("Super awesome window title");
+		frame.setTitle("Collosseum of Death (working title)");
 	}
 
 	public void addScrollListener(MouseWheelListener listener) {
@@ -148,6 +148,11 @@ public class GodFrame {
 		frame.getContentPane().remove(nextRoundPane);
 		frame.getContentPane().remove(highscorePane);
 		frame.getContentPane().add(t);
+	}
+	
+	public void setLoadingVisibility(boolean visible)
+	{
+		mainMenuPanel.setLoadingVisibility(visible);
 	}
 	
 	public void buildHighscoreGui()
@@ -302,14 +307,21 @@ public class GodFrame {
 			buyFeedbackLabel.setForeground(new Color(184, 0, 0));
 		buyFeedbackLabel.setText(msg);
 	}
+	
+	public void setNewSeedForTextField()
+	{
+		seedTF.setText("" + new Random().nextInt());
+	}
 
 	public void buildMainMenuGui() {
-		MainMenuPanel panel = new MainMenuPanel((ActionEvent e) -> {
+		mainMenuPanel = new MainMenuPanel((ActionEvent e) -> {
 			//Start-Button
+			if(world.isStartingGame())
+				return;
 			try {
-				changeToFrame(FrameType.VIEWPORT);
-				world.startNewGame(Integer.valueOf(seedTF.getText()));
-				seedTF.setText("" + new Random().nextInt()); // Already set seed for the next game
+				String s=seedTF.getText();
+				int seed=!s.equals("") ? Integer.parseInt(s) : new Random().nextInt();
+				world.startNewGame(seed);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -317,52 +329,14 @@ public class GodFrame {
 				//Highscore-Button
 		(ActionEvent e)->
 		{
+			if(world.isStartingGame())
+				return;
 			changeToFrame(FrameType.HIGHSCORE);
-		});
-		seedTF = panel.getSeedTF();
+		}, world);
+		seedTF = mainMenuPanel.getSeedTF();
 		seedTF.setText("" + new Random().nextInt());
-		panel.setPreferredSize(getPrefSize(panel));
-
-		//		panel.setLayout(null);
-		//		panel.setPreferredSize(getPrefSize(panel));
-		//		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		//		Dimension panelSize = panel.getPreferredSize();
-		//		// /////CODE FOR MAIN MENU GOES HERE
-		//
-		//		JLabel startLabel = new JLabel("Start a new game");
-		//		startLabel.setBounds(0, 100, panelSize.width, 50);
-		//		startLabel.setFont(new Font("", Font.BOLD, 24));
-		//		startLabel.setHorizontalAlignment(JLabel.CENTER);
-		//		panel.add(startLabel);
-		//
-		//		JButton start = new JButton();
-		//		int buttonWidth = 150;
-		//		int buttonHeight = 40;
-		//		start.setBounds(panelSize.width / 2 - buttonWidth / 2, panelSize.height / 2 - 60, buttonWidth, buttonHeight);
-		//		start.setText("Start");
-		//		start.addActionListener((ActionEvent e) -> {
-		//			changeToFrame(FrameType.VIEWPORT);
-		//			world.startNewGame(Integer.valueOf(seedTF.getText()));
-		//			seedTF.setText("" + new Random().nextInt()); // Already set seed for the next game
-		//		});
-		//		panel.add(start);
-		//
-		//		JLabel seedLabel = new JLabel("Seed:");
-		//		int lWidth = 100;
-		//		int lHeight = 50;
-		//		int space = 20;
-		//		seedLabel.setBounds(panelSize.width / 2 - lWidth - space, panelSize.height / 2 + 150 - lHeight / 2, lWidth,
-		//				lHeight);
-		//		seedLabel.setHorizontalAlignment(JLabel.RIGHT);
-		//		panel.add(seedLabel);
-		//
-		//		int tfWidth = 100;
-		//		int tfHeight = 24;
-		//		seedTF.setBounds(panelSize.width / 2 + space, panelSize.height / 2 + 150 - tfHeight / 2, tfWidth, tfHeight);
-		//		panel.add(seedTF);
-		//		// /////
-		//
-		JScrollPane outer = new JScrollPane(panel);
+		mainMenuPanel.setPreferredSize(getPrefSize(mainMenuPanel));
+		JScrollPane outer = new JScrollPane(mainMenuPanel);
 		outer.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		mainMenuPane = outer;

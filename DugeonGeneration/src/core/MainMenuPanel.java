@@ -1,24 +1,30 @@
 package core;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+
+import world.DungeonMap;
 
 public class MainMenuPanel extends BackgroundPanel {
 	private static final long serialVersionUID = 1320537140564920879L;
 	private JTextField textField;
-
+	private JLabel loadingLabel;
 	private final Random random = new Random();
 
-	public MainMenuPanel(final ActionListener start, final ActionListener highscore) {
+	public MainMenuPanel(final ActionListener start, final ActionListener highscore, DungeonMap dm) {
 		super(new ImageIcon(MainMenuPanel.class.getClassLoader().getResource("images/background/Background.jpg")).getImage());
 		setBounds(200, 200, 1024, 768);
 		setLayout(null);
@@ -61,11 +67,24 @@ public class MainMenuPanel extends BackgroundPanel {
 				eingeben.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/new-seed.png")));
 			}
 		});
+		
+		ImageIcon spinner=new ImageIcon(MainMenuPanel.class.getResource("/images/hud/ajax-loader.gif"));
+		loadingLabel=new JLabel(spinner);
+		loadingLabel.setText("  LOADING");
+		loadingLabel.setForeground(Color.black);
+		loadingLabel.setBounds(0, 250, DungeonMap.VIEWPORT_WIDTH, 100);
+		loadingLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		loadingLabel.setVisible(false);
+		panel.add(loadingLabel);
+		
 		eingeben.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/new-seed.png")));
 		eingeben.setContentAreaFilled(false);
 		eingeben.setOpaque(false);
 		eingeben.setBorder(null);
-		eingeben.addActionListener((a) -> textField.setText(String.valueOf(random.nextInt())));
+		eingeben.addActionListener((a) -> {
+			if(!dm.isStartingGame()) 
+				textField.setText(String.valueOf(random.nextInt()));
+		});
 		JButton HighScore = new JButton("");
 		HighScore.setBounds(342, 414, 348, 70);
 		HighScore.addActionListener(highscore);
@@ -96,6 +115,11 @@ public class MainMenuPanel extends BackgroundPanel {
 		panel.add(GameStart);
 		panel.add(textField);
 
+	}
+	
+	public void setLoadingVisibility(boolean visible)
+	{
+		loadingLabel.setVisible(visible);
 	}
 
 	public JTextField getSeedTF() {

@@ -77,6 +77,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private static int greenfootTime = 0;
 	private long lastTicks;
 	private static int ticksAtEndOfLastRound = 0;
+	
+	private boolean isStartingGame=false;
 
 	private int numAliveEnemies = 0;
 
@@ -157,6 +159,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 		super.setPaintOrder(args);
 	}
+	
+	public boolean isStartingGame()
+	{
+		return isStartingGame;
+	}
 
 	public void log(String str) {
 		logger.println(str);
@@ -179,7 +186,15 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	public void startNewGame(int seed) throws AWTException {
+		if(isStartingGame)
+			return;
+		godFrame.setLoadingVisibility(true);
+		isStartingGame=true;
 		generateNewMap(seed);
+	}
+	
+	private void startGameAfterMapLoad(int seed)
+	{
 		new Thread(() -> {
 			try {
 				Pair<GreenfootImage[][], MapElement[][]> p = new DungeonMapper(map).getImageForTilesetHouse();
@@ -200,6 +215,10 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		spawnEnemies();
 		log("Seed: " + seed);
 		round = 1;
+		changeToFrame(FrameType.VIEWPORT);
+		isStartingGame=false;
+		godFrame.setLoadingVisibility(false);
+		godFrame.setNewSeedForTextField();
 	}
 
 	public void setPlayer(Player player) {
@@ -430,7 +449,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	private final void generateNewMap(int seed) {
-		gen = new DungeonGenerator(this, seed);
+		new Thread(()->
+		{
+			gen = new DungeonGenerator(this, seed);
+			startGameAfterMapLoad(seed);
+		}).start();
 	}
 
 	//	private void addDestructableObjectsToWorld() {
