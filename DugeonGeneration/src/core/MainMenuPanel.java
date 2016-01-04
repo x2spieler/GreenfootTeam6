@@ -2,7 +2,6 @@ package core;
 
 import java.awt.Font;
 import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -69,10 +68,7 @@ public class MainMenuPanel extends BackgroundPanel {
 		eingeben.addActionListener((a) -> textField.setText(String.valueOf(random.nextInt())));
 		JButton HighScore = new JButton("");
 		HighScore.setBounds(342, 414, 348, 70);
-		HighScore.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+		HighScore.addActionListener(highscore);
 		HighScore.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {

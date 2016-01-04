@@ -107,6 +107,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	final int BASE_TIME_PER_ROUND = 120/*seconds*/* 1000/*convert to milliseconds*/;
 
 	private int round = 1;
+	
+	private int lastPlayerScore=-1;
 
 	private DatabaseHandler dbHandler;
 
@@ -171,8 +173,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	}
 
 	public void playerDied() {
-		endGame();
 		godFrame.changeToFrame(FrameType.GAME_OVER);
+		lastPlayerScore=player.getPlayerScore();
+		endGame();
 	}
 
 	public void startNewGame(int seed) throws AWTException {
@@ -263,7 +266,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		numAliveEnemies = 0;
 		enemiesSpawned = false;
 	}
-	
+
 	public int getSeed()
 	{
 		return gen.getSeed();
@@ -414,6 +417,16 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	public void updateFeedbackLabel(boolean success, String msg) {
 		godFrame.updateFeedbackLabel(success, msg);
+	}
+
+	public void addToHighscoreList(String name)
+	{
+		addHighscore(name, lastPlayerScore);
+	}
+
+	public int getPlayerScore()
+	{
+		return player!=null ? player.getScore() : -1;
 	}
 
 	private final void generateNewMap(int seed) {

@@ -238,16 +238,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 				{
 					//Once more were spawned in a room that is not connected to any other room *Sigh*
 					//Get us another location that is not that anti-social [i.e. get a location that is connected to the rest of the map]
-					MapField[][] mf=wi.getMap();
-					Random r = new Random(wi.getSeed());
-					int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
-					int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
-					while(!mf[x][y].walkable())
-					{
-						x = r.nextInt(DungeonGenerator.MAP_WIDTH);
-						y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
-					}
-					setGlobalLocation(x*TILE_SIZE+TILE_SIZE/2, y*TILE_SIZE+TILE_SIZE/2);
+					portToRandomLocation();
 					couldNotFindWay=false;
 				}
 			} else {
@@ -306,6 +297,20 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 				walkCounter++;
 		}
 	}
+	
+	private void portToRandomLocation()
+	{
+		MapField[][] mf=wi.getMap();
+		Random r = new Random(wi.getSeed());
+		int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
+		int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
+		while(!mf[x][y].walkable())
+		{
+			x = r.nextInt(DungeonGenerator.MAP_WIDTH);
+			y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
+		}
+		setGlobalLocation(x*TILE_SIZE+TILE_SIZE/2, y*TILE_SIZE+TILE_SIZE/2);
+	}
 
 	private void updatePathToPlayer(Point end) {
 		Node n = currTargetNode;
@@ -326,7 +331,11 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 				currTargetNode = findPath(new Point(getGlobalX() / TILE_SIZE, getGlobalY() / TILE_SIZE), end, true);
 			else
 				shortestDistance.prev = findPath(start, end, true);
-
+			if(couldNotFindWay)
+			{
+				portToRandomLocation();
+				couldNotFindWay=false;
+			}
 		}
 
 	}

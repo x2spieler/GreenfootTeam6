@@ -6,5 +6,6 @@ public enum FrameType
 	MAIN_MENU,
 	PAUSE_MENU,
 	GAME_OVER,
-	NEXT_ROUND
+	NEXT_ROUND,
+	HIGHSCORE
 }

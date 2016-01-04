@@ -1,92 +1,95 @@
 package core;
 
-import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.Rectangle;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
+
+import database.HighscoreEntry;
+import world.DungeonMap;
 
 public class HighScorePanel extends BackgroundPanel {
 
-	private static final long serialVersionUID = -6287639398060155139L;
-	private JLabel label_1;
-	private JLabel label_5;
-	private JLabel label_4;
-	private JLabel label_6;
-	private JLabel label_2;
-	private JLabel label;
-	private JLabel label_3;
+	DungeonMap dMap=null;
+	private static final long serialVersionUID = 1L;
+	
+	private JLabel[] names=null;
+	private JLabel[] dashes=null;
+	private JLabel[] scores=null;
+	
+	private int numListEntries=-1;
 
-	public HighScorePanel() {
-		super(new ImageIcon(HighScorePanel.class.getClassLoader().getResource("images/background/Background.jpg")).getImage());
-		setLayout(new BorderLayout(0, 0));
-
-		JScrollPane scrollPane = new JScrollPane();
-
-		JPanel panel = new JPanel();
-		scrollPane.setViewportView(panel);
-
-		JLabel lblNewLabel = new JLabel("Highscore");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-		label = new JLabel("");
-
-		label_1 = new JLabel("");
-
-		label_2 = new JLabel("");
-
-		label_3 = new JLabel("");
-
-		label_4 = new JLabel("");
-
-		label_5 = new JLabel("");
-
-		label_6 = new JLabel("");
-		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
-				gl_panel.createSequentialGroup().addContainerGap().addGroup(
-						gl_panel.createParallelGroup(Alignment.LEADING).addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 428, GroupLayout.PREFERRED_SIZE).addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup().addGap(11).addComponent(label, GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)).addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup().addGap(11).addComponent(label_1, GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)).addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup().addGap(11).addComponent(label_2, GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)).addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup().addGap(11).addComponent(label_3, GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)).addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup().addGap(11).addComponent(label_4, GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)).addGroup(
-								Alignment.TRAILING, gl_panel.createSequentialGroup().addGap(11).addComponent(label_5, GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)).addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup().addGap(11).addComponent(label_6, GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE))).addContainerGap()));
-		gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
-				gl_panel.createSequentialGroup().addContainerGap().addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(label, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(label_1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(label_2, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(label_3, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(label_4, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(label_5, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(
-						label_6, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE).addContainerGap(14, Short.MAX_VALUE)));
-		panel.setLayout(gl_panel);
-		add(scrollPane);
-
+	public HighScorePanel(DungeonMap dm, int numListEntries, ActionListener backToMainMenuListener) {
+		super(null/*new ImageIcon(HighScorePanel.class.getClassLoader().getResource("images/background/Background.jpg")).getImage()*/);
+		this.dMap=dm;
+		this.numListEntries=numListEntries;
+		buildGui(backToMainMenuListener);
+		updateList();
 	}
 
-	public JLabel getLabel_1() {
-		return label_1;
+	private void buildGui(ActionListener backToMainMenuListener)
+	{
+		JLabel headerLabel = new JLabel("Highscores");
+		headerLabel.setBounds(0, 50, DungeonMap.VIEWPORT_WIDTH, 50);
+		headerLabel.setFont(new Font("", Font.PLAIN, 26));
+		headerLabel.setHorizontalAlignment(JLabel.CENTER);
+		add(headerLabel);
+		
+		names=new JLabel[numListEntries];
+		dashes=new JLabel[numListEntries];
+		scores=new JLabel[numListEntries];
+		int x1=300;
+		int x2=500;
+		int x3=500;
+		int yStart=150;
+		int yBorder=50;
+		for(int i=0;i<numListEntries;i++)
+		{
+			names[i]=new JLabel();
+			names[i].setBounds(new Rectangle(x1, yStart+i*yBorder, 200, 30));
+			names[i].setHorizontalAlignment(SwingConstants.LEFT);
+			dashes[i]=new JLabel();
+			dashes[i].setBounds(new Rectangle(x2, yStart+i*yBorder, 200, 30));
+			scores[i]=new JLabel();
+			scores[i].setBounds(new Rectangle(x3, yStart+i*yBorder, 200, 30));
+			scores[i].setHorizontalAlignment(SwingConstants.RIGHT);
+			
+			add(names[i]);
+			add(dashes[i]);
+			add(scores[i]);
+		}
+		
+		JButton mmenu = new JButton();
+		int buttonWidth = 200;
+		int buttonHeight = 40;
+		mmenu.setBounds(DungeonMap.VIEWPORT_WIDTH/2 - buttonWidth / 2, (int)(DungeonMap.VIEWPORT_HEIGHT - 2.5*buttonHeight), buttonWidth, buttonHeight);
+		mmenu.setText("Back to main menu");
+		mmenu.addActionListener(backToMainMenuListener);
+		add(mmenu);
 	}
-
-	public JLabel getLabel_5() {
-		return label_5;
-	}
-
-	public JLabel getLabel_4() {
-		return label_4;
-	}
-
-	public JLabel getLabel_6() {
-		return label_6;
-	}
-
-	public JLabel getLabel_2() {
-		return label_2;
-	}
-
-	public JLabel getLabel() {
-		return label;
-	}
-
-	public JLabel getLabel_3() {
-		return label_3;
+	
+	public void updateList()
+	{
+		ArrayList<HighscoreEntry> entries=dMap.getTopEntries(numListEntries);
+		for(int i=0;i<numListEntries;i++)
+		{
+			if(i<entries.size())
+			{
+				HighscoreEntry entry=entries.get(i);
+				names[i].setText(entry.getName());
+				scores[i].setText(""+entry.getScore());
+				dashes[i].setText("-");
+			}
+			else
+			{
+				names[i].setText("");
+				scores[i].setText("");
+				dashes[i].setText("");
+			}
+		}
 	}
 }
