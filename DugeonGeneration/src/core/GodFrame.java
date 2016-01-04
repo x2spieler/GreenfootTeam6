@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.TextField;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -54,6 +55,8 @@ public class GodFrame {
 	private JScrollPane mainMenuPane = null;
 	private JScrollPane gameOverPane = null;
 	private JScrollPane nextRoundPane = null;
+	private JScrollPane highscorePane=null;
+	private HighScorePanel highScorePanel=null;
 	private JPanel viewportPanel = null;
 	private JLabel seedLabel = null;
 	private JLabel coinLabel = null;
@@ -66,6 +69,7 @@ public class GodFrame {
 	private JLabel scoreLabel = null;
 	private JLabel noDamageLabel = null;
 	private JLabel inTimeLabel = null;
+	private JLabel hsScoreInfo=null;
 	private BufferedImage healthBarImage = null;
 	private DungeonMap world;
 
@@ -88,6 +92,7 @@ public class GodFrame {
 		buildHUD();
 		buildGameOverGui();
 		buildNextRoundGui();
+		buildHighscoreGui();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		frame.pack();
 		frame.setLocation(screenSize.width / 2 - frame.getWidth() / 2, screenSize.height / 2 - frame.getHeight() / 2);
@@ -117,12 +122,17 @@ public class GodFrame {
 			break;
 		case GAME_OVER:
 			changeTo(gameOverPane);
+			hsScoreInfo.setText("You got a score of "+world.getPlayerScore()+" !");
 			Greenfoot.stop();
 			break;
 		case NEXT_ROUND:
 			changeTo(nextRoundPane);
 			buyFeedbackLabel.setText("");
 			Greenfoot.stop();
+			break;
+		case HIGHSCORE:
+			highScorePanel.updateList();
+			changeTo(highscorePane);
 			break;
 		}
 		frame.pack();
@@ -136,7 +146,22 @@ public class GodFrame {
 		frame.getContentPane().remove(pauseMenuPane);
 		frame.getContentPane().remove(gameOverPane);
 		frame.getContentPane().remove(nextRoundPane);
+		frame.getContentPane().remove(highscorePane);
 		frame.getContentPane().add(t);
+	}
+	
+	public void buildHighscoreGui()
+	{
+		highScorePanel=new HighScorePanel(world, 10, (ActionEvent e) -> {
+			changeToFrame(FrameType.MAIN_MENU);
+		});
+		highScorePanel.setLayout(null);
+		highScorePanel.setPreferredSize(getPrefSize(highScorePanel));
+		highScorePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		JScrollPane outer = new JScrollPane(highScorePanel);
+		outer.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+		highscorePane = outer;
 	}
 
 	public void buildMenuGui() {
@@ -280,6 +305,7 @@ public class GodFrame {
 
 	public void buildMainMenuGui() {
 		MainMenuPanel panel = new MainMenuPanel((ActionEvent e) -> {
+			//Start-Button
 			try {
 				changeToFrame(FrameType.VIEWPORT);
 				world.startNewGame(Integer.valueOf(seedTF.getText()));
@@ -287,7 +313,12 @@ public class GodFrame {
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-		} , null);
+		} , 
+				//Highscore-Button
+		(ActionEvent e)->
+		{
+			changeToFrame(FrameType.HIGHSCORE);
+		});
 		seedTF = panel.getSeedTF();
 		seedTF.setText("" + new Random().nextInt());
 		panel.setPreferredSize(getPrefSize(panel));
@@ -351,16 +382,30 @@ public class GodFrame {
 		loseLabel.setHorizontalAlignment(JLabel.CENTER);
 		panel.add(loseLabel);
 
-		JButton mmenu = new JButton();
+		// /////
+		
+		hsScoreInfo = new JLabel("You got a score of "+world.getPlayerScore()+" !");
+		hsScoreInfo.setBounds(0, 350, panelSize.width, 50);
+		hsScoreInfo.setFont(new Font("", Font.ITALIC, 15));
+		hsScoreInfo.setHorizontalAlignment(JLabel.CENTER);
+		panel.add(hsScoreInfo);
+		
+		JTextField hsNameTextField=new JTextField();
+		hsNameTextField.setBounds(350, 420, 150, 25);
+		hsNameTextField.setText("Name");
+		panel.add(hsNameTextField);
+		
+		JButton hsAddButton = new JButton();
 		int buttonWidth = 200;
 		int buttonHeight = 30;
-		mmenu.setBounds(panelSize.width / 2 - buttonWidth / 2, panelSize.height / 2, buttonWidth, buttonHeight);
-		mmenu.setText("Back to main menu");
-		mmenu.addActionListener((ActionEvent e) -> {
+		hsAddButton.setBounds(550,420, buttonWidth, buttonHeight);
+		hsAddButton.setText("Add to highscores");
+		hsAddButton.addActionListener((ActionEvent e) -> {
+			changeToFrame(FrameType.MAIN_MENU);
+			world.addToHighscoreList(hsNameTextField.getText());
 			changeToFrame(FrameType.MAIN_MENU);
 		});
-		panel.add(mmenu);
-		// /////
+		panel.add(hsAddButton);
 
 		JScrollPane outer = new JScrollPane(panel);
 		outer.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
