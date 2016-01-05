@@ -6,10 +6,9 @@ import weapons.abstracts.LongRangeWeapon;
 import weapons.bullets.CrossbowArrow;
 import weapons.bullets.LoveShots;
 
-public class LoveWand extends LongRangeWeapon{
-	
-	public LoveWand(ScrollActor owner, int ammo)
-	{
+public class LoveWand extends LongRangeWeapon {
+
+	public LoveWand(ScrollActor owner, int ammo) {
 		super(ammo);
 		damage=19;
 		weaponName="love_wand";
@@ -28,6 +27,6 @@ public class LoveWand extends LongRangeWeapon{
 	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean areBulletsClassOf(Class c) {
-		return c==CrossbowArrow.class;
+		return c == CrossbowArrow.class;
 	}
 }

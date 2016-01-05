@@ -1,6 +1,7 @@
 package AI;
 
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -37,11 +38,14 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 
 	protected String enemyName = "";
 	protected GreenfootImage[][] images;
+	protected GreenfootImage[][] damagedImages;
 	protected String[] allowedWeapons;
 
 	private boolean isAttacking = false;
 	private boolean cantFindWay = false;
-	private boolean couldNotFindWay=false;
+	private boolean couldNotFindWay = false;
+	private boolean isShowingDamage = false;
+	private int showingDamageCounter = 0;
 	private Node currTargetNode = null;
 	private IWorldInterfaceForAI wi = null;
 	private Point lastPlayerTile = null;
@@ -52,6 +56,8 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 	private short walkCounter = 0;
 	private boolean isPendingKill = false;
 	private int currRotation = 0;
+	private int[] rgb;
+	private int[] red;
 
 	protected enum ImageIndex {
 		IDLE(0), WALK1(1), WALK2(2), ATTACK(0);
@@ -109,11 +115,31 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 
 	private void loadImages() {
 		images = new GreenfootImage[4][3];
+		damagedImages = new GreenfootImage[images.length][images[0].length];
 		for (int i = 0; i < 4; i++) {
-			images[i][ImageIndex.IDLE.getValue()] = new GreenfootImage("enemies/" + enemyName + "/" + enemyName + "_" + i + "_base.png");
-			images[i][ImageIndex.WALK1.getValue()] = new GreenfootImage("enemies/" + enemyName + "/" + enemyName + "_" + i + "_walk1.png");
-			images[i][ImageIndex.WALK2.getValue()] = new GreenfootImage("enemies/" + enemyName + "/" + enemyName + "_" + i + "_walk2.png");
-			images[i][ImageIndex.ATTACK.getValue()] = new GreenfootImage("enemies/" + enemyName + "/" + enemyName + "_" + i + "_walk1.png");
+			images[i][ImageIndex.IDLE.getValue()] = new GreenfootImage(
+					"enemies/" + enemyName + "/" + enemyName + "_" + i + "_base.png");
+			images[i][ImageIndex.WALK1.getValue()] = new GreenfootImage(
+					"enemies/" + enemyName + "/" + enemyName + "_" + i + "_walk1.png");
+			images[i][ImageIndex.WALK2.getValue()] = new GreenfootImage(
+					"enemies/" + enemyName + "/" + enemyName + "_" + i + "_walk2.png");
+			images[i][ImageIndex.ATTACK.getValue()] = new GreenfootImage(
+					"enemies/" + enemyName + "/" + enemyName + "_" + i + "_walk1.png");
+		}
+		for (int i = 0; i < images.length; i++) {
+			for (int j = 0; j < images[i].length; j++) {
+				GreenfootImage image = new GreenfootImage(images[i][j]);
+				BufferedImage img = image.getAwtImage();
+				int imgwidth = img.getWidth();
+				int imgheight = img.getHeight();
+				int[] rgb = img.getRGB(0, 0, imgwidth, imgheight, null, 0, imgwidth);
+				int[] red = new int[rgb.length];
+				for (int k = 0; k < rgb.length; k++) {
+					red[k] = (rgb[k] & 0xffff0000);
+				}
+				img.setRGB(0, 0, imgwidth, imgheight, red, 0, imgwidth);
+				damagedImages[i][j] = image;
+			}
 		}
 	}
 
@@ -172,7 +198,8 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 			weapon = new weapons.long_range_weapon.NinjaStar(this, Integer.MAX_VALUE);
 			break;
 		default:
-			throw new IllegalArgumentException("Seems like somebody forgot to update this switch-statement after adding new weapons.. Bad boy!");
+			throw new IllegalArgumentException(
+					"Seems like somebody forgot to update this switch-statement after adding new weapons.. Bad boy!");
 		}
 		if (weapon != null)
 			getWorld().addObject(weapon, 0, 0);
@@ -183,12 +210,20 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 		if (isPendingKill)
 			return;
 		hp -= dmg;
+		showDamage();
 		if (hp <= 0) {
 			setImage("tombstone.png");
 			getWorld().removeObject(weapon);
 			isPendingKill = true;
 			wi.enemyDied(this);
 		}
+	}
+
+	private void showDamage() {
+		if (isShowingDamage)
+			return;
+		isShowingDamage = true;
+		showingDamageCounter = 10;
 	}
 
 	public int getScore() {
@@ -200,7 +235,10 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 	}
 
 	private GreenfootImage getCurrentImage(ImageIndex indx) {
-		return images[((currRotation + 45) % 360) / 90][indx.getValue()];
+		if (isShowingDamage)
+			return damagedImages[((currRotation + 45) % 360) / 90][indx.getValue()];
+		else
+			return images[((currRotation + 45) % 360) / 90][indx.getValue()];
 	}
 
 	@Override
@@ -222,6 +260,14 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 
 		super.act();
 
+		if (isShowingDamage) {
+			if (showingDamageCounter == 0) {
+				isShowingDamage = false;
+			} else {
+				showingDamageCounter--;
+			}
+		}
+
 		if (getImage() == null)
 			setImage(getCurrentImage(ImageIndex.IDLE));
 
@@ -231,15 +277,17 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 		Point currTile = new Point(getGlobalX() / TILE_SIZE, getGlobalY() / TILE_SIZE);
 
 		if (currTargetNode == null) {
-			int squaredDistance = squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
-			if (!isAttacking && ((!weapon.isLongRangeWeapon() && squaredDistance > REACHED_PLAYER_DISTANCE_SQUARED) || (weapon.isLongRangeWeapon() && squaredDistance > RPD_MULTIPLICATOR_LRW * REACHED_PLAYER_DISTANCE_SQUARED))) {
+			int squaredDistance = squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(),
+					getGlobalY());
+			if (!isAttacking && ((!weapon.isLongRangeWeapon() && squaredDistance > REACHED_PLAYER_DISTANCE_SQUARED)
+					|| (weapon.isLongRangeWeapon()
+							&& squaredDistance > RPD_MULTIPLICATOR_LRW * REACHED_PLAYER_DISTANCE_SQUARED))) {
 				currTargetNode = findPath(currTile, currPlayerTile, true);
-				if(couldNotFindWay)
-				{
+				if (couldNotFindWay) {
 					//Once more were spawned in a room that is not connected to any other room *Sigh*
 					//Get us another location that is not that anti-social [i.e. get a location that is connected to the rest of the map]
 					portToRandomLocation();
-					couldNotFindWay=false;
+					couldNotFindWay = false;
 				}
 			} else {
 				if (getImage() != getCurrentImage(ImageIndex.IDLE) && !isAttacking) {
@@ -268,11 +316,14 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 			if (!isAttacking)
 				moveAtAngle(currRotation);
 			int squaredDistToTarget = squaredDistance(currTargetNode.x, currTargetNode.y, getGlobalX(), getGlobalY());
-			int squaredDistanceToPlayer = squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y, getGlobalX(), getGlobalY());
+			int squaredDistanceToPlayer = squaredDistance(wi.getPlayerPosition().x, wi.getPlayerPosition().y,
+					getGlobalX(), getGlobalY());
 			if (isTouchingWall()) {
 				//We ran into a wall and missed our target or can't reach it - just get a new target next frame
 				currTargetNode = null;
-			} else if (weapon.isLongRangeWeapon() && squaredDistanceToPlayer <= RPD_MULTIPLICATOR_LRW * REACHED_PLAYER_DISTANCE_SQUARED && canSee(new Point(getGlobalX(), getGlobalY()), wi.getPlayerPosition())) {
+			} else if (weapon.isLongRangeWeapon()
+					&& squaredDistanceToPlayer <= RPD_MULTIPLICATOR_LRW * REACHED_PLAYER_DISTANCE_SQUARED
+					&& canSee(new Point(getGlobalX(), getGlobalY()), wi.getPlayerPosition())) {
 				//We have a LongRangeWeapon, we are close enough
 				currTargetNode = null;
 			} else if ((currTargetNode.prev == null && squaredDistToTarget <= REACHED_PLAYER_DISTANCE_SQUARED) //Target is player
@@ -297,19 +348,17 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 				walkCounter++;
 		}
 	}
-	
-	private void portToRandomLocation()
-	{
-		MapField[][] mf=wi.getMap();
+
+	private void portToRandomLocation() {
+		MapField[][] mf = wi.getMap();
 		Random r = new Random(wi.getSeed());
 		int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 		int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
-		while(!mf[x][y].walkable())
-		{
+		while (!mf[x][y].walkable()) {
 			x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
 		}
-		setGlobalLocation(x*TILE_SIZE+TILE_SIZE/2, y*TILE_SIZE+TILE_SIZE/2);
+		setGlobalLocation(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 	}
 
 	private void updatePathToPlayer(Point end) {
@@ -331,10 +380,9 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 				currTargetNode = findPath(new Point(getGlobalX() / TILE_SIZE, getGlobalY() / TILE_SIZE), end, true);
 			else
 				shortestDistance.prev = findPath(start, end, true);
-			if(couldNotFindWay)
-			{
+			if (couldNotFindWay) {
 				portToRandomLocation();
-				couldNotFindWay=false;
+				couldNotFindWay = false;
 			}
 		}
 
@@ -373,7 +421,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 		ArrayList<Node> openList = new ArrayList<Node>();
 
 		MapField[][] map = wi.getMap();
-		couldNotFindWay=false;
+		couldNotFindWay = false;
 
 		openList.add(new Node(manhattanDistance(start, end.x, end.y), 0, end.x, end.y, null));
 
@@ -383,7 +431,7 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 			if (cantFindWay || !map[end.x][end.y].walkable() || !map[start.x][start.y].walkable()) {
 				cantFindWay = false;
 				System.out.println("Couldn't find a way");
-				couldNotFindWay=true;
+				couldNotFindWay = true;
 				return null;
 			}
 		}
@@ -438,9 +486,11 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 			y = closest.y + addY;
 			if (x < 0 || y < 0 || x >= map.length || y >= map[0].length)
 				continue;
-			Node currNode = new Node(manhattanDistance(start, x, y) + closest.movementCost + 1, closest.movementCost + 1, x, y, closest);
+			Node currNode = new Node(manhattanDistance(start, x, y) + closest.movementCost + 1,
+					closest.movementCost + 1, x, y, closest);
 			if (map[x][y].walkable() && !closedList.contains(currNode)) {
-				if (!(map[x + 1][y].walkable() && map[x - 1][y].walkable() && map[x][y + 1].walkable() && map[x][y - 1].walkable()))
+				if (!(map[x + 1][y].walkable() && map[x - 1][y].walkable() && map[x][y + 1].walkable()
+						&& map[x][y - 1].walkable()))
 					currNode.movementCost += 1;
 				int indx = openList.indexOf(currNode);
 				if (indx == -1) {
