@@ -84,7 +84,7 @@ public class DungeonGenerator {
 		removeUnrenderableConestalltions();
 		dm.setMap(mapBlocks);
 		placeDestructable();
-		showMap();
+		//showMap();
 		//showRoomPathes();
 	}
 	
@@ -147,10 +147,9 @@ public class DungeonGenerator {
 		for (int y = 1; y < MAP_HEIGHT - 1; y++) {
 
 			for (int x = 1; x < MAP_WIDTH - 1; x++) {
-
 				if (mapBlocks[x][y].getFieldType() == FieldType.CELL) {
 					mapBlocks[x][y].setFieldType(FieldType.WALL);
-				} else {
+				} else if (mapBlocks[x][y].getFieldType() == FieldType.RESERVED) {
 					mapBlocks[x][y].setFieldType(FieldType.GROUND);
 				}
 
@@ -288,7 +287,7 @@ public class DungeonGenerator {
 				
 				System.out.println("Connected unsuccesfully!!!");
 				System.out.println(smallest);
-				//floodFill(smallest);
+				floodFill(smallest);
 				
 			}
 
@@ -299,46 +298,28 @@ public class DungeonGenerator {
 		
 	public void floodFill(ArrayList<Room> al){
 		//TODO: Start multiple threads per room
-		Point startPos = new Point();
-		Point add = new Point();
 		Point p = new Point();
 		
 		Queue<Point> open = new LinkedList<Point>();
-
-		for (Room r:al){
-			startPos.translate(r.getCenter().x, r.getCenter().y);
-			break;
-		}
-		System.out.println(startPos);
-		
-		open.add(startPos);
-		
+		open.add(al.get(0).getCenter());
 		while(!open.isEmpty()){
-			
 			p = open.poll();
-			
 			if (mapBlocks[p.x][p.y].getFieldType() == FieldType.RESERVED){
 				
 				mapBlocks[p.x][p.y].setFieldType(FieldType.WALL);
 				
-				
-				if ((mapBlocks[p.x-1][p.y].getFieldType() == FieldType.RESERVED)){
-					add.translate(p.x-1, p.y);
-					open.add(add);
+				if (mapBlocks[p.x-1][p.y].getFieldType() == FieldType.RESERVED){
+					open.add(new Point(p.x-1, p.y));
 				}
-				if ((mapBlocks[p.x+1][p.y].getFieldType() == FieldType.RESERVED)){
-					add.translate(p.x+1, p.y);
-					open.add(add);
+				if (mapBlocks[p.x+1][p.y].getFieldType() == FieldType.RESERVED){
+					open.add(new Point(p.x+1, p.y));
 				}
-				if ((mapBlocks[p.x][p.y-1].getFieldType() == FieldType.RESERVED)){
-					add.translate(p.x, p.y-1);
-					open.add(add);
+				if (mapBlocks[p.x][p.y-1].getFieldType() == FieldType.RESERVED){
+					open.add(new Point(p.x, p.y-1));
 				}
-				if ((mapBlocks[p.x][p.y+1].getFieldType() == FieldType.RESERVED)){
-					add.translate(p.x, p.y+1);
-					open.add(add);
+				if (mapBlocks[p.x][p.y+1].getFieldType() == FieldType.RESERVED){
+					open.add(new Point(p.x, p.y+1));
 				}
-				System.out.println(open);
 
 					
 				
