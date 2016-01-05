@@ -58,9 +58,8 @@ public class MapField {
 			case RESERVED:
 				isWalkable = true;
 				break;
-			case CENTER:
-				isWalkable = true;
-				break;
+
+				
 			
 			}	
 	}

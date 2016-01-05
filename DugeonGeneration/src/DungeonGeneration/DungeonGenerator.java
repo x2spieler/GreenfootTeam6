@@ -2,8 +2,9 @@ package DungeonGeneration;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
-
 
 import objects.Crate;
 import objects.DestroyableObject;
@@ -13,7 +14,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 12; //TODO: Decreased ROOM_POOL to prevent multiple networks
+	public static final int ROOM_POOL = 40; 
 	public static int usedRooms = ROOM_POOL;
 
 	public static final int MAP_WIDTH = 150;
@@ -173,7 +174,7 @@ public class DungeonGenerator {
 			if (!roomFree) {
 				i--;
 			} else {
-				mapBlocks[rooms[i].getCenter().x][rooms[i].getCenter().y].setFieldType(FieldType.CENTER);
+				//mapBlocks[rooms[i].getCenter().x][rooms[i].getCenter().y].setFieldType(FieldType.CENTER);
 			}
 
 		}
@@ -192,13 +193,7 @@ public class DungeonGenerator {
 		}
 	}
 
-	public void showRoomPathes(){
-		for(Room r:rooms){
-			System.out.println("Room :" + r);
-			System.out.println(r.getPathes());
-		}
-		
-	}
+
 	
 	public void connectSeparatedNetworks() {
 
@@ -207,9 +202,7 @@ public class DungeonGenerator {
 			//System.out.println("More than one network!!!");
 			//System.out.println("# of networks: " + getConnectedRooms().size());
 			
-			for (ArrayList<Room> ar:getConnectedRooms()){
-				//System.out.println(ar);
-			}
+			ArrayList<Room> smallest = new ArrayList<Room>();
 			
 			Point startPos = new Point();
 			Point endPos = new Point();
@@ -220,8 +213,15 @@ public class DungeonGenerator {
 				first:
 
 				for (ArrayList<Room> hs2 : getConnectedRooms()) {
+					
+					
 
 					if (hs1.hashCode() != hs2.hashCode()) {
+						
+						if (hs1.size()>hs2.size()){
+							smallest.clear();
+							smallest.addAll(hs2);
+						}
 
 						for (Room r1 : hs1) {
 							for (Room r2 : hs2) {
@@ -255,64 +255,65 @@ public class DungeonGenerator {
 			if (!(connected >= getConnectedRooms().size())) {
 				
 				System.out.println("Connected unsuccesfully!!!");
+				System.out.println(smallest);
+				//floodFill(smallest);
 				
 			}
-//				ArrayList<Room> smallest = new ArrayList<Room>();
-//				
-//				System.out.println("Connected unsuccesfully!!!");
-//				
-//				first:
-//				for (ArrayList<Room> hs1 : getConnectedRooms()) {
-//					
-//
-//					for (ArrayList<Room> hs2 : getConnectedRooms()) {
-//
-//						if (hs1.size() < hs2.size()) {
-//							
-//							smallest.addAll(hs1);
-//							break first;
-//						} else{
-//							smallest.addAll(hs2);
-//							break first;
-//						}
-//					}
-//
-//						System.out.println(smallest);
-//						
-//							for (Room r1 : smallest) {
-//								for (Room r2 : smallest) {
-//
-//									if (r1 != r2) {
-//										for (int s = 0; s < 4; s++) {
-//											for (int e = 0; e < 4; e++) {
-//
-//												startPos.setLocation(randomShift(r1, s));
-//												endPos.setLocation(randomShift(r2, e));
-//
-//												
-//												
-//												BufferWayWrapper bwr = bufferWay(startPos, endPos, 3);
-//												if (bwr.succesful && bwr.length < 100) {
-//													createWay(3, FieldType.WALL, lastWayBuffer);
-//													//hs1.addAll(hs2);
-//													connected++;
-//													break first;
-//												}
-//
-//											}
-//										}
-//									}
-//
-//								}
-//							}
-//						}
-//					}
+
 				}
 				
 			}
 
 		
-	
+	public void floodFill(ArrayList<Room> al){
+		//TODO: Start multiple threads per room
+		Point startPos = new Point();
+		Point add = new Point();
+		Point p = new Point();
+		
+		Queue<Point> open = new LinkedList<Point>();
+
+		for (Room r:al){
+			startPos.translate(r.getCenter().x, r.getCenter().y);
+			break;
+		}
+		System.out.println(startPos);
+		
+		open.add(startPos);
+		
+		while(!open.isEmpty()){
+			
+			p = open.poll();
+			
+			if (mapBlocks[p.x][p.y].getFieldType() == FieldType.RESERVED){
+				
+				mapBlocks[p.x][p.y].setFieldType(FieldType.WALL);
+				
+				
+				if ((mapBlocks[p.x-1][p.y].getFieldType() == FieldType.RESERVED)){
+					add.translate(p.x-1, p.y);
+					open.add(add);
+				}
+				if ((mapBlocks[p.x+1][p.y].getFieldType() == FieldType.RESERVED)){
+					add.translate(p.x+1, p.y);
+					open.add(add);
+				}
+				if ((mapBlocks[p.x][p.y-1].getFieldType() == FieldType.RESERVED)){
+					add.translate(p.x, p.y-1);
+					open.add(add);
+				}
+				if ((mapBlocks[p.x][p.y+1].getFieldType() == FieldType.RESERVED)){
+					add.translate(p.x, p.y+1);
+					open.add(add);
+				}
+				System.out.println(open);
+
+					
+				
+			}
+		}
+		
+	}
 
 	
 	
@@ -366,7 +367,6 @@ public class DungeonGenerator {
 					BufferWayWrapper bwr = bufferWay(startPos, endPos, rad);
 					if (bwr.succesful && bwr.length < 40) { //40
 						reserveBufferedWay(rad);
-						rooms[buildFirst[1]].setPathes(lastWayBuffer);
 						break first;
 					}
 
@@ -399,7 +399,7 @@ public class DungeonGenerator {
 						BufferWayWrapper bwr = bufferWay(startPos, endPos, rad);
 						if (bwr.succesful && bwr.length < 50) { //50
 							reserveBufferedWay(rad);
-							rooms[r1].setPathes(lastWayBuffer);
+							//rooms[r1].setPathes(lastWayBuffer);
 
 							break outerfor;
 						}
@@ -498,9 +498,7 @@ public class DungeonGenerator {
 				case CELL:
 					System.out.print("c");
 					break;
-				case CENTER:
-					System.out.print("^");
-					break;
+				
 				case RESERVED:
 					System.out.print("*");
 
@@ -580,7 +578,7 @@ public class DungeonGenerator {
 				if (x < 0 || y < 0 || x >= mapBlocks.length || y >= mapBlocks[0].length)
 					continue;
 				Node currNode = new Node(manhattanDistance(p1, x, y) + closest.movementCost + 1, closest.movementCost + 1, x, y, closest);
-				if ((mapBlocks[x][y].getFieldType() == FieldType.RESERVED || mapBlocks[x][y].getFieldType() == FieldType.CENTER) && !closedList.contains(currNode)) {
+				if ((mapBlocks[x][y].getFieldType() == FieldType.RESERVED  && !closedList.contains(currNode))) {
 					int indx = openList.indexOf(currNode);
 					if (indx == -1) {
 						openList.add(currNode);
