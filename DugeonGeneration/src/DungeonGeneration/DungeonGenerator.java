@@ -53,14 +53,12 @@ public class DungeonGenerator {
 		randomSeed = new MegaRandom();
 		mapSeed = randomSeed.randomInt(0, Integer.MAX_VALUE - 1);
 		rand = new MegaRandom(mapSeed);
-
 		this.dm = dm;
 		initGen();
 	}
 
 	public DungeonGenerator(DungeonMap dm, int seed) {
 		mapSeed = seed;
-		mapSeed=1648765600;
 		rand = new MegaRandom(mapSeed);
 		this.dm = dm;
 		initGen();
