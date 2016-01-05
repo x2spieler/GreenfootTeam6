@@ -60,7 +60,7 @@ public class DungeonGenerator {
 
 	public DungeonGenerator(DungeonMap dm, int seed) {
 		mapSeed = seed;
-		mapSeed=-1276500193;
+		mapSeed=seed;
 		rand = new MegaRandom(mapSeed);
 		this.dm = dm;
 		initGen();
@@ -85,7 +85,7 @@ public class DungeonGenerator {
 		removeUnrenderableConestalltions();
 		dm.setMap(mapBlocks);
 		placeDestructable();
-		showMap();
+		//showMap();
 		//showRoomPathes();
 	}
 
