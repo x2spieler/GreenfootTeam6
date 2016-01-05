@@ -60,6 +60,7 @@ public class DungeonGenerator {
 
 	public DungeonGenerator(DungeonMap dm, int seed) {
 		mapSeed = seed;
+		mapSeed=1648765600;
 		rand = new MegaRandom(mapSeed);
 		this.dm = dm;
 		initGen();
@@ -81,10 +82,43 @@ public class DungeonGenerator {
 		connectClosestRooms();
 		connectSeparatedNetworks();
 		convertCells();
+		removeUnrenderableConestalltions();
 		dm.setMap(mapBlocks);
 		placeDestructable();
 		showMap();
 		//showRoomPathes();
+	}
+	
+	private void removeUnrenderableConestalltions()
+	{
+		boolean foundBad=false;
+		do
+		{
+			foundBad=false;
+			for (int y = 0; y < MAP_HEIGHT; y++) {
+
+				for (int x = 0; x < MAP_WIDTH; x++) {
+					if(mapBlocks[x][y].walkable())
+						continue;
+					int adjacent=0;
+					if(x<MAP_WIDTH-1&&mapBlocks[x+1][y].walkable())
+						adjacent++;
+					if(x>0&&mapBlocks[x-1][y].walkable())
+						adjacent++;
+					if(y<MAP_HEIGHT-1&&mapBlocks[x][y+1].walkable())
+						adjacent++;
+					if(y>0&&mapBlocks[x][y-1].walkable())
+						adjacent++;
+					if(adjacent>=3)
+					{
+						mapBlocks[x][y].setFieldType(FieldType.GROUND);
+						foundBad=true;
+					}
+					
+				}
+			}
+			System.out.println("dsa");
+		} while (foundBad);
 	}
 
 	//Clears the map by setting every single field to fieldType wall
