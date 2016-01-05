@@ -1,7 +1,6 @@
 package DungeonGeneration;
 
 import java.awt.Point;
-import java.util.ArrayList;
 
 public class Room {
 
@@ -10,15 +9,11 @@ public class Room {
 
 	private Point pos = new Point();
 	private Point center = new Point();
-	
-	
 
-
-	public Room (int sizeX, int sizeY) {
+	public Room(int sizeX, int sizeY) {
 
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
-
 
 	}
 
@@ -26,13 +21,11 @@ public class Room {
 
 		pos.x = x;
 		pos.y = y;
-		center.x = pos.x + sizeX/2;
-		center.y = pos.y + sizeY/2;
+		center.x = pos.x + sizeX / 2;
+		center.y = pos.y + sizeY / 2;
 
 	}
 
-	
-	
 	public void setPosition(Point pos) {
 
 		this.pos = new Point(pos.x, pos.y);
