@@ -79,6 +79,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private static int ticksAtEndOfLastRound = 0;
 	
 	private boolean isStartingGame=false;
+	
+	private int tierOneBound=-1;
+	private int tierTwoBound=-1;
 
 	private int numAliveEnemies = 0;
 
@@ -190,6 +193,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			return;
 		godFrame.setLoadingVisibility(true);
 		isStartingGame=true;
+		tierOneBound=60;
+		tierTwoBound=90;
 		generateNewMap(seed);
 	}
 	
@@ -261,7 +266,13 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		enemiesSpawned = false;
 		player.resetWeapons();
 		processAbstractGoals();
+		if(round<=25)
+		{
+			tierOneBound-=2;
+			tierTwoBound-=2;
+		}
 		round++;
+		
 	}
 
 	private void processAbstractGoals() {
@@ -295,58 +306,67 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		if (testing)
 			return;
 		Random r = new Random(gen.getSeed());
+		
 		for (int i = 0; i < 20; i++) {
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
-			//x = 0;
-			//y = 0;
 			Enemy e = null;
-			switch (r.nextInt(15)) {
-			case 0:
-				e = new RedDragon();
-				break;
-			case 1:
-				e = new BlueFlower();
-				break;
-			case 2:
-				e = new SkeletonCape();
-				break;
-			case 3:
-				e = new PurpleEyeGhost();
-				break;
-			case 4:
-				e = new PurpleDemon();
-				break;
-			case 5:
-				e = new Goblin();
-				break;
-			case 6:
-				e = new Vampire();
-				break;
-			case 7:
-				e = new RedWitch();
-				break;
-			case 8:
-				e = new RedWitch();
-				break;
-			case 9:
-				e = new Snake();
-				break;
-			case 10:
-				e = new PurpleWorm();
-				break;
-			case 11:
-				e = new Mummy();
-				break;
-			case 12:
-				e = new Zombie();
-				break;
-			case 13:
-				e = new Orc();
-				break;
-			case 14:
-				e = new Bee();
-				break;
+			int tier=r.nextInt(100);
+			if(tier<tierOneBound)
+			{
+				switch (r.nextInt(6)) {
+				case 0:
+					e = new Goblin();
+					break;
+				case 1:
+					e = new Vampire();
+					break;
+				case 2:
+					e = new Snake();
+					break;
+				case 3:
+					e = new PurpleWorm();
+					break;
+				case 4:
+					e = new Bee();
+					break;
+				case 5:
+					e = new SkeletonCape();
+					break;
+				}
+			}
+			else if(tier<tierTwoBound)
+			{
+				switch (r.nextInt(5)) {
+				case 0:
+					e = new BlueFlower();
+					break;
+				case 1:
+					e = new PurpleEyeGhost();
+					break;
+				case 2:
+					e = new RedWitch();
+					break;
+				case 3:
+					e = new Mummy();
+					break;
+				case 4:
+					e = new Zombie();
+					break;
+				}
+			}
+			else {
+				switch (r.nextInt(3)) {
+				case 0:
+					e = new RedDragon();
+					break;
+				case 1:
+					e = new PurpleDemon();
+					break;
+				case 2:
+					e = new Orc();
+					break;
+				}
 			}
 			addObject(e, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
 			numAliveEnemies++;

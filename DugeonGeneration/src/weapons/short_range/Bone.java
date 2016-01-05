@@ -7,11 +7,11 @@ public class Bone extends ShortRangeWeapon
 {
 	public Bone(ScrollActor owner)
 	{
-		damage=3;
+		damage=7;
 		weaponName="bone";
 		displayName="Bone";
 		this.owner=owner;
-		reloadTimeInMS=800;
+		reloadTimeInMS=2000;
 		additionalValue=1;
 		ticksPerAnimImg=8;
 	}

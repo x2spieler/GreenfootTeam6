@@ -11,11 +11,11 @@ public class Sceptre extends LongRangeWeapon{
 	public Sceptre(ScrollActor owner, int ammo)
 	{
 		super(ammo);
-		damage=20;
+		damage=15;
 		weaponName="sceptre";
 		displayName="Sceptre";
 		this.owner=owner;
-		reloadTimeInMS=1500;
+		reloadTimeInMS=3500;
 		additionalValue=1;
 		ticksPerAnimImg=4;
 	}

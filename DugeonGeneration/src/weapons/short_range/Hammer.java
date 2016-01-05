@@ -7,7 +7,7 @@ public class Hammer extends ShortRangeWeapon
 {
 	public Hammer(ScrollActor owner)
 	{
-		damage=3;
+		damage=11;
 		weaponName="hammer";
 		displayName="Hammer";
 		this.owner=owner;

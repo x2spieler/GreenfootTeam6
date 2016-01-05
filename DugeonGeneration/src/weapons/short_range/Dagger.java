@@ -7,11 +7,11 @@ public class Dagger extends ShortRangeWeapon
 {
 	public Dagger(ScrollActor owner)
 	{
-		damage=3;
+		damage=7;
 		weaponName="dagger";
 		displayName="Dagger";
 		this.owner=owner;
-		reloadTimeInMS=400;
+		reloadTimeInMS=2000;
 		additionalValue=1;
 		ticksPerAnimImg=5;
 	}

@@ -40,6 +40,8 @@ public class Player extends DeltaMover implements IDamageable {
 	private int maxHP = -1;
 	private int currHP = -1;
 	private int mediPacks = 0;
+	
+	private final int STARTUP_MEDIPACKS=5;
 
 	private int score = 0;
 	private int playerScore=0;
@@ -205,7 +207,7 @@ public class Player extends DeltaMover implements IDamageable {
 			dungeonMap.updateWeaponName(currWeapon);
 			dungeonMap.updateScoreLabel(getScore());
 
-			setMediPacks(0);
+			setMediPacks(STARTUP_MEDIPACKS);
 		}
 
 		getKeysDown();

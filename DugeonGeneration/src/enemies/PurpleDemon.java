@@ -7,8 +7,8 @@ public class PurpleDemon extends Enemy
 	public PurpleDemon()
 	{
 		setSpeed(175);
-		value = 1;
-		hp = 1;
+		value = 6;
+		hp = 30;
 		enemyName="purple_demon";
 		allowedWeapons=new String[]{"acid_bubbles"};
 	}

@@ -5,18 +5,17 @@ import weapons.abstracts.Bullet;
 import weapons.abstracts.LongRangeWeapon;
 import weapons.bullets.CrossbowArrow;
 import weapons.bullets.LoveShots;
-import weapons.bullets.PurpleSpell;
 
 public class LoveWand extends LongRangeWeapon{
 	
 	public LoveWand(ScrollActor owner, int ammo)
 	{
 		super(ammo);
-		damage=20;
+		damage=19;
 		weaponName="love_wand";
 		displayName="Wand of love";
 		this.owner=owner;
-		reloadTimeInMS=1500;
+		reloadTimeInMS=3800;
 		additionalValue=1;
 		ticksPerAnimImg=4;
 	}

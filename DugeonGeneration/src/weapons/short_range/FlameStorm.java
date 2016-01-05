@@ -7,11 +7,11 @@ public class FlameStorm extends ShortRangeWeapon
 {
 	public FlameStorm(ScrollActor owner)
 	{
-		damage=15;
+		damage=26;
 		weaponName="flame_storm";
 		displayName="Flamestorm";
 		this.owner=owner;
-		reloadTimeInMS=750;
+		reloadTimeInMS=4000;
 		additionalValue=1;
 		ticksPerAnimImg=5;
 	}

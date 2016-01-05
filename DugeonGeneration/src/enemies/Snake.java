@@ -7,8 +7,8 @@ public class Snake extends Enemy
 	public Snake()
 	{
 		setSpeed(120);
-		value = 1;
-		hp = 1;
+		value = 2;
+		hp = 10;
 		enemyName="snake";
 		allowedWeapons=new String[]{"tongue"};
 	}

@@ -7,11 +7,11 @@ public class Bite extends ShortRangeWeapon
 {
 	public Bite(ScrollActor owner)
 	{
-		damage=3;
+		damage=6;
 		weaponName="bite";
 		displayName="Bite";
 		this.owner=owner;
-		reloadTimeInMS=800;
+		reloadTimeInMS=2000;
 		additionalValue=1;
 		ticksPerAnimImg=5;
 	}

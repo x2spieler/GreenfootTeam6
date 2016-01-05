@@ -7,8 +7,8 @@ public class PurpleSpell extends Bullet{
 
 	public PurpleSpell(EntityType typeToIgnore) {
 		super(typeToIgnore);
-		damage=4;
-		lifetimeInMs=4000;
+		damage=15;
+		lifetimeInMs=3500;
 		bulletName="spell_purple";
 		setSpeed(200);
 	}

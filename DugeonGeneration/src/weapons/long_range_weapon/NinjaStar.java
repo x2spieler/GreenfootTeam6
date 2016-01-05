@@ -10,7 +10,7 @@ public class NinjaStar extends LongRangeWeapon
 	public NinjaStar(ScrollActor owner, int ammo)
 	{
 		super(ammo);
-		damage=20;
+		damage=4;
 		weaponName="ninja_star";
 		displayName="Ninja star";
 		this.owner=owner;

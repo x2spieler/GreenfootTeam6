@@ -7,8 +7,8 @@ public class Leafs extends Bullet{
 
 	public Leafs(EntityType typeToIgnore) {
 		super(typeToIgnore);
-		damage=4;
-		lifetimeInMs=4000;
+		damage=17;
+		lifetimeInMs=3500;
 		bulletName="leafs";
 		setSpeed(500);
 	}

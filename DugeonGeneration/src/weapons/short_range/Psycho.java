@@ -7,11 +7,11 @@ public class Psycho extends ShortRangeWeapon
 {
 	public Psycho(ScrollActor owner)
 	{
-		damage=15;
+		damage=14;
 		weaponName="psycho";
 		displayName="Psycho";
 		this.owner=owner;
-		reloadTimeInMS=1500;
+		reloadTimeInMS=3000;
 		additionalValue=1;
 		ticksPerAnimImg=7;
 	}
