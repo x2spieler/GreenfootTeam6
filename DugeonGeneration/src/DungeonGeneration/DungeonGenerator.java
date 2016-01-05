@@ -116,7 +116,6 @@ public class DungeonGenerator {
 					
 				}
 			}
-			System.out.println("dsa");
 		} while (foundBad);
 	}
 
