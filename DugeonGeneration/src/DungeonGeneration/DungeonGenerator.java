@@ -84,6 +84,7 @@ public class DungeonGenerator {
 		dm.setMap(mapBlocks);
 		placeDestructable();
 		showMap();
+		//showRoomPathes();
 	}
 
 	//Clears the map by setting every single field to fieldType wall
@@ -155,15 +156,9 @@ public class DungeonGenerator {
 
 				for (int x = -ROOM_BORDER; x < rooms[i].getSizeX() + ROOM_BORDER && roomFree; x++) {
 
-					//prevents going outOfBounds
-					//					if (rooms[i].getPosition().x + x > MAP_WIDTH || rooms[i].getPosition().y + y > MAP_HEIGHT)
-					//						roomFree = false;
-					//					if (rooms[i].getPosition().x + x < ROOM_BORDER || rooms[i].getPosition().y + y < ROOM_BORDER)
-					//						roomFree = false;
-					//					//
+					
 					if (mapBlocks[rooms[i].getPosition().x + x][rooms[i].getPosition().y + y].getFieldType() == FieldType.RESERVED) {
 						roomFree = false;
-						//System.out.println(roomFree);
 					}
 				}
 			}
@@ -197,6 +192,13 @@ public class DungeonGenerator {
 		}
 	}
 
+	public void showRoomPathes(){
+		for(Room r:rooms){
+			System.out.println("Room :" + r);
+			System.out.println(r.getPathes());
+		}
+		
+	}
 	
 	public void connectSeparatedNetworks() {
 
@@ -204,6 +206,11 @@ public class DungeonGenerator {
 		if (getConnectedRooms().size() > 1) {
 			//System.out.println("More than one network!!!");
 			//System.out.println("# of networks: " + getConnectedRooms().size());
+			
+			for (ArrayList<Room> ar:getConnectedRooms()){
+				//System.out.println(ar);
+			}
+			
 			Point startPos = new Point();
 			Point endPos = new Point();
 			int connected = 0;
@@ -214,7 +221,7 @@ public class DungeonGenerator {
 
 				for (ArrayList<Room> hs2 : getConnectedRooms()) {
 
-					if (hs1 != hs2) {
+					if (hs1.hashCode() != hs2.hashCode()) {
 
 						for (Room r1 : hs1) {
 							for (Room r2 : hs2) {
@@ -226,13 +233,11 @@ public class DungeonGenerator {
 											startPos.setLocation(randomShift(r1, s));
 											endPos.setLocation(randomShift(r2, e));
 
-											//System.out.println("tried: " + );
 
 											BufferWayWrapper bwr = bufferWay(startPos, endPos, 3);
 											if (bwr.succesful && bwr.length < 100) {
 												reserveBufferedWay(3);
 												//hs1.addAll(hs2);
-												//System.out.println("Connected " + r1 + " & " + r2);
 												connected++;
 												break first;
 											}
@@ -247,13 +252,72 @@ public class DungeonGenerator {
 				}
 			}
 
-			if (connected >= getConnectedRooms().size()) {
-				//System.out.println("Connected succesfully");
+			if (!(connected >= getConnectedRooms().size())) {
+				
+				System.out.println("Connected unsuccesfully!!!");
+				
+			}
+//				ArrayList<Room> smallest = new ArrayList<Room>();
+//				
+//				System.out.println("Connected unsuccesfully!!!");
+//				
+//				first:
+//				for (ArrayList<Room> hs1 : getConnectedRooms()) {
+//					
+//
+//					for (ArrayList<Room> hs2 : getConnectedRooms()) {
+//
+//						if (hs1.size() < hs2.size()) {
+//							
+//							smallest.addAll(hs1);
+//							break first;
+//						} else{
+//							smallest.addAll(hs2);
+//							break first;
+//						}
+//					}
+//
+//						System.out.println(smallest);
+//						
+//							for (Room r1 : smallest) {
+//								for (Room r2 : smallest) {
+//
+//									if (r1 != r2) {
+//										for (int s = 0; s < 4; s++) {
+//											for (int e = 0; e < 4; e++) {
+//
+//												startPos.setLocation(randomShift(r1, s));
+//												endPos.setLocation(randomShift(r2, e));
+//
+//												
+//												
+//												BufferWayWrapper bwr = bufferWay(startPos, endPos, 3);
+//												if (bwr.succesful && bwr.length < 100) {
+//													createWay(3, FieldType.WALL, lastWayBuffer);
+//													//hs1.addAll(hs2);
+//													connected++;
+//													break first;
+//												}
+//
+//											}
+//										}
+//									}
+//
+//								}
+//							}
+//						}
+//					}
+				}
+				
 			}
 
-		}
-	}
+		
+	
 
+	
+	
+		
+	
 	public void connectClosestRooms() {
 
 		Point startPos = new Point();
@@ -281,7 +345,6 @@ public class DungeonGenerator {
 
 				delta = Math.sqrt((absDeltaX * absDeltaX) + (absDeltaY * absDeltaY));
 				absDelta = (int) Math.round(Math.abs(delta));
-				//System.out.println(absDelta);
 
 				if (absDelta < first) {
 
@@ -299,11 +362,11 @@ public class DungeonGenerator {
 					startPos.setLocation(randomShift(rooms[buildFirst[1]], s));
 					endPos.setLocation(randomShift(rooms[buildFirst[2]], e));
 
-					//System.out.println("tried: " + );
-
+					
 					BufferWayWrapper bwr = bufferWay(startPos, endPos, rad);
 					if (bwr.succesful && bwr.length < 40) { //40
 						reserveBufferedWay(rad);
+						rooms[buildFirst[1]].setPathes(lastWayBuffer);
 						break first;
 					}
 
@@ -317,8 +380,7 @@ public class DungeonGenerator {
 		for (int r0 = 0; r0 < usedRooms; r0++) {
 			for (int r1 = 0; r1 != r0 && r1 < usedRooms; r1++) {
 
-				//System.out.println("trying " + r0 + " with " + r1);
-
+				
 				deltaX = rooms[r1].getCenter().x - rooms[r0].getCenter().x;
 				deltaY = rooms[r1].getCenter().y - rooms[r0].getCenter().y;
 				absDeltaX = Math.abs(deltaX);
@@ -333,11 +395,12 @@ public class DungeonGenerator {
 						startPos.setLocation(randomShift(rooms[r0], s));
 						endPos.setLocation(randomShift(rooms[r1], e));
 
-						//System.out.println("tried: " + );
-
+						
 						BufferWayWrapper bwr = bufferWay(startPos, endPos, rad);
 						if (bwr.succesful && bwr.length < 50) { //50
 							reserveBufferedWay(rad);
+							rooms[r1].setPathes(lastWayBuffer);
+
 							break outerfor;
 						}
 
@@ -360,23 +423,19 @@ public class DungeonGenerator {
 
 		case 1:
 			pos.translate(0, (-1) * r.getSizeY() / 2 - 1);
-			//System.out.println("Direction 4 for " + room + " :" + pos);			
-			break;
+						break;
 
 		case 2:
 			pos.translate(r.getSizeX() / 2 + 1, 0);
-			//System.out.println("Direction 2 for " + room + " :" + pos);
-			break;
+						break;
 
 		case 3:
 			pos.translate(0, r.getSizeY() / 2 + 1);
-			//System.out.println("Direction 3 for " + room + " :" + pos);
-			break;
+						break;
 
 		case 4:
 			pos.translate((-1) * r.getSizeX() / 2 - 1, 0);
-			//System.out.println("Direction 4 for " + room + " :" + pos);
-
+			
 			break;
 
 		}
@@ -390,8 +449,8 @@ public class DungeonGenerator {
 			int numberOfCrates = rand.randomInt(0, 3);
 
 			for (int j = 0; j < numberOfCrates; j++) {
-				int randomOffsetX = rand.randomInt(1, rooms[i].getSizeX() - 1);
-				int randomOffsetY = rand.randomInt(1, rooms[i].getSizeY() - 1);
+				int randomOffsetX = rand.randomInt(2, rooms[i].getSizeX() - 2);
+				int randomOffsetY = rand.randomInt(2, rooms[i].getSizeY() - 2);
 
 				int posX = rooms[i].getPosition().x + randomOffsetX;
 				int posY = rooms[i].getPosition().y + randomOffsetY;
@@ -451,7 +510,7 @@ public class DungeonGenerator {
 			System.out.println();
 		}
 
-		//System.out.println("\n Map Seed: " + mapSeed);
+		System.out.println("\n Map Seed: " + mapSeed);
 
 	}
 
@@ -515,10 +574,7 @@ public class DungeonGenerator {
 					addX = 0;
 					addY = 1;
 				}
-				//1. Loop: 1 , 0
-				//2. Loop: -1, 0
-				//3. Loop: 0, 1l
-				//4. Loop: 0, -1
+				
 				x = closest.x + addX;
 				y = closest.y + addY;
 				if (x < 0 || y < 0 || x >= mapBlocks.length || y >= mapBlocks[0].length)
@@ -688,10 +744,7 @@ public class DungeonGenerator {
 				addX = 0;
 				addY = 1;
 			}
-			//1. Loop: 1 , 0
-			//2. Loop: -1, 0
-			//3. Loop: 0, 1l
-			//4. Loop: 0, -1
+			
 			int subPathLength = MIN_SUB_PATHS_LENGTH;
 			if (closest.prev != null && closest.x - closest.prev.x == addX && closest.y - closest.prev.y == addY)
 				subPathLength = 1;

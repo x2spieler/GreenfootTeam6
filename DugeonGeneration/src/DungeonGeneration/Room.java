@@ -1,6 +1,7 @@
 package DungeonGeneration;
 
 import java.awt.Point;
+import java.util.ArrayList;
 
 public class Room {
 
@@ -9,8 +10,15 @@ public class Room {
 
 	private Point pos = new Point();
 	private Point center = new Point();
+	private ArrayList<DungeonGenerator.Node> pathes = new ArrayList();
 	
-
+	public void setPathes(DungeonGenerator.Node n){
+		pathes.add(n);
+	}
+	
+	public ArrayList<DungeonGenerator.Node> getPathes(){
+		return pathes;
+	}
 
 
 	public Room (int sizeX, int sizeY) {
