@@ -5,12 +5,15 @@ import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
 import database.HighscoreEntry;
 import world.DungeonMap;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class HighScorePanel extends BackgroundPanel {
 
@@ -24,7 +27,8 @@ public class HighScorePanel extends BackgroundPanel {
 	private int numListEntries=-1;
 
 	public HighScorePanel(DungeonMap dm, int numListEntries, ActionListener backToMainMenuListener) {
-		super(null/*new ImageIcon(HighScorePanel.class.getClassLoader().getResource("images/background/Background.jpg")).getImage()*/);
+		super(new ImageIcon(HighScorePanel.class.getClassLoader().getResource("images/background/highscore/HighScoreBG.jpg")).getImage());
+		setBounds(200, 200, 1024, 768);
 		this.dMap=dm;
 		this.numListEntries=numListEntries;
 		buildGui(backToMainMenuListener);
@@ -33,11 +37,6 @@ public class HighScorePanel extends BackgroundPanel {
 
 	private void buildGui(ActionListener backToMainMenuListener)
 	{
-		JLabel headerLabel = new JLabel("Highscores");
-		headerLabel.setBounds(0, 50, DungeonMap.VIEWPORT_WIDTH, 50);
-		headerLabel.setFont(new Font("", Font.PLAIN, 26));
-		headerLabel.setHorizontalAlignment(JLabel.CENTER);
-		add(headerLabel);
 		
 		names=new JLabel[numListEntries];
 		dashes=new JLabel[numListEntries];
@@ -45,7 +44,7 @@ public class HighScorePanel extends BackgroundPanel {
 		int x1=300;
 		int x2=500;
 		int x3=500;
-		int yStart=150;
+		int yStart=200;
 		int yBorder=50;
 		for(int i=0;i<numListEntries;i++)
 		{
@@ -64,11 +63,23 @@ public class HighScorePanel extends BackgroundPanel {
 		}
 		
 		JButton mmenu = new JButton();
-		int buttonWidth = 200;
-		int buttonHeight = 40;
-		mmenu.setBounds(DungeonMap.VIEWPORT_WIDTH/2 - buttonWidth / 2, (int)(DungeonMap.VIEWPORT_HEIGHT - 2.5*buttonHeight), buttonWidth, buttonHeight);
-		mmenu.setText("Back to main menu");
+		mmenu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				mmenu.setIcon(new ImageIcon(MainMenuPanel.class.getResource("/images/background/highscore/back-shine.png")));
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				mmenu.setIcon(new ImageIcon(HighScorePanel.class.getResource("/images/background/highscore/back.png")));
+			}
+		});
+		mmenu.setIcon(new ImageIcon(HighScorePanel.class.getResource("/images/background/highscore/back.png")));
+		mmenu.setBounds(583, 627, 178, 64);
 		mmenu.addActionListener(backToMainMenuListener);
+		mmenu.setContentAreaFilled(false);
+		mmenu.setBorder(null);
+		mmenu.setOpaque(false);
+		setLayout(null);
 		add(mmenu);
 	}
 	

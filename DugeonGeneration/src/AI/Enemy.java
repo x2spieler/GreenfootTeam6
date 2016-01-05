@@ -56,8 +56,6 @@ public abstract class Enemy extends DeltaMover implements IDamageable {
 	private short walkCounter = 0;
 	private boolean isPendingKill = false;
 	private int currRotation = 0;
-	private int[] rgb;
-	private int[] red;
 
 	protected enum ImageIndex {
 		IDLE(0), WALK1(1), WALK2(2), ATTACK(0);

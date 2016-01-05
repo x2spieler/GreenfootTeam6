@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import AI.Enemy;
@@ -77,11 +78,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private static int greenfootTime = 0;
 	private long lastTicks;
 	private static int ticksAtEndOfLastRound = 0;
-	
-	private boolean isStartingGame=false;
-	
-	private int tierOneBound=-1;
-	private int tierTwoBound=-1;
+
+	private boolean isStartingGame = false;
+
+	private int tierOneBound = -1;
+	private int tierTwoBound = -1;
 
 	private int numAliveEnemies = 0;
 
@@ -192,9 +193,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		if (isStartingGame)
 			return;
 		godFrame.setLoadingVisibility(true);
-		isStartingGame=true;
-		tierOneBound=60;
-		tierTwoBound=90;
+		isStartingGame = true;
+		tierOneBound = 60;
+		tierTwoBound = 90;
 		generateNewMap(seed);
 	}
 
@@ -223,6 +224,23 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		isStartingGame = false;
 		godFrame.setLoadingVisibility(false);
 		godFrame.setNewSeedForTextField();
+	}
+
+	@SuppressWarnings("unused")
+	private void printPNG(GreenfootImage[][] mapTiles) throws IOException {
+		ImageObserver obs = (a, b, c, d, e, f) -> {
+			return false;
+		};
+		BufferedImage imageToWrite = new BufferedImage(mapTiles.length * TILE_SIZE, mapTiles[0].length * TILE_SIZE,
+				BufferedImage.TYPE_INT_ARGB);
+		Graphics2D gc = imageToWrite.createGraphics();
+		for (int i = 0; i < mapTiles.length; i++) {
+			for (int j = 0; j < mapTiles[i].length; j++) {
+				gc.drawImage(mapTiles[i][j].getAwtImage(), i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE, obs);
+			}
+		}
+		File file = new File("/home/stud/opitzju/Arbeitsfläche/wholeMap.png");
+		ImageIO.write(imageToWrite, "PNG", file);
 	}
 
 	public void setPlayer(Player player) {
@@ -266,13 +284,12 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		enemiesSpawned = false;
 		player.resetWeapons();
 		processAbstractGoals();
-		if(round<=25)
-		{
-			tierOneBound-=2;
-			tierTwoBound-=2;
+		if (round <= 25) {
+			tierOneBound -= 2;
+			tierTwoBound -= 2;
 		}
 		round++;
-		
+
 	}
 
 	private void processAbstractGoals() {
@@ -305,14 +322,13 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		if (testing)
 			return;
 		Random r = new Random(gen.getSeed());
-		
+
 		for (int i = 0; i < 20; i++) {
 			int x = r.nextInt(DungeonGenerator.MAP_WIDTH);
 			int y = r.nextInt(DungeonGenerator.MAP_HEIGHT);
 			Enemy e = null;
-			int tier=r.nextInt(100);
-			if(tier<tierOneBound)
-			{
+			int tier = r.nextInt(100);
+			if (tier < tierOneBound) {
 				switch (r.nextInt(6)) {
 				case 0:
 					e = new Goblin();
@@ -333,9 +349,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 					e = new SkeletonCape();
 					break;
 				}
-			}
-			else if(tier<tierTwoBound)
-			{
+			} else if (tier < tierTwoBound) {
 				switch (r.nextInt(5)) {
 				case 0:
 					e = new BlueFlower();
@@ -353,8 +367,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 					e = new Zombie();
 					break;
 				}
-			}
-			else {
+			} else {
 				switch (r.nextInt(3)) {
 				case 0:
 					e = new RedDragon();
