@@ -2,21 +2,9 @@ package DungeonGeneration;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Random;
 
-//import greenfoot.World;
 
-//Branching
-
-import java.awt.Point;
-import java.nio.Buffer;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
-
-import greenfoot.Actor;
 import objects.Crate;
 import objects.DestroyableObject;
 import objects.Grave;
@@ -25,7 +13,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 10; //TODO: Set to ~14 rooms
+	public static final int ROOM_POOL = 40; 
 	public static int usedRooms = ROOM_POOL;
 
 	public static final int MAP_WIDTH = 150;
@@ -95,7 +83,7 @@ public class DungeonGenerator {
 		convertCells();
 		dm.setMap(mapBlocks);
 		placeDestructable();
-		//showMap();
+		showMap();
 	}
 
 	//Clears the map by setting every single field to fieldType wall
@@ -195,7 +183,7 @@ public class DungeonGenerator {
 
 		}
 
-		System.out.println("Used rooms: " + usedRooms);
+		//System.out.println("Used rooms: " + usedRooms);
 	}
 
 	public void removeCells() {
@@ -209,73 +197,22 @@ public class DungeonGenerator {
 		}
 	}
 
-	//	public void connectSeparatedNetworks(){
-	//		
-	//		//TODO: Check if all networks got connected, if not abort game
-	//		
-	//		if (getConnectedRooms().size() > 1){
-	//			System.out.println("More than one network!!!");
-	//			System.out.println("# of networks: " + getConnectedRooms().size());
-	//			Point startPos = new Point();
-	//			Point endPos = new Point();
-	//			int connected = 0;
-	//			
-	//
-	//			for (HashSet<Room> hs1:getConnectedRooms()){
-	//				for (HashSet<Room> hs2:getConnectedRooms()){
-	//
-	//					if (hs1!=hs2){
-	//						for (int r0 = 0; r0 < hs1.size(); r0++){
-	//							for (int r1 = 0; r1!=r0 && r1 < hs2.size(); r1++){
-	//								
-	//								first:
-	//									for (int s = 0; s < 4;s++){
-	//										for (int e = 0; e < 4; e++){
-	//
-	//											startPos.setLocation(randomShift(r0, s));
-	//											endPos.setLocation(randomShift(r1, e));
-	//											
-	//											//System.out.println("tried: " + );
-	//						
-	//											BufferWayWrapper bwr=bufferWay(startPos, endPos, 3);
-	//											if(bwr.succesful){						
-	//												reserveBufferedWay(3);
-	//												hs1.addAll(hs2);
-	//												connected++;
-	//												break first;
-	//											}
-	//										
-	//											
-	//										}
-	//									}
-	//								
-	//								
-	//							}
-	//
-	//					
-	//						
-	//						}
-	//					}
-	//				}
-	//				
-	//			}
-	//		}
-	//	}
-
+	
 	public void connectSeparatedNetworks() {
 
-		//TODO: Check if all networks got connected, if not abort game
 
 		if (getConnectedRooms().size() > 1) {
-			System.out.println("More than one network!!!");
-			System.out.println("# of networks: " + getConnectedRooms().size());
+			//System.out.println("More than one network!!!");
+			//System.out.println("# of networks: " + getConnectedRooms().size());
 			Point startPos = new Point();
 			Point endPos = new Point();
 			int connected = 0;
 
-			first: for (HashSet<Room> hs1 : getConnectedRooms()) {
+			for (ArrayList<Room> hs1 : getConnectedRooms()) {
+			
+				first:
 
-				for (HashSet<Room> hs2 : getConnectedRooms()) {
+				for (ArrayList<Room> hs2 : getConnectedRooms()) {
 
 					if (hs1 != hs2) {
 
@@ -283,7 +220,6 @@ public class DungeonGenerator {
 							for (Room r2 : hs2) {
 
 								if (r1 != r2) {
-
 									for (int s = 0; s < 4; s++) {
 										for (int e = 0; e < 4; e++) {
 
@@ -293,10 +229,10 @@ public class DungeonGenerator {
 											//System.out.println("tried: " + );
 
 											BufferWayWrapper bwr = bufferWay(startPos, endPos, 3);
-											if (bwr.succesful) {
+											if (bwr.succesful && bwr.length < 100) {
 												reserveBufferedWay(3);
 												//hs1.addAll(hs2);
-												System.out.println("Connected " + r1 + " & " + r2);
+												//System.out.println("Connected " + r1 + " & " + r2);
 												connected++;
 												break first;
 											}
@@ -311,8 +247,8 @@ public class DungeonGenerator {
 				}
 			}
 
-			if (connected >= getConnectedRooms().size() - 1) {
-				System.out.println("Connected succesfully");
+			if (connected >= getConnectedRooms().size()) {
+				//System.out.println("Connected succesfully");
 			}
 
 		}
@@ -515,15 +451,15 @@ public class DungeonGenerator {
 			System.out.println();
 		}
 
-		System.out.println("\n Map Seed: " + mapSeed);
+		//System.out.println("\n Map Seed: " + mapSeed);
 
 	}
 
-	//TODO: New methods
 
-	private ArrayList<HashSet<Room>> getConnectedRooms() {
-		ArrayList<HashSet<Room>> connected = new ArrayList<>();
-		HashSet<Room> used = new HashSet<>();
+
+	private ArrayList<ArrayList<Room>> getConnectedRooms() {
+		ArrayList<ArrayList<Room>> connected = new ArrayList<>();
+		ArrayList<Room> used = new ArrayList<>();
 		while (used.size() < usedRooms) {
 			Room currRoom = null;
 			for (Room r : rooms) {
@@ -532,7 +468,7 @@ public class DungeonGenerator {
 					break;
 				}
 			}
-			HashSet<Room> currNet = new HashSet<>();
+			ArrayList<Room> currNet = new ArrayList<>();
 			currNet.add(currRoom);
 			for (int i = 0; i < usedRooms; i++) {
 				Room r = rooms[i];
