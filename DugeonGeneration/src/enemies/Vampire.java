@@ -7,8 +7,8 @@ public class Vampire extends Enemy
 	public Vampire()
 	{
 		setSpeed(175);
-		value = 1;
-		hp = 1;
+		value = 2;
+		hp = 10;
 		enemyName="vampire";
 		allowedWeapons=new String[]{"wood_stake"};
 	}

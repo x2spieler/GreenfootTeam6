@@ -7,11 +7,11 @@ public class WoodStake extends ShortRangeWeapon
 {
 	public WoodStake(ScrollActor owner)
 	{
-		damage=3;
+		damage=5;
 		weaponName="wood_stake";
 		displayName="Wooden Stake";
 		this.owner=owner;
-		reloadTimeInMS=1400;
+		reloadTimeInMS=2000;
 		additionalValue=1;
 		ticksPerAnimImg=8;
 	}

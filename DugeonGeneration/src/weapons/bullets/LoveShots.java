@@ -7,8 +7,8 @@ public class LoveShots extends Bullet{
 
 	public LoveShots(EntityType typeToIgnore) {
 		super(typeToIgnore);
-		damage=4;
-		lifetimeInMs=4000;
+		damage=19;
+		lifetimeInMs=3800;
 		bulletName="love_shots";
 		setSpeed(200);
 	}

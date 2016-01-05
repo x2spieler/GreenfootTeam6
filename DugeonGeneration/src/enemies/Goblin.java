@@ -7,8 +7,8 @@ public class Goblin extends Enemy
 	public Goblin()
 	{
 		setSpeed(210);
-		value = 1;
-		hp = 1;
+		value = 2;
+		hp = 10;
 		enemyName="goblin";
 		allowedWeapons=new String[]{"dagger"};
 	}

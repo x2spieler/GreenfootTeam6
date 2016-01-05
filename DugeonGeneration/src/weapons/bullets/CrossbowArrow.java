@@ -6,7 +6,7 @@ import weapons.abstracts.Bullet;
 public class CrossbowArrow extends Bullet {
 	public CrossbowArrow(EntityType typeToIgnore) {
 		super(typeToIgnore);
-		damage = 4;
+		damage = 20;
 		lifetimeInMs = 4000;
 		bulletName = "crossbow_arrow";
 		setSpeed(800);

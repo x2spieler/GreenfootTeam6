@@ -7,11 +7,11 @@ public class AcidBubbles extends ShortRangeWeapon
 {
 	public AcidBubbles(ScrollActor owner)
 	{
-		damage=5;
+		damage=22;
 		weaponName="acid_bubbles";
 		displayName="Acid Bubbles";
 		this.owner=owner;
-		reloadTimeInMS=750;
+		reloadTimeInMS=4000;
 		additionalValue=1;
 		ticksPerAnimImg=7;
 	}

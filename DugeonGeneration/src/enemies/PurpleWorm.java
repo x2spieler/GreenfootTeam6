@@ -7,8 +7,8 @@ public class PurpleWorm extends Enemy
 	public PurpleWorm()
 	{
 		setSpeed(175);
-		value = 1;
-		hp = 1;
+		value = 2;
+		hp = 10;
 		enemyName="purple_worm";
 		allowedWeapons=new String[]{"bite"};
 	}

@@ -7,8 +7,8 @@ public class RedWitch extends Enemy
 	public RedWitch()
 	{
 		setSpeed(175);
-		value = 1;
-		hp = 1;
+		value = 4;
+		hp = 20;
 		enemyName="red_witch";
 		allowedWeapons=new String[]{"love_wand"};
 	}

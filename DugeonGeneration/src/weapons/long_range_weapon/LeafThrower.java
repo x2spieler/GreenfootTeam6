@@ -10,11 +10,11 @@ public class LeafThrower extends LongRangeWeapon
 	public LeafThrower(ScrollActor owner, int ammo)
 	{
 		super(ammo);
-		damage=20;
+		damage=17;
 		weaponName="leaf_thrower";
 		displayName="Leaf thrower";
 		this.owner=owner;
-		reloadTimeInMS=500;
+		reloadTimeInMS=2500;
 		additionalValue=1;
 		ticksPerAnimImg=1;
 	}

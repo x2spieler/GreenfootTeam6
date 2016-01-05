@@ -221,22 +221,20 @@ public class GodFrame {
 		int horizontalSpace = 20;
 		//TODO find a smart way to get the Icon from the weapon it belongs to
 		entryPanel.add(
-				new ShopEntry(BuyItem.WEAPON_AXE, new GreenfootImage("enemies/weapons/axe/axe0.png"), 30, 1, world));
+				new ShopEntry(BuyItem.WEAPON_AXE, new GreenfootImage("enemies/weapons/axe/axe0.png"), 300, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_HAMMER, new GreenfootImage("enemies/weapons/hammer/hammer0.png"),
-				30, 1, world));
+				250, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SPEAR, new GreenfootImage("enemies/weapons/spear/spear0.png"), 30,
-				1, world));
+				250, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_CROSSBOW,
-				new GreenfootImage("enemies/weapons/crossbow/crossbow0.png"), 30, 1, world));
-		entryPanel.add(new ShopEntry(BuyItem.WEAPON_SWORD, new GreenfootImage("enemies/weapons/sword/sword.png"), 30, 1,
-				world));
+				new GreenfootImage("enemies/weapons/crossbow/crossbow0.png"), 250, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.WEAPON_NINJA_STAR,
-				new GreenfootImage("enemies/weapons/ninja_star/ninja_star0.png"), 30, 1, world));
+				new GreenfootImage("enemies/weapons/ninja_star/ninja_star0.png"), 250, 1, world));
 		entryPanel.add(new ShopEntry(BuyItem.BULLET_CROSSBOW_ARROW,
-				new GreenfootImage("enemies/bullets/crossbow_arrow.png"), 30, 100, world));
+				new GreenfootImage("enemies/bullets/crossbow_arrow.png"), 50, 30, world));
 		entryPanel.add(new ShopEntry(BuyItem.BULLET_NINJA_STAR, new GreenfootImage("enemies/bullets/ninja_star.png"),
-				30, 100, world));
-		entryPanel.add(new ShopEntry(BuyItem.MEDI_PACK, new GreenfootImage("medi_pack.png"), 30, 1, world));
+				50, 30, world));
+		entryPanel.add(new ShopEntry(BuyItem.MEDI_PACK, new GreenfootImage("medi_pack.png"), 20, 1, world));
 
 		JScrollPane scrollPane = new JScrollPane(entryPanel);
 		int scrollY = 100;

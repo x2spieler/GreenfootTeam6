@@ -11,7 +11,7 @@ public class Sword extends ShortRangeWeapon {
 	private static final int FRAME_COUNT = 12;
 
 	public Sword(ScrollActor owner) {
-		damage = 2000;
+		damage = 8;
 		weaponName = "sword";
 		displayName = "Sword";
 		this.owner = owner;

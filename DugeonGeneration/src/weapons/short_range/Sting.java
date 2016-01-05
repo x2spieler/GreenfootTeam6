@@ -7,11 +7,11 @@ public class Sting extends ShortRangeWeapon
 {
 	public Sting(ScrollActor owner)
 	{
-		damage=5;
+		damage=9;
 		weaponName="sting";
 		displayName="Sting";
 		this.owner=owner;
-		reloadTimeInMS=750;
+		reloadTimeInMS=2500;
 		additionalValue=1;
 		ticksPerAnimImg=5;
 	}

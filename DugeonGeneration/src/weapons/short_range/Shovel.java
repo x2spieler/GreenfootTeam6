@@ -7,11 +7,11 @@ public class Shovel extends ShortRangeWeapon
 {
 	public Shovel(ScrollActor owner)
 	{
-		damage=3;
+		damage=12;
 		weaponName="shovel";
 		displayName="Shovel";
 		this.owner=owner;
-		reloadTimeInMS=1000;
+		reloadTimeInMS=3000;
 		additionalValue=1;
 		ticksPerAnimImg=9;
 	}

@@ -7,11 +7,11 @@ public class Tongue extends ShortRangeWeapon
 {
 	public Tongue(ScrollActor owner)
 	{
-		damage=3;
+		damage=5;
 		weaponName="tongue";
 		displayName="Tongue";
 		this.owner=owner;
-		reloadTimeInMS=800;
+		reloadTimeInMS=2000;
 		additionalValue=1;
 		ticksPerAnimImg=4;
 	}

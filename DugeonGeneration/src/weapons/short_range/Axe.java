@@ -7,7 +7,7 @@ public class Axe extends ShortRangeWeapon
 {
 	public Axe(ScrollActor owner)
 	{
-		damage=3;
+		damage=15;
 		weaponName="axe";
 		displayName="Axe";
 		this.owner=owner;

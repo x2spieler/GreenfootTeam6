@@ -7,8 +7,8 @@ public class Zombie extends Enemy
 	public Zombie()
 	{
 		setSpeed(100);
-		value = 1;
-		hp = 1;
+		value = 4;
+		hp = 20;
 		enemyName="zombie";
 		allowedWeapons=new String[]{"shovel"};
 	}

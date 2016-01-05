@@ -7,8 +7,8 @@ public class PurpleEyeGhost extends Enemy
 	public PurpleEyeGhost()
 	{
 		setSpeed(175);
-		value = 1;
-		hp = 1;
+		value = 4;
+		hp = 20;
 		enemyName="purple_eye_ghost";
 		allowedWeapons=new String[]{"psycho"};
 	}

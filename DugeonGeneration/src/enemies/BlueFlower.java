@@ -7,8 +7,8 @@ public class BlueFlower extends Enemy
 	public BlueFlower()
 	{
 		setSpeed(175);
-		value = 1;
-		hp = 1;
+		value = 4;
+		hp = 20;
 		enemyName="blue_flower";
 		allowedWeapons=new String[]{"leaf_thrower"};
 	}
