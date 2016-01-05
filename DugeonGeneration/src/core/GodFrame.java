@@ -54,8 +54,8 @@ public class GodFrame {
 	private JScrollPane mainMenuPane = null;
 	private JScrollPane gameOverPane = null;
 	private JScrollPane nextRoundPane = null;
-	private JScrollPane highscorePane=null;
-	private HighScorePanel highScorePanel=null;
+	private JScrollPane highscorePane = null;
+	private HighScorePanel highScorePanel = null;
 	private JPanel viewportPanel = null;
 	private JLabel seedLabel = null;
 	private JLabel coinLabel = null;
@@ -68,10 +68,10 @@ public class GodFrame {
 	private JLabel scoreLabel = null;
 	private JLabel noDamageLabel = null;
 	private JLabel inTimeLabel = null;
-	private JLabel hsScoreInfo=null;
+	private JLabel hsScoreInfo = null;
 	private BufferedImage healthBarImage = null;
 	private DungeonMap world;
-	private MainMenuPanel mainMenuPanel=null;
+	private MainMenuPanel mainMenuPanel = null;
 
 	private LinkedHashMap<String, BuffPanel> buffPanels;
 	private final int LABEL_HEIGHT = 80;
@@ -123,7 +123,7 @@ public class GodFrame {
 			break;
 		case GAME_OVER:
 			changeTo(gameOverPane);
-			hsScoreInfo.setText("You got a score of "+world.getPlayerScore()+" !");
+			hsScoreInfo.setText(String.valueOf(world.getPlayerScore()));
 			Greenfoot.stop();
 			break;
 		case NEXT_ROUND:
@@ -150,15 +150,13 @@ public class GodFrame {
 		frame.getContentPane().remove(highscorePane);
 		frame.getContentPane().add(t);
 	}
-	
-	public void setLoadingVisibility(boolean visible)
-	{
+
+	public void setLoadingVisibility(boolean visible) {
 		mainMenuPanel.setLoadingVisibility(visible);
 	}
-	
-	public void buildHighscoreGui()
-	{
-		highScorePanel=new HighScorePanel(world, 10, (ActionEvent e) -> {
+
+	public void buildHighscoreGui() {
+		highScorePanel = new HighScorePanel(world, 10, (ActionEvent e) -> {
 			changeToFrame(FrameType.MAIN_MENU);
 		});
 		highScorePanel.setLayout(null);
@@ -306,32 +304,30 @@ public class GodFrame {
 			buyFeedbackLabel.setForeground(new Color(184, 0, 0));
 		buyFeedbackLabel.setText(msg);
 	}
-	
-	public void setNewSeedForTextField()
-	{
+
+	public void setNewSeedForTextField() {
 		seedTF.setText("" + new Random().nextInt());
 	}
 
 	public void buildMainMenuGui() {
 		mainMenuPanel = new MainMenuPanel((ActionEvent e) -> {
 			//Start-Button
-			if(world.isStartingGame())
+			if (world.isStartingGame())
 				return;
 			try {
-				String s=seedTF.getText();
-				int seed=!s.equals("") ? Integer.parseInt(s) : new Random().nextInt();
+				String s = seedTF.getText();
+				int seed = !s.equals("") ? Integer.parseInt(s) : new Random().nextInt();
 				world.startNewGame(seed);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-		} , 
+		} ,
 				//Highscore-Button
-		(ActionEvent e)->
-		{
-			if(world.isStartingGame())
-				return;
-			changeToFrame(FrameType.HIGHSCORE);
-		}, world);
+				(ActionEvent e) -> {
+					if (world.isStartingGame())
+						return;
+					changeToFrame(FrameType.HIGHSCORE);
+				} , world);
 		seedTF = mainMenuPanel.getSeedTF();
 		seedTF.setText("" + new Random().nextInt());
 		mainMenuPanel.setPreferredSize(getPrefSize(mainMenuPanel));
@@ -342,44 +338,14 @@ public class GodFrame {
 	}
 
 	public void buildGameOverGui() {
-		JPanel panel = new JPanel();
-		panel.setLayout(null);
+		GameOverPanel panel = new GameOverPanel();
 		panel.setPreferredSize(getPrefSize(panel));
-		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		Dimension panelSize = panel.getPreferredSize();
-		// /////CODE FOR GAME OVER MENU GOES HERE
-
-		JLabel loseLabel = new JLabel("You lost!");
-		loseLabel.setBounds(0, 100, panelSize.width, 50);
-		loseLabel.setFont(new Font("", Font.ITALIC, 24));
-		loseLabel.setHorizontalAlignment(JLabel.CENTER);
-		panel.add(loseLabel);
-
-		// /////
-		
-		hsScoreInfo = new JLabel("You got a score of "+world.getPlayerScore()+" !");
-		hsScoreInfo.setBounds(0, 350, panelSize.width, 50);
-		hsScoreInfo.setFont(new Font("", Font.ITALIC, 15));
-		hsScoreInfo.setHorizontalAlignment(JLabel.CENTER);
-		panel.add(hsScoreInfo);
-		
-		JTextField hsNameTextField=new JTextField();
-		hsNameTextField.setBounds(350, 420, 150, 25);
-		hsNameTextField.setText("Name");
-		panel.add(hsNameTextField);
-		
-		JButton hsAddButton = new JButton();
-		int buttonWidth = 200;
-		int buttonHeight = 30;
-		hsAddButton.setBounds(550,420, buttonWidth, buttonHeight);
-		hsAddButton.setText("Add to highscores");
-		hsAddButton.addActionListener((ActionEvent e) -> {
+		panel.getAddHighscores().addActionListener((ActionEvent e) -> {
 			changeToFrame(FrameType.MAIN_MENU);
-			world.addToHighscoreList(hsNameTextField.getText());
+			world.addToHighscoreList(panel.getNameText().getText());
 			changeToFrame(FrameType.MAIN_MENU);
 		});
-		panel.add(hsAddButton);
-
+		hsScoreInfo = panel.getHighScorezeigen();
 		JScrollPane outer = new JScrollPane(panel);
 		outer.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
