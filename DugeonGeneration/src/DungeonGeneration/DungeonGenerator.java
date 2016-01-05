@@ -13,7 +13,7 @@ import world.DungeonMap;
 
 public class DungeonGenerator {
 
-	public static final int ROOM_POOL = 40; 
+	public static final int ROOM_POOL = 12; //TODO: Decreased ROOM_POOL to prevent multiple networks
 	public static int usedRooms = ROOM_POOL;
 
 	public static final int MAP_WIDTH = 150;
