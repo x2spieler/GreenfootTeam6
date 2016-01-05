@@ -55,6 +55,7 @@ public class GameOverPanel extends BackgroundPanel {
 		nameText.setBounds(503, 471, 276, 42);
 		panel.add(nameText);
 		nameText.setColumns(10);
+		nameText.setCaretColor(Color.WHITE);
 
 		addHighscores = new JButton("");
 		addHighscores.addMouseListener(new MouseAdapter() {
