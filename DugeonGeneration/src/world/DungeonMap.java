@@ -99,6 +99,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 	private FPS fps;
 
 	private boolean testing = false;
+	@SuppressWarnings("unused")
 	private boolean running = false;
 	private boolean debugging = false;
 
@@ -109,11 +110,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	final int BASE_SCORE_FOR_NO_DAMAGE = 100;
 	final int BASE_SCORE_FOR_IN_TIME = 100;
-	final int BASE_TIME_PER_ROUND = 120/*seconds*/* 1000/*convert to milliseconds*/;
+	final int BASE_TIME_PER_ROUND = 120/*seconds*/ * 1000/*convert to milliseconds*/;
 
 	private int round = 1;
-	
-	private int lastPlayerScore=-1;
+
+	private int lastPlayerScore = -1;
 
 	private DatabaseHandler dbHandler;
 
@@ -162,9 +163,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		}
 		super.setPaintOrder(args);
 	}
-	
-	public boolean isStartingGame()
-	{
+
+	public boolean isStartingGame() {
 		return isStartingGame;
 	}
 
@@ -184,12 +184,12 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	public void playerDied() {
 		godFrame.changeToFrame(FrameType.GAME_OVER);
-		lastPlayerScore=player.getPlayerScore();
+		lastPlayerScore = player.getPlayerScore();
 		endGame();
 	}
 
 	public void startNewGame(int seed) throws AWTException {
-		if(isStartingGame)
+		if (isStartingGame)
 			return;
 		godFrame.setLoadingVisibility(true);
 		isStartingGame=true;
@@ -197,9 +197,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		tierTwoBound=90;
 		generateNewMap(seed);
 	}
-	
-	private void startGameAfterMapLoad(int seed)
-	{
+
+	private void startGameAfterMapLoad(int seed) {
 		new Thread(() -> {
 			try {
 				Pair<GreenfootImage[][], MapElement[][]> p = new DungeonMapper(map).getImageForTilesetHouse();
@@ -221,7 +220,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		log("Seed: " + seed);
 		round = 1;
 		changeToFrame(FrameType.VIEWPORT);
-		isStartingGame=false;
+		isStartingGame = false;
 		godFrame.setLoadingVisibility(false);
 		godFrame.setNewSeedForTextField();
 	}
@@ -257,7 +256,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 			if (o instanceof Enemy || o instanceof Bullet || o instanceof StairsToHeaven)
 				removeObject((Actor) o);
 			if (o instanceof DestroyableObject) {
-				map[((DestroyableObject) o).getGlobalX() / TILE_SIZE][((DestroyableObject) o).getGlobalY() / TILE_SIZE].setFieldType(FieldType.GROUND);
+				map[((DestroyableObject) o).getGlobalX() / TILE_SIZE][((DestroyableObject) o).getGlobalY() / TILE_SIZE]
+						.setFieldType(FieldType.GROUND);
 				removeObject((Actor) o);
 			}
 		}
@@ -297,8 +297,7 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		enemiesSpawned = false;
 	}
 
-	public int getSeed()
-	{
+	public int getSeed() {
 		return gen.getSeed();
 	}
 
@@ -403,7 +402,9 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 						if (r.nextBoolean())
 							yAdd *= -1;
 						y = player.getGlobalY() / TILE_SIZE + yAdd;
-					} while (x < 0 || y < 0 || x >= getMap().length || y >= getMap()[0].length || !map[x][y].walkable() || !map[x + 1][y].walkable() || !map[x - 1][y].walkable() || !map[x][y + 1].walkable() || !map[x][y - 1].walkable());
+					} while (x < 0 || y < 0 || x >= getMap().length || y >= getMap()[0].length || !map[x][y].walkable()
+							|| !map[x + 1][y].walkable() || !map[x - 1][y].walkable() || !map[x][y + 1].walkable()
+							|| !map[x][y - 1].walkable());
 				} while (!tryAddObject(stairs, x * TILE_SIZE, y * TILE_SIZE));
 			}
 		}
@@ -458,19 +459,16 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		godFrame.updateFeedbackLabel(success, msg);
 	}
 
-	public void addToHighscoreList(String name)
-	{
+	public void addToHighscoreList(String name) {
 		addHighscore(name, lastPlayerScore);
 	}
 
-	public int getPlayerScore()
-	{
-		return player!=null ? player.getScore() : -1;
+	public int getPlayerScore() {
+		return player != null ? player.getScore() : -1;
 	}
 
 	private final void generateNewMap(int seed) {
-		new Thread(()->
-		{
+		new Thread(() -> {
 			gen = new DungeonGenerator(this, seed);
 			startGameAfterMapLoad(seed);
 		}).start();
@@ -571,7 +569,8 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 
 	private GreenfootImage getImageForTile(int i, int j) {
 
-		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT) ? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
+		return (i >= 0 && j >= 0 && i < DungeonGenerator.MAP_WIDTH && j < DungeonGenerator.MAP_HEIGHT)
+				? (tileMap[i][j] != null) ? tileMap[i][j] : empty : outOfMap;
 	}
 
 	@Override
