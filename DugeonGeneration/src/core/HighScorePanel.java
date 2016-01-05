@@ -27,7 +27,7 @@ public class HighScorePanel extends BackgroundPanel {
 	private int numListEntries=-1;
 
 	public HighScorePanel(DungeonMap dm, int numListEntries, ActionListener backToMainMenuListener) {
-		super(new ImageIcon(HighScorePanel.class.getClassLoader().getResource("images/background/highscore/Highscore-BG.png")).getImage());
+		super(new ImageIcon(HighScorePanel.class.getClassLoader().getResource("images/background/highscore/HighScoreBG.jpg")).getImage());
 		setBounds(200, 200, 1024, 768);
 		this.dMap=dm;
 		this.numListEntries=numListEntries;
@@ -74,7 +74,7 @@ public class HighScorePanel extends BackgroundPanel {
 			}
 		});
 		mmenu.setIcon(new ImageIcon(HighScorePanel.class.getResource("/images/background/highscore/back.png")));
-		mmenu.setBounds(663, 623, 178, 64);
+		mmenu.setBounds(583, 627, 178, 64);
 		mmenu.addActionListener(backToMainMenuListener);
 		mmenu.setContentAreaFilled(false);
 		mmenu.setBorder(null);
