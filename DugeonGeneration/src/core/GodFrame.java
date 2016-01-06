@@ -79,6 +79,8 @@ public class GodFrame {
 	private final int LABEL_X_START = 10;
 	private final int LABEL_Y_START = 225;
 	private JTextField seedTF;
+	
+	private boolean paused=false;
 
 	public GodFrame(JFrame frame, DungeonMap world) {
 		this.frame = frame;
@@ -111,6 +113,11 @@ public class GodFrame {
 		switch (type) {
 		case VIEWPORT:
 			changeTo(viewPortPane);
+			if(paused)
+			{
+				paused=false;
+				world.setLastTicks();
+			}
 			Greenfoot.start();
 			break;
 		case MAIN_MENU:
@@ -120,6 +127,7 @@ public class GodFrame {
 		case PAUSE_MENU:
 			changeTo(pauseMenuPane);
 			Greenfoot.stop();
+			paused=true;
 			break;
 		case GAME_OVER:
 			changeTo(gameOverPane);

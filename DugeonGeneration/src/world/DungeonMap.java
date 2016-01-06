@@ -386,6 +386,11 @@ public class DungeonMap extends ScrollWorld implements IWorldInterfaceForAI {
 		// Increase numAlivEenemies here , spawnWerewolfs does so
 		enemiesSpawned = true;
 	}
+	
+	public void setLastTicks()
+	{
+		lastTicks=System.currentTimeMillis();
+	}
 
 	@Override
 	public void act() {
